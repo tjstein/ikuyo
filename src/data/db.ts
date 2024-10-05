@@ -167,10 +167,12 @@ export async function dbAddUserToTrip({
 
   let userId = user?.id;
   if (!userId) {
+    // New user
     userId = id();
+    const defaultHandle = userEmail.toLowerCase().replace(/[@.]/g, '_');
     transactions.push(
       db.tx.user[userId].update({
-        handle: userEmail,
+        handle: defaultHandle,
         email: userEmail,
         activated: false,
         createdAt: lastUpdatedAt,
@@ -266,10 +268,10 @@ export async function dbUpsertUser(
   let userId = user?.id;
   if (!userId) {
     // new user
-    userId = id(); 
+    userId = id();
     return db.transact(
       db.tx.user[userId].update({
-        ...newUser, 
+        ...newUser,
         createdAt: Date.now(),
         lastUpdatedAt: Date.now(),
       })
@@ -278,7 +280,7 @@ export async function dbUpsertUser(
     // existing user
     return db.transact(
       db.tx.user[userId].update({
-        ...newUser,  
+        ...newUser,
         lastUpdatedAt: Date.now(),
       })
     );
