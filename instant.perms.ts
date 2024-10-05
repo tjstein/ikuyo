@@ -31,6 +31,14 @@ export default {
       update: 'true',
     },
   },
+  $users: {
+    allow: {
+      view: 'auth.id == data.id',
+      create: 'false',
+      delete: 'false',
+      update: 'false',
+    },
+  },
   activity: {
     bind: [
       'isTripViewer',

@@ -5,6 +5,9 @@ import { i } from '@instantdb/react';
 
 const graph = i.graph(
   {
+    $users: i.entity({
+      email: i.string().unique(),
+    }),
     activity: i.entity({
       createdAt: i.number(),
       description: i.string(),
@@ -23,10 +26,10 @@ const graph = i.graph(
       title: i.string(),
     }),
     user: i.entity({
-      createdAt: i.number(),
-      handle: i.string().unique().indexed(),
-      email: i.string().unique().indexed(),
       activated: i.boolean(),
+      createdAt: i.number(),
+      email: i.string().unique().indexed(),
+      handle: i.string().unique().indexed(),
       lastUpdatedAt: i.number(),
     }),
   },
@@ -43,6 +46,18 @@ const graph = i.graph(
         label: 'activity',
       },
     },
+    tripEditor: {
+      forward: {
+        on: 'trip',
+        has: 'many',
+        label: 'editor',
+      },
+      reverse: {
+        on: 'user',
+        has: 'many',
+        label: 'tripEditor',
+      },
+    },
     tripOwner: {
       forward: {
         on: 'trip',
@@ -53,6 +68,18 @@ const graph = i.graph(
         on: 'user',
         has: 'many',
         label: 'tripOwner',
+      },
+    },
+    tripUser: {
+      forward: {
+        on: 'trip',
+        has: 'many',
+        label: 'user',
+      },
+      reverse: {
+        on: 'user',
+        has: 'many',
+        label: 'trip',
       },
     },
     tripViewer: {
@@ -67,16 +94,16 @@ const graph = i.graph(
         label: 'tripViewer',
       },
     },
-    tripEditor: {
+    user$users: {
       forward: {
-        on: 'trip',
-        has: 'many',
-        label: 'editor',
+        on: 'user',
+        has: 'one',
+        label: '$users',
       },
       reverse: {
-        on: 'user',
-        has: 'many',
-        label: 'tripEditor',
+        on: '$users',
+        has: 'one',
+        label: 'user',
       },
     },
   }
