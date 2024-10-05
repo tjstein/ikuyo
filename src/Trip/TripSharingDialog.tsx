@@ -89,6 +89,11 @@ export function TripSharingDialog({
         return;
       }
 
+      if ((newUserRole as TripUserRole) === TripUserRole.Owner) {
+        setErrorMessage(`Cannot set other person as owner`);
+        return;
+      }
+
       await dbAddUserToTrip({
         tripId: trip.id,
         userEmail: newUserEmail,
@@ -105,7 +110,13 @@ export function TripSharingDialog({
       setNewUserEmail('');
       setNewUserRole(TripUserRole.Viewer);
     };
-  }, [currentUserIsOwner, currentUser.email, trip.id, trip.title, publishToast]);
+  }, [
+    currentUserIsOwner,
+    currentUser.email,
+    trip.id,
+    trip.title,
+    publishToast,
+  ]);
 
   const handleFormSubmit = useCallback(
     (e: SyntheticEvent<HTMLFormElement>) => {
@@ -165,7 +176,6 @@ export function TripSharingDialog({
                     <Select.Item value={TripUserRole.Editor}>
                       Editor
                     </Select.Item>
-                    <Select.Item value={TripUserRole.Owner}>Owner</Select.Item>
                   </Select.Content>
                 </Select.Root>
                 <Button type="submit" size="2" variant="outline">
@@ -193,7 +203,13 @@ export function TripSharingDialog({
                 return (
                   <Table.Row key={user.id}>
                     <Table.RowHeaderCell>
-                      {user.handle || user.email}
+                      {user.activated ? (
+                        user.handle
+                      ) : (
+                        <>
+                          {user.email} <Text size="1">(not activated)</Text>
+                        </>
+                      )}
                     </Table.RowHeaderCell>
                     <Table.Cell>{capitalizeFirst(role)}</Table.Cell>
                     {currentUserIsOwner ? (
