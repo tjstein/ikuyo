@@ -28,7 +28,7 @@ export default {
       view: 'true',
       create: 'true',
       delete: 'false',
-      update: 'true',
+      update: 'isSelf',
     },
   },
   $users: {
