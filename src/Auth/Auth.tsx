@@ -16,6 +16,7 @@ import { ROUTES } from '../routes';
 
 import imgUrl from '/ikuyo.svg';
 import { DocTitle } from '../Nav/DocTitle';
+import { CommonDialogMaxWidth } from '../dialog';
 
 export default PageLogin;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -88,7 +89,7 @@ export function PageLogin(_props: RouteComponentProps) {
     <>
       <DocTitle title={'Login'} />
       <Grid className={s.grid}>
-        <Box maxWidth="450px" mx="2" px="2">
+        <Box maxWidth={CommonDialogMaxWidth} mx="2" px="2">
           {authUserLoading || isLoading ? (
             'Loading'
           ) : error ? (

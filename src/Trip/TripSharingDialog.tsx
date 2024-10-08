@@ -15,6 +15,7 @@ import { DbTrip, DbUser } from '../data/types';
 import { TripUserRole } from '../data/TripUserRole';
 import { PlusIcon, TrashIcon } from '@radix-ui/react-icons';
 import s from './TripSharingDialog.module.css';
+import { CommonDialogMaxWidth } from '../dialog';
 
 export function TripSharingDialog({
   dialogOpen,
@@ -129,7 +130,7 @@ export function TripSharingDialog({
 
   return (
     <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
-      <Dialog.Content maxWidth="450px">
+      <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>Share Trip</Dialog.Title>
         <Dialog.Description>
           Share this trip with other people!

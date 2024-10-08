@@ -4,6 +4,7 @@ import { DbTrip } from '../data/types';
 import { ActivityForm } from './ActivityForm';
 import { ActivityFormMode } from './ActivityFormMode';
 import { formatToDatetimeLocalInput } from './time';
+import { CommonDialogMaxWidth } from '../dialog';
 
 export function ActivityNewDialog({
   trip,
@@ -25,7 +26,7 @@ export function ActivityNewDialog({
 
   return (
     <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
-      <Dialog.Content maxWidth="450px">
+      <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>New Activity</Dialog.Title>
         <Dialog.Description>
           Fill in your new activity details...

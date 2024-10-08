@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { dbDeleteActivity } from '../data/db';
 import { useBoundStore } from '../data/store';
 import { DbActivity } from '../data/types';
+import { CommonDialogMaxWidth } from '../dialog';
 
 export function ActivityDeleteDialog({
   activity,
@@ -42,7 +43,7 @@ export function ActivityDeleteDialog({
       onOpenChange={setDialogOpen}
       defaultOpen={dialogOpen}
     >
-      <AlertDialog.Content maxWidth="450px">
+      <AlertDialog.Content maxWidth={CommonDialogMaxWidth}>
         <AlertDialog.Title>Delete Activity</AlertDialog.Title>
         <AlertDialog.Description size="2">
           Are you sure to delete activity "{activity.title}"?

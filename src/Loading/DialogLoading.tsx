@@ -5,7 +5,7 @@ export function DialogLoading() {
   return (
     <Portal className={s.dialogLoadingContainer} asChild>
       <Theme accentColor="plum">
-        <div className={s.dialogLoading} >Loading...</div>
+        <div className={s.dialogLoading}>Loading...</div>
       </Theme>
     </Portal>
   );

@@ -4,6 +4,7 @@ import { DbActivityWithTrip } from '../data/types';
 import { ActivityForm } from './ActivityForm';
 import { ActivityFormMode } from './ActivityFormMode';
 import { formatToDatetimeLocalInput } from './time';
+import { CommonDialogMaxWidth } from '../dialog';
 
 export function ActivityEditDialog({
   activity,
@@ -32,7 +33,7 @@ export function ActivityEditDialog({
   );
   return (
     <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
-      <Dialog.Content maxWidth="450px">
+      <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>Edit Activity</Dialog.Title>
         <Dialog.Description>
           Fill in your edited activity details...

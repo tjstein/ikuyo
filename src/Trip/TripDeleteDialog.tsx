@@ -5,6 +5,7 @@ import { useBoundStore } from '../data/store';
 import { DbTripWithActivity } from '../data/types';
 import { ROUTES } from '../routes';
 import { useLocation } from 'wouter';
+import { CommonDialogMaxWidth } from '../dialog';
 
 export function TripDeleteDialog({
   trip,
@@ -47,7 +48,7 @@ export function TripDeleteDialog({
       onOpenChange={setDialogOpen}
       defaultOpen={dialogOpen}
     >
-      <AlertDialog.Content maxWidth="450px">
+      <AlertDialog.Content maxWidth={CommonDialogMaxWidth}>
         <AlertDialog.Title>Delete Trip</AlertDialog.Title>
         <AlertDialog.Description size="2">
           <Text as="p">Are you sure to delete trip "{trip.title}"?</Text>

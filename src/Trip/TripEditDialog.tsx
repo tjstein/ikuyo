@@ -4,6 +4,7 @@ import { DbTripWithActivity } from '../data/types';
 import { TripForm } from './TripForm';
 import { TripFormMode } from './TripFormMode';
 import { formatToDateInput } from './time';
+import { CommonDialogMaxWidth } from '../dialog';
 
 export function TripEditDialog({
   trip,
@@ -24,7 +25,7 @@ export function TripEditDialog({
   );
   return (
     <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
-      <Dialog.Content maxWidth="450px">
+      <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>Edit Trip</Dialog.Title>
         <Dialog.Description>
           Fill in your edited trip details...

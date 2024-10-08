@@ -7,8 +7,11 @@
   background-color: var(--color-panel-solid);
   outline: none;
   width: 100%;
-  max-width: 450px;
+  box-sizing: border-box;
+  max-width: min(450px, 95vw);
   min-height: 150px;
+  margin-left: 16px;
+  margin-right: 16px;
 }
 .dialogLoadingContainer {
   position: fixed;

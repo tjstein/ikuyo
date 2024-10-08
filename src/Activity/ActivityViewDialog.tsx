@@ -6,6 +6,7 @@ import createUrlRegExp from 'url-regex-safe';
 
 import s from './Activity.module.css';
 import { useMemo } from 'react';
+import { CommonDialogMaxWidth } from '../dialog';
 export function ActivityViewDialog({
   activity,
   dialogOpen,
@@ -61,7 +62,7 @@ export function ActivityViewDialog({
   }, [activity.description]);
   return (
     <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
-      <Dialog.Content maxWidth="450px">
+      <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>View Activity</Dialog.Title>
         <Dialog.Description>Activity details</Dialog.Description>
         <Flex direction="column" gap="3" mt="3">
