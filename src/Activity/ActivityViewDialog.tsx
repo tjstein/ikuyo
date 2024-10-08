@@ -125,7 +125,7 @@ export function ActivityViewDialog({
             Edit
           </Button>
           <Dialog.Close>
-            <Button type="button" size="2" variant="soft" color="gray">
+            <Button type="button" size="2">
               Close
             </Button>
           </Dialog.Close>
