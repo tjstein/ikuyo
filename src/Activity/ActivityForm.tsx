@@ -4,6 +4,7 @@ import { dbUpdateActivity, dbAddActivity } from '../data/db';
 import { useBoundStore } from '../data/store';
 import { ActivityFormMode } from './ActivityFormMode';
 import { getDateTimeFromDatetimeLocalInput } from './time';
+import { setNewActivityTimestamp } from './activitiyStorage';
 
 export function ActivityForm({
   mode,
@@ -106,6 +107,10 @@ export function ActivityForm({
           close: {},
         });
       } else if (mode === ActivityFormMode.New && tripId) {
+        setNewActivityTimestamp({
+          timestamp: timeEndDate.toMillis(),
+          tripId: tripId,
+        });
         await dbAddActivity(
           {
             title,

@@ -5,6 +5,8 @@ import { ActivityForm } from './ActivityForm';
 import { ActivityFormMode } from './ActivityFormMode';
 import { formatToDatetimeLocalInput } from './time';
 import { CommonDialogMaxWidth } from '../dialog';
+import { useMemo } from 'react';
+import { getNewActivityTimestamp } from './activitiyStorage';
 
 export function ActivityNewDialog({
   trip,
@@ -23,6 +25,22 @@ export function ActivityNewDialog({
       .setZone(trip.timeZone)
       .minus({ minute: 1 })
   );
+  const [activityStartStr, activityEndStr] = useMemo(() => {
+    const activityStartTimestamp = getNewActivityTimestamp(trip);
+
+    return [
+      formatToDatetimeLocalInput(
+        DateTime.fromMillis(activityStartTimestamp).setZone(trip.timeZone)
+      ),
+      formatToDatetimeLocalInput(
+        DateTime.fromMillis(activityStartTimestamp)
+          .setZone(trip.timeZone)
+          .plus({
+            hours: 1,
+          })
+      ),
+    ];
+  }, [trip]);
 
   return (
     <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -41,8 +59,8 @@ export function ActivityNewDialog({
           tripEndStr={tripEndStr}
           tripTimeZone={trip.timeZone}
           activityTitle={''}
-          activityStartStr={tripStartStr}
-          activityEndStr={tripEndStr}
+          activityStartStr={activityStartStr}
+          activityEndStr={activityEndStr}
           activityLocation={''}
           activityDescription={''}
         />
