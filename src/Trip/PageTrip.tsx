@@ -12,7 +12,7 @@ import s from './PageTrip.module.css';
 
 import { TripMenu } from './TripMenu';
 import { UserAvatarMenu } from '../Auth/UserAvatarMenu';
-import { TripViewMode } from './TripViewMode';
+import { TripViewMode, useTripViewMode } from './TripViewMode';
 
 import { DocTitle } from '../Nav/DocTitle';
 import { withLoading } from '../Loading/withLoading';
@@ -108,7 +108,7 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
   const [editTripDialogOpen, setEditTripDialogOpen] = useState(false);
   const [deleteTripDialogOpen, setDeleteTripDialogOpen] = useState(false);
   const [shareTripDialogOpen, setShareTripDialogOpen] = useState(false);
-  const [tripViewMode, setTripViewMode] = useState(TripViewMode.Timetable);
+  const [tripViewMode, setTripViewMode] = useTripViewMode();
 
   return (
     <>
