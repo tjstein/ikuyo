@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import style from './Activity.module.css';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ClockIcon,
   InfoCircledIcon,
@@ -65,6 +65,11 @@ export function Activity({
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const responsiveTextSize = { initial: '1' as const };
+  const isActivityOngoing = useMemo(() => {
+    const now = Date.now();
+    return activity.timestampStart <= now && now <= activity.timestampEnd;
+  }, [activity.timestampEnd, activity.timestampStart]);
+
   return (
     <>
       <ContextMenu.Root>
@@ -81,6 +86,7 @@ export function Activity({
               dayStartMapping[dayStart],
               dayColMapping[dayStart][columnIndex],
               columnIndex === columnEndIndex ? '' : dayEndMapping[dayEnd],
+              isActivityOngoing ? style.activityOngoing : '',
               className
             )}
             onClick={() => {
