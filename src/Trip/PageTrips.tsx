@@ -23,8 +23,9 @@ import { PlusIcon } from '@radix-ui/react-icons';
 import { DocTitle } from '../Nav/DocTitle';
 import { withLoading } from '../Loading/withLoading';
 import React from 'react';
+import { DialogLoading } from '../Loading/DialogLoading';
 
-const TripNewDialog = withLoading()(
+const TripNewDialog = withLoading({ fallback: () => <DialogLoading /> })(
   React.lazy(() =>
     import('./TripNewDialog').then((module) => {
       return { default: module.TripNewDialog };
