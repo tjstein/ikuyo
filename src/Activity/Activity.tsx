@@ -158,6 +158,8 @@ export function Activity({
           activity={activity}
           dialogOpen={viewDialogOpen}
           setDialogOpen={setViewDialogOpen}
+          setEditDialogOpen={setEditDialogOpen}
+          setDeleteDialogOpen={setDeleteDialogOpen}
         />
       ) : null}
       {editDialogOpen ? (

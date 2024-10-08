@@ -10,10 +10,14 @@ export function ActivityViewDialog({
   activity,
   dialogOpen,
   setDialogOpen,
+  setEditDialogOpen,
+  setDeleteDialogOpen,
 }: {
   activity: DbActivityWithTrip;
   dialogOpen: boolean;
   setDialogOpen: (newValue: boolean) => void;
+  setEditDialogOpen: (newValue: boolean) => void;
+  setDeleteDialogOpen: (newValue: boolean) => void;
 }) {
   const activityStartStr = DateTime.fromMillis(activity.timestampStart)
     .setZone(activity.trip.timeZone)
@@ -93,13 +97,38 @@ export function ActivityViewDialog({
             <></>
           )}
         </Flex>
-        <Dialog.Close>
-          <Flex gap="3" mt="5" justify="end">
+        <Flex gap="3" mt="5" justify="end">
+          <Button
+            mr="auto"
+            type="button"
+            size="2"
+            variant="soft"
+            color="gray"
+            onClick={() => {
+              setDialogOpen(false);
+              setDeleteDialogOpen(true);
+            }}
+          >
+            Delete
+          </Button>
+          <Button
+            type="button"
+            size="2"
+            variant="soft"
+            color="gray"
+            onClick={() => {
+              setDialogOpen(false);
+              setEditDialogOpen(true);
+            }}
+          >
+            Edit
+          </Button>
+          <Dialog.Close>
             <Button type="button" size="2" variant="soft" color="gray">
               Close
             </Button>
-          </Flex>
-        </Dialog.Close>
+          </Dialog.Close>
+        </Flex>
       </Dialog.Content>
     </Dialog.Root>
   );
