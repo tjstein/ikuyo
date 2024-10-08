@@ -95,13 +95,17 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
   }, [rawTrip, user]);
 
   const trip: undefined | DbTripWithActivity = useMemo(() => {
-    if (rawTrip && rawTrip.activity) {
-      rawTrip.activity = rawTrip.activity.map((activity) => {
-        activity.trip = rawTrip;
-        return activity;
-      });
+    if (rawTrip) {
+      const tripWithActivity = {
+        ...rawTrip,
+        activity: rawTrip.activity?.map((activity) => {
+          activity.trip = rawTrip;
+          return activity;
+        }) ?? [],
+      } as DbTripWithActivity;
+      return tripWithActivity;
     }
-    return rawTrip as undefined | DbTripWithActivity;
+    return undefined;
   }, [rawTrip]);
 
   const [newActivityDialogOpen, setNewActivityDialogOpen] = useState(false);
