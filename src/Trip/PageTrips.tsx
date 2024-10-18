@@ -24,6 +24,7 @@ import { DocTitle } from '../Nav/DocTitle';
 import { withLoading } from '../Loading/withLoading';
 import React from 'react';
 import { DialogLoading } from '../Loading/DialogLoading';
+import { DateTime } from 'luxon';
 
 const TripNewDialog = withLoading({ fallback: () => <DialogLoading /> })(
   React.lazy(() =>
@@ -181,13 +182,17 @@ function Trips({
                         </Text>
                         <Text as="div" size="2" color="gray">
                           {formatTimestampToReadableDate(
-                            trip.timestampStart,
-                            trip.timeZone
+                            DateTime.fromMillis(trip.timestampStart, {
+                              zone: trip.timeZone,
+                            })
                           )}{' '}
                           &ndash;{' '}
                           {formatTimestampToReadableDate(
-                            trip.timestampEnd,
-                            trip.timeZone
+                            DateTime.fromMillis(trip.timestampEnd, {
+                              zone: trip.timeZone,
+                            }).minus({
+                              day: 1,
+                            })
                           )}{' '}
                           ({trip.timeZone})
                         </Text>
