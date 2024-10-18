@@ -21,12 +21,19 @@
       // Generate [t0000] var(--row-minute-height), [te000 t0001] var(--row-minute-height), ..., [te2357 t2358] var(--row-minute-height), [te2358 t2359] var(--row-minute-height) [te2359]
       @if $i == 0 and $j == 0 {
         // first one
-        $ret: $ret + '[t#{$hh}#{$mm}]' + ' var(--row-minute-height) ';
+        $ret: $ret + '[t#{$hh}#{$mm}]' + ' var(--row-minute-narrow-height) ';
       } @else if not ($i == 0 and $j == 0) and not ($i == 23 and $j == 59) {
         // middle ones
-        $ret: $ret +
-          '[te#{$phhmm} t#{$hh}#{$mm}]' +
-          ' var(--row-minute-height) ';
+
+        @if (0 <= $i and $i <= 5) {
+          $ret: $ret +
+            '[te#{$phhmm} t#{$hh}#{$mm}]' +
+            ' var(--row-minute-narrow-height) ';
+        } @else {
+          $ret: $ret +
+            '[te#{$phhmm} t#{$hh}#{$mm}]' +
+            ' var(--row-minute-height) ';
+        }
       } @else if $i == 23 and $j == 59 {
         // final one
         $ret: $ret +
@@ -43,6 +50,7 @@
 @layer timetableBase {
   .timetable {
     --row-minute-height: 2px;
+    --row-minute-narrow-height: 0.8px;
     display: grid;
     // grid-template-columns will be overridden in "style" at <Timetable />
     grid-template-columns: [time] 45px repeat(5, [d] 1fr);
@@ -61,6 +69,7 @@
   @media (min-width: 520px) {
     .timetable {
       --row-minute-height: 1px;
+      --row-minute-narrow-height: 0.5px;
     }
   }
 
@@ -111,7 +120,7 @@
     justify-content: center;
     overflow-wrap: break-word;
     background: var(--time-bg);
-    padding: 0.6em 0.3em;
+    padding: 0.1em;
     font-weight: bold;
     border: 1px solid var(--gray-6);
     z-index: 1;
