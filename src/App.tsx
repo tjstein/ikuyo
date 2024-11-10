@@ -8,6 +8,8 @@ import { ROUTES } from './routes';
 import { ThemeAppearance, useTheme } from './theme';
 import { withLoading } from './Loading/withLoading';
 
+const PageTerms = withLoading()(React.lazy(() => import('./Docs/Terms')));
+const PagePrivacy = withLoading()(React.lazy(() => import('./Docs/Privacy')));
 const PageLogin = withLoading()(React.lazy(() => import('./Auth/Auth')));
 const PageTrips = withLoading()(React.lazy(() => import('./Trip/PageTrips')));
 const PageTrip = withLoading()(React.lazy(() => import('./Trip/PageTrip')));
@@ -28,6 +30,8 @@ function App() {
           <Route path={ROUTES.Trips} component={PageTrips} />
           <Route path={ROUTES.Trip} component={PageTrip} />
           <Route path={ROUTES.Account} component={PageAccount} />
+          <Route path={ROUTES.Privacy} component={PagePrivacy} />
+          <Route path={ROUTES.Terms} component={PageTerms} />
           <Route>
             <Redirect to={ROUTES.Login} />
           </Route>
