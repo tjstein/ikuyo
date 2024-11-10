@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useId, useState } from 'react';
+import React, { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { db, dbUpsertUser as dbUpsertUser } from '../data/db';
 import {
   Text,
@@ -17,16 +17,37 @@ import { ROUTES } from '../routes';
 import imgUrl from '/ikuyo.svg';
 import { DocTitle } from '../Nav/DocTitle';
 import { CommonDialogMaxWidth } from '../dialog';
+import { ArrowLeftIcon } from '@radix-ui/react-icons';
 
 export default PageLogin;
+
+enum AuthScreen {
+  LoginSelection,
+  LoginViaEmailInput,
+  LoginViaEmailVerify,
+  LoginViaGoogle,
+  InvalidState,
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function PageLogin(_props: RouteComponentProps) {
   const { isLoading: authUserLoading, user: authUser, error } = db.useAuth();
+  console.log('authUser', authUser);
+  const [screen, setScreen] = useState(AuthScreen.LoginSelection);
   const [sentEmail, setSentEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const publishToast = useBoundStore((state) => state.publishToast);
   const resetToast = useBoundStore((state) => state.resetToast);
   const [, setLocation] = useLocation();
+
+  const googleAuthUrl = useMemo(
+    () =>
+      db.auth.createAuthorizationURL({
+        clientName: 'ikuyo.kenrick95.org',
+        redirectURL: window.location.href,
+      }),
+    []
+  );
 
   useEffect(() => {
     async function checkUser(userEmail: string) {
@@ -40,7 +61,7 @@ export function PageLogin(_props: RouteComponentProps) {
             limit: 1,
           },
         },
-      }); 
+      });
       if (userData.user.length === 0 || !userData.user[0].activated) {
         // Create new user if not exist, or alr exist but not yet activated
         const defaultHandle = userEmail.toLowerCase().replace(/[@.]/g, '_');
@@ -94,10 +115,19 @@ export function PageLogin(_props: RouteComponentProps) {
             'Loading'
           ) : error ? (
             `Error: ${error.message}`
-          ) : !sentEmail ? (
-            <Email setSentEmail={setSentEmail} />
+          ) : screen === AuthScreen.LoginSelection ? (
+            <LoginSelection
+              setScreen={setScreen}
+              googleAuthUrl={googleAuthUrl}
+            />
+          ) : screen === AuthScreen.LoginViaGoogle ? (
+            <LoginViaGoogle setScreen={setScreen} />
+          ) : screen === AuthScreen.LoginViaEmailInput ? (
+            <Email setScreen={setScreen} setSentEmail={setSentEmail} />
+          ) : screen === AuthScreen.LoginViaEmailVerify ? (
+            <MagicCode setScreen={setScreen} sentEmail={sentEmail} />
           ) : (
-            <MagicCode sentEmail={sentEmail} />
+            <>Invalid State</>
           )}
         </Box>
       </Grid>
@@ -105,7 +135,67 @@ export function PageLogin(_props: RouteComponentProps) {
   );
 }
 
-function Email({ setSentEmail }: { setSentEmail: (email: string) => void }) {
+function LoginViaGoogle({
+  setScreen,
+}: {
+  setScreen: (screen: AuthScreen) => void;
+}) {
+  return (
+    <>
+      Logging in via Google...
+      <br />
+      <Button
+        type="reset"
+        variant="outline"
+        onClick={() => {
+          setScreen(AuthScreen.LoginSelection);
+        }}
+      >
+        Back
+      </Button>
+    </>
+  );
+}
+
+function LoginSelection({
+  setScreen,
+  googleAuthUrl,
+}: {
+  setScreen: (screen: AuthScreen) => void;
+  googleAuthUrl: string;
+}) {
+  return (
+    <Flex direction="column" gap="2">
+      <Heading>
+        <img src={imgUrl} className={s.logo} /> Ikuyo!
+      </Heading>
+      <Button
+        variant="outline"
+        onClick={() => {
+          setScreen(AuthScreen.LoginViaEmailInput);
+        }}
+      >
+        Log in via email code
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() => {
+          window.location.href = googleAuthUrl;
+          setScreen(AuthScreen.LoginViaGoogle);
+        }}
+      >
+        Log in via Google
+      </Button>
+    </Flex>
+  );
+}
+function Email({
+  setSentEmail,
+  setScreen,
+}: {
+  setSentEmail: (email: string) => void;
+  setScreen: (screen: AuthScreen) => void;
+}) {
   const publishToast = useBoundStore((state) => state.publishToast);
 
   const handleSubmit = useCallback(
@@ -122,6 +212,7 @@ function Email({ setSentEmail }: { setSentEmail: (email: string) => void }) {
         .sendMagicCode({ email })
         .then(() => {
           setSentEmail(email);
+          setScreen(AuthScreen.LoginViaEmailVerify);
           publishToast({
             root: { duration: Infinity },
             title: { children: 'Email sent!' },
@@ -149,6 +240,16 @@ function Email({ setSentEmail }: { setSentEmail: (email: string) => void }) {
     <form onSubmit={handleSubmit}>
       <Flex direction="column" gap="2">
         <Heading>
+          <Button
+            type="reset"
+            variant="ghost"
+            className={s.screenBackButton}
+            onClick={() => {
+              setScreen(AuthScreen.LoginSelection);
+            }}
+          >
+            <ArrowLeftIcon />
+          </Button>
           <img src={imgUrl} className={s.logo} /> Ikuyo!
         </Heading>
         <Text as="label" htmlFor={idEmail}>
@@ -167,7 +268,13 @@ function Email({ setSentEmail }: { setSentEmail: (email: string) => void }) {
   );
 }
 
-function MagicCode({ sentEmail }: { sentEmail: string }) {
+function MagicCode({
+  sentEmail,
+  setScreen,
+}: {
+  sentEmail: string;
+  setScreen: (screen: AuthScreen) => void;
+}) {
   const publishToast = useBoundStore((state) => state.publishToast);
 
   const handleSubmit = useCallback(
@@ -200,6 +307,16 @@ function MagicCode({ sentEmail }: { sentEmail: string }) {
     <form onSubmit={handleSubmit}>
       <Flex direction="column" gap="2">
         <Heading>
+          <Button
+            type="reset"
+            variant="ghost"
+            className={s.screenBackButton}
+            onClick={() => {
+              setScreen(AuthScreen.LoginViaEmailInput);
+            }}
+          >
+            <ArrowLeftIcon />
+          </Button>
           <img src={imgUrl} className={s.logo} /> Ikuyo!
         </Heading>
         <Text as="label" htmlFor={idCode}>
