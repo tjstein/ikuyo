@@ -3,6 +3,7 @@ import type { DbActivity, DbTrip, DbTripWithActivity, DbUser } from './types';
 import { DateTime } from 'luxon';
 import schema from '../../instant.schema';
 import { TripUserRole } from './TripUserRole';
+import { TransactionChunk } from '@instantdb/core';
 
 // ID for app: ikuyo
 const APP_ID = '6962735b-d61f-4c3c-a78f-03ca3fa6ba9a';
@@ -98,7 +99,7 @@ export async function dbUpdateTrip(
   const tripId = trip.id;
 
   const transactionTimestamp = Date.now();
-  const transactions = [
+  const transactions: TransactionChunk<any, any>[] = [
     db.tx.trip[tripId].merge({
       ...trip,
       lastUpdatedAt: transactionTimestamp,
