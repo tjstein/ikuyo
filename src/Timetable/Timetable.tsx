@@ -130,7 +130,7 @@ function generateGridTemplateColumns(dayGroups: DayGroups): string {
   }
 
   // Then add final "day end" line name
-  str += ` [de${String(dayGroups.length - 1)}]`;
+  str += ` [de${String(dayGroups.length)}]`;
 
   return str;
 }
