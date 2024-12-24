@@ -55,11 +55,11 @@ export function ActivityForm({
         return;
       }
       const formData = new FormData(elForm);
-      const title = formData.get('title')?.toString() ?? '';
-      const description = formData.get('description')?.toString() ?? '';
-      const location = formData.get('location')?.toString() ?? '';
-      const timeStartString = formData.get('startTime')?.toString() ?? '';
-      const timeEndString = formData.get('endTime')?.toString() ?? '';
+      const title = formData.get('title') as string | null ?? '';
+      const description = formData.get('description') as string | null ?? '';
+      const location = formData.get('location') as string | null ?? '';
+      const timeStartString = formData.get('startTime') as string | null ?? '';
+      const timeEndString = formData.get('endTime') as string | null ?? '';
       const timeStartDate = getDateTimeFromDatetimeLocalInput(
         timeStartString,
         tripTimeZone

@@ -206,7 +206,7 @@ function Email({
         return;
       }
       const formData = new FormData(elForm);
-      const email = formData.get('email')?.toString() ?? '';
+      const email = formData.get('email') as string | null ?? '';
 
       db.auth
         .sendMagicCode({ email })
@@ -232,7 +232,7 @@ function Email({
           });
         });
     },
-    [setSentEmail, publishToast]
+    [setScreen, setSentEmail, publishToast]
   );
   const idEmail = useId();
 
@@ -285,7 +285,7 @@ function MagicCode({
         return;
       }
       const formData = new FormData(elForm);
-      const code = formData.get('code')?.toString() ?? '';
+      const code = formData.get('code') as string | null  ?? '';
       db.auth
         .signInWithMagicCode({ email: sentEmail, code })
         .catch((err: unknown) => {

@@ -48,10 +48,10 @@ export function TripForm({
         return;
       }
       const formData = new FormData(elForm);
-      const title = formData.get('title')?.toString() ?? '';
-      const dateStartStr = formData.get('startDate')?.toString() ?? '';
-      const dateEndStr = formData.get('endDate')?.toString() ?? '';
-      const timeZone = formData.get('timeZone')?.toString() ?? '';
+      const title = formData.get('title') as string | null ?? '';
+      const dateStartStr = formData.get('startDate') as string | null ?? '';
+      const dateEndStr = formData.get('endDate') as string | null ?? '';
+      const timeZone = formData.get('timeZone') as string | null ?? '';
 
       const dateStartDateTime = getDateTimeFromDateInput(
         dateStartStr,

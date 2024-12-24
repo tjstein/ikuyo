@@ -3,8 +3,8 @@
 
 import { i } from '@instantdb/react';
 
-const graph = i.graph(
-  {
+const schema = i.schema({
+  entities: {
     $users: i.entity({
       email: i.string().unique(),
     }),
@@ -33,7 +33,7 @@ const graph = i.graph(
       lastUpdatedAt: i.number(),
     }),
   },
-  {
+  links: {
     activityTrip: {
       forward: {
         on: 'activity',
@@ -106,7 +106,7 @@ const graph = i.graph(
         label: 'user',
       },
     },
-  }
-);
+  },
+});
 
-export default graph;
+export default schema;

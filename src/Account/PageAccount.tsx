@@ -44,7 +44,7 @@ export function PageAccount(_props: RouteComponentProps) {
         return;
       }
       const formData = new FormData(elForm);
-      const handle = formData.get('handle')?.toString() ?? '';
+      const handle = formData.get('handle') as string | null ?? '';
 
       if (!handle || !userData) {
         return;

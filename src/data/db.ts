@@ -1,4 +1,4 @@
-import { id, init_experimental, lookup } from '@instantdb/react';
+import { id, init, lookup } from '@instantdb/react';
 import type { DbActivity, DbTrip, DbTripWithActivity, DbUser } from './types';
 import { DateTime } from 'luxon';
 import schema from '../../instant.schema';
@@ -8,7 +8,7 @@ import { TransactionChunk } from '@instantdb/core';
 // ID for app: ikuyo
 const APP_ID = '6962735b-d61f-4c3c-a78f-03ca3fa6ba9a';
 
-export const db = init_experimental({ schema, appId: APP_ID, devtool: false });
+export const db = init({ schema, appId: APP_ID, devtool: false });
 
 export async function dbAddActivity(
   newActivity: Omit<DbActivity, 'id' | 'createdAt' | 'lastUpdatedAt' | 'trip'>,

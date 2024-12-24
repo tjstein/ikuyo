@@ -74,8 +74,8 @@ export function TripSharingDialog({
         return;
       }
       const formData = new FormData(elForm);
-      const newUserEmail = formData.get('newUserEmail')?.toString() ?? '';
-      const newUserRole = formData.get('newUserRole')?.toString() ?? '';
+      const newUserEmail = formData.get('newUserEmail') as string | null ?? '';
+      const newUserRole = formData.get('newUserRole') as string | null ?? '';
 
       console.log('TripForm', {
         newUserEmail,
