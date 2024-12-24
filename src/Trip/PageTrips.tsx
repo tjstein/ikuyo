@@ -21,18 +21,9 @@ import { TripGroup } from './TripGroup';
 import { PlusIcon } from '@radix-ui/react-icons';
 
 import { DocTitle } from '../Nav/DocTitle';
-import { withLoading } from '../Loading/withLoading';
-import React from 'react';
-import { DialogLoading } from '../Loading/DialogLoading';
 import { DateTime } from 'luxon';
 
-const TripNewDialog = withLoading({ fallback: () => <DialogLoading /> })(
-  React.lazy(() =>
-    import('./TripNewDialog').then((module) => {
-      return { default: module.TripNewDialog };
-    })
-  )
-);
+import { TripNewDialog } from './TripNewDialog';
 
 export default PageTrips;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

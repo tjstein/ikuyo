@@ -16,7 +16,6 @@ import { TripViewMode, useTripViewMode } from './TripViewMode';
 
 import { DocTitle } from '../Nav/DocTitle';
 import { withLoading } from '../Loading/withLoading';
-import { DialogLoading } from '../Loading/DialogLoading';
 
 const Timetable = withLoading()(
   React.lazy(() =>
@@ -32,34 +31,10 @@ const ActivityList = withLoading()(
     })
   )
 );
-const ActivityNewDialog = withLoading({ fallback: () => <DialogLoading /> })(
-  React.lazy(() =>
-    import('../Activity/ActivityNewDialog').then((module) => {
-      return { default: module.ActivityNewDialog };
-    })
-  )
-);
-const TripEditDialog = withLoading({ fallback: () => <DialogLoading /> })(
-  React.lazy(() =>
-    import('./TripEditDialog').then((module) => {
-      return { default: module.TripEditDialog };
-    })
-  )
-);
-const TripDeleteDialog = withLoading({ fallback: () => <DialogLoading /> })(
-  React.lazy(() =>
-    import('./TripDeleteDialog').then((module) => {
-      return { default: module.TripDeleteDialog };
-    })
-  )
-);
-const TripSharingDialog = withLoading({ fallback: () => <DialogLoading /> })(
-  React.lazy(() =>
-    import('./TripSharingDialog').then((module) => {
-      return { default: module.TripSharingDialog };
-    })
-  )
-);
+import { ActivityNewDialog } from '../Activity/ActivityNewDialog';
+import { TripEditDialog } from './TripEditDialog';
+import { TripDeleteDialog } from './TripDeleteDialog';
+import { TripSharingDialog } from './TripSharingDialog';
 
 export default PageTrip;
 export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
@@ -98,10 +73,11 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
     if (rawTrip) {
       const tripWithActivity = {
         ...rawTrip,
-        activity: rawTrip.activity?.map((activity) => {
-          activity.trip = rawTrip;
-          return activity;
-        }) ?? [],
+        activity:
+          rawTrip.activity?.map((activity) => {
+            activity.trip = rawTrip;
+            return activity;
+          }) ?? [],
       } as DbTripWithActivity;
       return tripWithActivity;
     }
