@@ -1,10 +1,10 @@
 import { Flex, Text, TextField, TextArea, Button } from '@radix-ui/themes';
 import { useId, useCallback, useState } from 'react';
-import { dbUpdateActivity, dbAddActivity } from '../data/db';
 import { useBoundStore } from '../data/store';
 import { ActivityFormMode } from './ActivityFormMode';
 import { getDateTimeFromDatetimeLocalInput } from './time';
 import { setNewActivityTimestamp } from './activitiyStorage';
+import { dbUpdateActivity, dbAddActivity } from './db';
 
 export function ActivityForm({
   mode,
@@ -55,11 +55,12 @@ export function ActivityForm({
         return;
       }
       const formData = new FormData(elForm);
-      const title = formData.get('title') as string | null ?? '';
-      const description = formData.get('description') as string | null ?? '';
-      const location = formData.get('location') as string | null ?? '';
-      const timeStartString = formData.get('startTime') as string | null ?? '';
-      const timeEndString = formData.get('endTime') as string | null ?? '';
+      const title = (formData.get('title') as string | null) ?? '';
+      const description = (formData.get('description') as string | null) ?? '';
+      const location = (formData.get('location') as string | null) ?? '';
+      const timeStartString =
+        (formData.get('startTime') as string | null) ?? '';
+      const timeEndString = (formData.get('endTime') as string | null) ?? '';
       const timeStartDate = getDateTimeFromDatetimeLocalInput(
         timeStartString,
         tripTimeZone

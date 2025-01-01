@@ -1,10 +1,10 @@
 import { Dialog, Box } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
-import { DbActivityWithTrip } from '../data/types';
 import { ActivityForm } from './ActivityForm';
 import { ActivityFormMode } from './ActivityFormMode';
 import { formatToDatetimeLocalInput } from './time';
 import { CommonDialogMaxWidth } from '../dialog';
+import { DbActivityWithTrip } from './db';
 
 export function ActivityEditDialog({
   activity,

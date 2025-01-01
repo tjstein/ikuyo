@@ -7,8 +7,7 @@ import {
   SewingPinIcon,
 } from '@radix-ui/react-icons';
 
-import { Text, Box, ContextMenu } from '@radix-ui/themes';
-import { DbActivityWithTrip } from '../data/types';
+import { Text, Box, ContextMenu } from '@radix-ui/themes'; 
 import { formatTime } from './time';
 import { DateTime } from 'luxon';
 import {
@@ -23,6 +22,7 @@ import { TripViewMode } from '../Trip/TripViewMode';
 import { ActivityViewDialog } from './ActivityViewDialog';
 import { ActivityDeleteDialog } from './ActivityDeleteDialog';
 import { ActivityEditDialog } from './ActivityEditDialog';
+import { DbActivityWithTrip } from './db';
 
 export function Activity({
   activity,

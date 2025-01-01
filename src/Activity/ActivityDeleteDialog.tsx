@@ -1,9 +1,8 @@
 import { AlertDialog, Flex, Button } from '@radix-ui/themes';
 import { useCallback } from 'react';
-import { dbDeleteActivity } from '../data/db';
 import { useBoundStore } from '../data/store';
-import { DbActivity } from '../data/types';
 import { CommonDialogMaxWidth } from '../dialog';
+import { DbActivity, dbDeleteActivity } from './db';
 
 export function ActivityDeleteDialog({
   activity,

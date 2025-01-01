@@ -33,6 +33,7 @@
     "@types/react-dom": "npm:types-react-dom@rc",
     "@types/url-regex-safe": "^1.0.2",
     "@vitejs/plugin-react-swc": "~3.7.2",
+    "dotenv": "^16.4.7",
     "eslint": "~9.17.0",
     "eslint-plugin-react-compiler": "19.0.0-beta-b2e8e9c-20241220",
     "eslint-plugin-react-hooks": "5.1.0",

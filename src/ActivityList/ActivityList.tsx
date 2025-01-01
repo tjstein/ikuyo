@@ -1,10 +1,10 @@
 import { Flex, Heading } from '@radix-ui/themes';
 import { Activity } from '../Activity/Activity';
-import { DbTripWithActivity } from '../data/types';
 import s from './ActivityList.module.css';
 import { groupActivitiesByDays } from '../Activity/eventGrouping';
 import { useMemo } from 'react';
 import { TripViewMode } from '../Trip/TripViewMode';
+import { DbTripWithActivity } from '../Trip/db';
 
 export function ActivityList({ trip }: { trip: DbTripWithActivity }) {
   const dayGroups = useMemo(() => groupActivitiesByDays(trip), [trip]);

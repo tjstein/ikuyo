@@ -1,7 +1,6 @@
 import clsx from 'clsx';
 import { Activity } from '../Activity/Activity';
 import s from './Timetable.module.scss';
-import { DbTripWithActivity } from '../data/types';
 import { ContextMenu, Section, Text } from '@radix-ui/themes';
 
 import { useMemo } from 'react';
@@ -14,6 +13,7 @@ import { DayGroups, groupActivitiesByDays } from '../Activity/eventGrouping';
 import { TripViewMode } from '../Trip/TripViewMode';
 import { pad2 } from './time';
 import { ClockIcon } from '@radix-ui/react-icons';
+import { DbTripWithActivity } from '../Trip/db';
 
 const times = new Array(24).fill(0).map((_, i) => {
   return (

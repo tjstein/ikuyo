@@ -1,12 +1,12 @@
 import { Dialog, Flex, Text, Heading, Button } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
-import { DbActivityWithTrip } from '../data/types';
 
 import createUrlRegExp from 'url-regex-safe';
 
 import s from './Activity.module.css';
 import { useMemo } from 'react';
 import { CommonDialogMaxWidth } from '../dialog';
+import { DbActivityWithTrip } from './db';
 export function ActivityViewDialog({
   activity,
   dialogOpen,

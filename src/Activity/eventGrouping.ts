@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
-import { DbTripWithActivity, DbActivityWithTrip } from '../data/types';
+import { DbTripWithActivity } from '../Trip/db';
+import { DbActivityWithTrip } from './db';
 
 export type DayGroups = Array<{
   /** DateTime in trip time zone */

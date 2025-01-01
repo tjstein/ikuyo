@@ -1,12 +1,12 @@
 import { Flex, Text, TextField, Button, Select } from '@radix-ui/themes';
 import { useId, useCallback, useState } from 'react';
-import { dbUpdateTrip, dbAddTrip } from '../data/db';
 import { useBoundStore } from '../data/store';
 import { TripFormMode } from './TripFormMode';
 import { getDateTimeFromDateInput } from './time';
 import { useLocation } from 'wouter';
 import { ROUTES } from '../routes';
-import { DbActivity } from '../data/types';
+import { DbActivity } from '../Activity/db';
+import { dbUpdateTrip, dbAddTrip } from './db';
 
 export function TripForm({
   mode,
@@ -48,10 +48,10 @@ export function TripForm({
         return;
       }
       const formData = new FormData(elForm);
-      const title = formData.get('title') as string | null ?? '';
-      const dateStartStr = formData.get('startDate') as string | null ?? '';
-      const dateEndStr = formData.get('endDate') as string | null ?? '';
-      const timeZone = formData.get('timeZone') as string | null ?? '';
+      const title = (formData.get('title') as string | null) ?? '';
+      const dateStartStr = (formData.get('startDate') as string | null) ?? '';
+      const dateEndStr = (formData.get('endDate') as string | null) ?? '';
+      const timeZone = (formData.get('timeZone') as string | null) ?? '';
 
       const dateStartDateTime = getDateTimeFromDateInput(
         dateStartStr,

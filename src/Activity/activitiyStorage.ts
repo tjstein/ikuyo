@@ -1,4 +1,4 @@
-import { DbTrip } from '../data/types';
+import { DbTrip } from '../Trip/db';
 
 const lastNewActivityTimestampStorageKey = 'ikuyo:last-new-activity-timestamp';
 

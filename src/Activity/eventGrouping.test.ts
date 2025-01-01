@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { groupActivitiesByDays } from './eventGrouping';
-import { DbActivityWithTrip, DbTripWithActivity } from '../data/types';
+import { DbTripWithActivity } from '../Trip/db';
+import { DbActivityWithTrip } from './db';
 
 describe('Trip', () => {
   const baseTrip: DbTripWithActivity = {

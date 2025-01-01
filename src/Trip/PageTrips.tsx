@@ -16,7 +16,7 @@ import { UserAvatarMenu } from '../Auth/UserAvatarMenu';
 import s from './PageTrips.module.css';
 import { formatTimestampToReadableDate } from './time';
 import { useMemo, useState } from 'react';
-import { DbTrip, DbUser } from '../data/types';
+import { DbUser } from '../data/types';
 import { TripGroup } from './TripGroup';
 import { PlusIcon } from '@radix-ui/react-icons';
 
@@ -24,6 +24,7 @@ import { DocTitle } from '../Nav/DocTitle';
 import { DateTime } from 'luxon';
 
 import { TripNewDialog } from './TripNewDialog';
+import { DbTrip } from './db';
 
 export default PageTrips;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

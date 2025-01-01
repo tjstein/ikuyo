@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react-swc';
 
@@ -12,6 +13,10 @@ export default defineConfig({
         api: 'modern-compiler',
       },
     },
+  },
+
+  define: {
+    'process.env.INSTANT_APP_ID': JSON.stringify(process.env.INSTANT_APP_ID),
   },
 
   plugins: [

@@ -6,7 +6,7 @@ import { db } from '../data/db';
 import { useMemo, useState } from 'react';
 
 import { useAuthUser } from '../Auth/hooks';
-import { DbTrip, DbTripWithActivity, DbUser } from '../data/types';
+import { DbUser } from '../data/types';
 
 import s from './PageTrip.module.css';
 
@@ -35,6 +35,7 @@ import { ActivityNewDialog } from '../Activity/ActivityNewDialog';
 import { TripEditDialog } from './TripEditDialog';
 import { TripDeleteDialog } from './TripDeleteDialog';
 import { TripSharingDialog } from './TripSharingDialog';
+import { DbTrip, DbTripWithActivity } from './db';
 
 export default PageTrip;
 export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {

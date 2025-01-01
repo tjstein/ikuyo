@@ -9,13 +9,13 @@ import {
   Inset,
 } from '@radix-ui/themes';
 import { useCallback, useState, useMemo, SyntheticEvent } from 'react';
-import { dbAddUserToTrip, dbRemoveUserFromTrip } from '../data/db';
 import { useBoundStore } from '../data/store';
-import { DbTrip, DbUser } from '../data/types';
+import { DbUser } from '../data/types';
 import { TripUserRole } from '../data/TripUserRole';
 import { PlusIcon, TrashIcon } from '@radix-ui/react-icons';
 import s from './TripSharingDialog.module.css';
 import { CommonDialogMaxWidth } from '../dialog';
+import { DbTrip, dbRemoveUserFromTrip, dbAddUserToTrip } from './db';
 
 export function TripSharingDialog({
   dialogOpen,
@@ -74,8 +74,9 @@ export function TripSharingDialog({
         return;
       }
       const formData = new FormData(elForm);
-      const newUserEmail = formData.get('newUserEmail') as string | null ?? '';
-      const newUserRole = formData.get('newUserRole') as string | null ?? '';
+      const newUserEmail =
+        (formData.get('newUserEmail') as string | null) ?? '';
+      const newUserRole = (formData.get('newUserRole') as string | null) ?? '';
 
       console.log('TripForm', {
         newUserEmail,
