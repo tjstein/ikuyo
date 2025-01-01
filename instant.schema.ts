@@ -42,6 +42,18 @@ const schema = i.schema({
       phoneNumber: i.string(),
       notes: i.string(),
     }),
+    expense: i.entity({
+      title: i.string(),
+      desscription: i.string(),
+      createdAt: i.number(),
+      lastUpdatedAt: i.number(),
+      timestampIncurred: i.number(),
+
+      currency: i.string(),
+      amount: i.number(),
+      currencyConversionFactor: i.number().optional(),
+      amountInDefaultCurrency: i.number().optional(),
+    }),
   },
   links: {
     activityTrip: {
@@ -112,6 +124,18 @@ const schema = i.schema({
       },
       reverse: {
         on: 'accommodation',
+        has: 'one',
+        label: 'trip',
+      },
+    },
+    tripExpense: {
+      forward: {
+        on: 'trip',
+        has: 'many',
+        label: 'expense',
+      },
+      reverse: {
+        on: 'expense',
         has: 'one',
         label: 'trip',
       },

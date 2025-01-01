@@ -8,6 +8,8 @@ export default {
   },
   trip: {
     bind: [
+      // TODO: Refactor permission model to use "roles"
+      // TODO: Roles: 'viewer', 'participant', 'owner'
       'isTripViewer',
       "auth.email in data.ref('viewer.email')",
       'isTripEditor',
@@ -66,6 +68,22 @@ export default {
     ],
     allow: {
       view: 'isTripViewer || isTripEditor || isTripOwner',
+      create: 'isTripEditor || isTripOwner',
+      delete: 'isTripEditor || isTripOwner',
+      update: 'isTripEditor || isTripOwner',
+    },
+  },
+  expense: {
+    bind: [
+      'isTripViewer',
+      "auth.email in data.ref('trip.viewer.email')",
+      'isTripEditor',
+      "auth.email in data.ref('trip.editor.email')",
+      'isTripOwner',
+      "auth.email in data.ref('trip.owner.email')",
+    ],
+    allow: {
+      view: 'isTripEditor || isTripOwner',
       create: 'isTripEditor || isTripOwner',
       delete: 'isTripEditor || isTripOwner',
       update: 'isTripEditor || isTripOwner',
