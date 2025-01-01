@@ -7,14 +7,20 @@ import { useState } from 'react';
 import { AccommodationViewDialog } from './AccommodationViewDialog';
 import { AccommodationEditDialog } from './AccommodationEditDialog';
 import { AccommodationDeleteDialog } from './AccommodationDeleteDialog';
+import { ClockIcon, HomeIcon } from '@radix-ui/react-icons';
+import { formatTime } from './time';
+import { AccommodationDisplayTimeMode } from './AccommodationDisplayTimeMode';
 
 export function Accommodation({
   className,
   accommodation,
+  tripViewMode,
+  displayTimeMode,
 }: {
   className?: string;
   accommodation: DbAccommodationWithTrip;
   tripViewMode: TripViewMode;
+  displayTimeMode?: AccommodationDisplayTimeMode;
 }) {
   const responsiveTextSize = { initial: '1' as const };
 
@@ -37,8 +43,24 @@ export function Accommodation({
             }}
           >
             <Text as="div" size={responsiveTextSize} weight="bold">
+              <HomeIcon style={{ verticalAlign: '-3px' }} />{' '}
               {accommodation.name}
             </Text>
+            {tripViewMode === TripViewMode.List &&
+            (displayTimeMode === AccommodationDisplayTimeMode.CheckIn ||
+              displayTimeMode === AccommodationDisplayTimeMode.CheckOut) ? (
+              <>
+                <Text as="div" size={responsiveTextSize} color="gray">
+                  <ClockIcon style={{ verticalAlign: '-2px' }} /> {displayTimeMode}:{' '}
+                  {formatTime(
+                    displayTimeMode === AccommodationDisplayTimeMode.CheckIn
+                      ? accommodation.timestampCheckIn
+                      : accommodation.timestampCheckOut,
+                    accommodation.trip.timeZone
+                  )}
+                </Text>
+              </>
+            ) : null}
           </Box>
         </ContextMenu.Trigger>
         <ContextMenu.Content>

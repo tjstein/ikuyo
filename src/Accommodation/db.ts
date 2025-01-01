@@ -17,6 +17,9 @@ export type DbAccommodation = {
   phoneNumber: string;
   notes: string;
 
+  createdAt: number;
+  lastUpdatedAt: number;
+  
   trip: DbTrip | undefined;
 };
 

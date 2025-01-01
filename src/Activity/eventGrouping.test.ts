@@ -1,10 +1,12 @@
 import { describe, expect, test } from 'vitest';
 import { groupActivitiesByDays } from './eventGrouping';
-import { DbTripWithActivity } from '../Trip/db';
+import { DbTripWithActivityAccommodation } from '../Trip/db';
 import { DbActivityWithTrip } from './db';
+import { DbAccommodationWithTrip } from '../Accommodation/db';
+import { AccommodationDisplayTimeMode } from '../Accommodation/AccommodationDisplayTimeMode';
 
 describe('Trip', () => {
-  const baseTrip: DbTripWithActivity = {
+  const baseTrip: DbTripWithActivityAccommodation = {
     id: 'trip-0',
     title: 'Trip 0',
     timestampStart: new Date('2024-09-23T00:00:00Z').getTime(),
@@ -30,6 +32,23 @@ describe('Trip', () => {
       description: '',
       trip: baseTrip,
       ...activity,
+    };
+  }
+  function createAccommodation(
+    accommodation: Partial<DbAccommodationWithTrip>
+  ): DbAccommodationWithTrip {
+    return {
+      id: 'acc-1',
+      name: 'acc-1',
+      timestampCheckIn: new Date('2024-09-23T15:00:00Z').getTime(),
+      timestampCheckOut: new Date('2024-09-24T11:00:00Z').getTime(),
+      createdAt: 0,
+      lastUpdatedAt: 0,
+      notes: '',
+      address: '',
+      phoneNumber: '',
+      trip: baseTrip,
+      ...accommodation,
     };
   }
   test('Non-overlapping activities', () => {
@@ -59,9 +78,18 @@ describe('Trip', () => {
         timestampEnd: new Date('2024-09-24T03:00:00Z').getTime(),
       }),
     ];
-    const trip: DbTripWithActivity = {
+    const accommodations: DbAccommodationWithTrip[] = [
+      createAccommodation({
+        id: 'acc-0',
+        name: 'acc-0',
+        timestampCheckIn: new Date('2024-09-23T15:00:00Z').getTime(),
+        timestampCheckOut: new Date('2024-09-24T11:00:00Z').getTime(),
+      }),
+    ];
+    const trip: DbTripWithActivityAccommodation = {
       ...baseTrip,
       activity: activities,
+      accommodation: accommodations,
     };
     const result = groupActivitiesByDays(trip);
     expect(result.length).toBe(2);
@@ -69,6 +97,14 @@ describe('Trip', () => {
     expect(result[0].activities.length).toBe(3);
     expect(result[1].columns).toBe(1);
     expect(result[1].activities.length).toBe(1);
+    expect(result[0].accommodations.length).toBe(1);
+    expect(result[0].accommodationProps.get('acc-0')?.displayTimeMode).toBe(
+      AccommodationDisplayTimeMode.CheckIn
+    );
+    expect(result[1].accommodations.length).toBe(1);
+    expect(result[1].accommodationProps.get('acc-0')?.displayTimeMode).toBe(
+      AccommodationDisplayTimeMode.CheckOut
+    );
   });
   test('Overlap = 2 on day 1', () => {
     /***
@@ -104,7 +140,7 @@ describe('Trip', () => {
         timestampEnd: new Date('2024-09-23T03:00:00Z').getTime(),
       }),
     ];
-    const trip: DbTripWithActivity = {
+    const trip: DbTripWithActivityAccommodation = {
       ...baseTrip,
       activity: activities,
     };
@@ -151,7 +187,7 @@ describe('Trip', () => {
         timestampEnd: new Date('2024-09-23T02:00:00Z').getTime(),
       }),
     ];
-    const trip: DbTripWithActivity = {
+    const trip: DbTripWithActivityAccommodation = {
       ...baseTrip,
       activity: activities,
     };
@@ -166,5 +202,45 @@ describe('Trip', () => {
     expect(day1Columns.get('act-1')?.end).toBe(2);
     expect(day1Columns.get('act-2')?.start).toBe(1);
     expect(day1Columns.get('act-2')?.end).toBe(1);
+  });
+
+  test('Three day trip, two accomodations', () => {
+    const accommodations: DbAccommodationWithTrip[] = [
+      createAccommodation({
+        id: 'acc-0',
+        name: 'acc-0',
+        timestampCheckIn: new Date('2024-09-23T15:00:00Z').getTime(),
+        timestampCheckOut: new Date('2024-09-24T11:00:00Z').getTime(),
+      }),
+      createAccommodation({
+        id: 'acc-1',
+        name: 'acc-1',
+        timestampCheckIn: new Date('2024-09-24T15:00:00Z').getTime(),
+        timestampCheckOut: new Date('2024-09-25T11:00:00Z').getTime(),
+      }),
+    ];
+    const trip: DbTripWithActivityAccommodation = {
+      ...baseTrip,
+      timestampStart: new Date('2024-09-23T00:00:00Z').getTime(),
+      timestampEnd: new Date('2024-09-26T00:00:00Z').getTime(),
+      accommodation: accommodations,
+    };
+    const result = groupActivitiesByDays(trip);
+    expect(result.length).toBe(3);
+    expect(result[0].accommodations.length).toBe(1);
+    expect(result[0].accommodationProps.get('acc-0')?.displayTimeMode).toBe(
+      AccommodationDisplayTimeMode.CheckIn
+    );
+    expect(result[1].accommodations.length).toBe(2);
+    expect(result[1].accommodationProps.get('acc-0')?.displayTimeMode).toBe(
+      AccommodationDisplayTimeMode.CheckOut
+    );
+    expect(result[1].accommodationProps.get('acc-1')?.displayTimeMode).toBe(
+      AccommodationDisplayTimeMode.CheckIn
+    );
+    expect(result[2].accommodations.length).toBe(1);
+    expect(result[2].accommodationProps.get('acc-1')?.displayTimeMode).toBe(
+      AccommodationDisplayTimeMode.CheckOut
+    );
   });
 });

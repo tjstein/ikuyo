@@ -1,6 +1,8 @@
 import { DateTime } from 'luxon';
-import { DbTripWithActivity } from '../Trip/db';
+import { DbTripWithActivityAccommodation } from '../Trip/db';
 import { DbActivityWithTrip } from './db';
+import { DbAccommodationWithTrip } from '../Accommodation/db';
+import { AccommodationDisplayTimeMode } from '../Accommodation/AccommodationDisplayTimeMode';
 
 export type DayGroups = Array<{
   /** DateTime in trip time zone */
@@ -9,10 +11,18 @@ export type DayGroups = Array<{
   activities: DbActivityWithTrip[];
   /** activity id --> {start: column index (1-based), end: column index (1-based)} */
   activityColumnIndexMap: Map<string, { start: number; end: number }>;
+  accommodations: DbAccommodationWithTrip[];
+  /** accommodation id --> { displayTimeMode } */
+  accommodationProps: Map<
+    string,
+    { displayTimeMode: AccommodationDisplayTimeMode }
+  >;
 }>;
 
 /** Return `DateTime` objects for each of day in the trip */
-export function groupActivitiesByDays(trip: DbTripWithActivity): DayGroups {
+export function groupActivitiesByDays(
+  trip: DbTripWithActivityAccommodation
+): DayGroups {
   const res: DayGroups = [];
   const tripStartDateTime = DateTime.fromMillis(trip.timestampStart).setZone(
     trip.timeZone
@@ -25,6 +35,11 @@ export function groupActivitiesByDays(trip: DbTripWithActivity): DayGroups {
     const dayStartDateTime = tripStartDateTime.plus({ day: d });
     const dayEndDateTime = tripStartDateTime.plus({ day: d + 1 });
     const dayActivities: DbActivityWithTrip[] = [];
+    const dayAccommodations: DbAccommodationWithTrip[] = [];
+    const accommodationProps: Map<
+      string,
+      { displayTimeMode: AccommodationDisplayTimeMode }
+    > = new Map();
     const activityColumnIndexMap: Map<string, { start: number; end: number }> =
       new Map();
     for (const activity of trip.activity) {
@@ -48,6 +63,45 @@ export function groupActivitiesByDays(trip: DbTripWithActivity): DayGroups {
       }
       return a.timestampStart - b.timestampStart;
     });
+
+    for (const accommodation of trip.accommodation) {
+      const accommodationCheckInDateTime = DateTime.fromMillis(
+        accommodation.timestampCheckIn
+      ).setZone(trip.timeZone);
+      const accommodationCheckOutDateTime = DateTime.fromMillis(
+        accommodation.timestampCheckOut
+      ).setZone(trip.timeZone);
+      if (
+        // This day is the start of the stay: check in time is this day
+        dayStartDateTime <= accommodationCheckInDateTime &&
+        accommodationCheckInDateTime <= dayEndDateTime
+      ) {
+        dayAccommodations.push(accommodation);
+        accommodationProps.set(accommodation.id, {
+          displayTimeMode: AccommodationDisplayTimeMode.CheckIn,
+        });
+      } else if (
+        // This day is during the stay: check in time is before this day, check out time is after this day
+        accommodationCheckInDateTime <= dayStartDateTime &&
+        accommodationCheckInDateTime <= dayEndDateTime &&
+        accommodationCheckOutDateTime >= dayStartDateTime &&
+        accommodationCheckOutDateTime >= dayEndDateTime
+      ) {
+        dayAccommodations.push(accommodation);
+        accommodationProps.set(accommodation.id, {
+          displayTimeMode: AccommodationDisplayTimeMode.None,
+        });
+      } else if (
+        // This day is the end of the stay: check out time is this day
+        dayStartDateTime <= accommodationCheckOutDateTime &&
+        accommodationCheckOutDateTime <= dayEndDateTime
+      ) {
+        dayAccommodations.push(accommodation);
+        accommodationProps.set(accommodation.id, {
+          displayTimeMode: AccommodationDisplayTimeMode.CheckOut,
+        });
+      }
+    }
 
     // Finding max overlaps: https://stackoverflow.com/a/46532590/917957
     enum Token {
@@ -172,6 +226,8 @@ export function groupActivitiesByDays(trip: DbTripWithActivity): DayGroups {
       columns: Math.max(maxOverlaps, 1),
       activities: dayActivities,
       activityColumnIndexMap,
+      accommodations: dayAccommodations,
+      accommodationProps,
     });
   }
 

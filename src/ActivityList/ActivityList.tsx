@@ -4,9 +4,14 @@ import s from './ActivityList.module.css';
 import { groupActivitiesByDays } from '../Activity/eventGrouping';
 import { useMemo } from 'react';
 import { TripViewMode } from '../Trip/TripViewMode';
-import { DbTripWithActivity } from '../Trip/db';
+import { DbTripWithActivityAccommodation } from '../Trip/db';
+import { Accommodation } from '../Accommodation/Accommodation';
 
-export function ActivityList({ trip }: { trip: DbTripWithActivity }) {
+export function ActivityList({
+  trip,
+}: {
+  trip: DbTripWithActivityAccommodation;
+}) {
   const dayGroups = useMemo(() => groupActivitiesByDays(trip), [trip]);
 
   return (
@@ -16,6 +21,18 @@ export function ActivityList({ trip }: { trip: DbTripWithActivity }) {
           <Heading as="h2" size="4" className={s.listSubheader}>
             {dayGroup.startDateTime.toFormat(`cccc, dd LLLL yyyy`)}
           </Heading>,
+          ...Object.values(dayGroup.accommodations).map((accommodation) => {
+            const props = dayGroup.accommodationProps.get(accommodation.id);
+            return (
+              <Accommodation
+                key={accommodation.id}
+                accommodation={accommodation}
+                tripViewMode={TripViewMode.List}
+                className={s.listItem}
+                {...props}
+              />
+            );
+          }),
           ...Object.values(dayGroup.activities).map((activity) => {
             const columnIndex = dayGroup.activityColumnIndexMap.get(
               activity.id

@@ -11,3 +11,7 @@ export function getDateTimeFromDatetimeLocalInput(
     zone: timeZone,
   });
 }
+
+export function formatTime(timestamp: number, timeZone: string): string {
+  return DateTime.fromMillis(timestamp).setZone(timeZone).toFormat(`HHmm`);
+}
