@@ -4,6 +4,12 @@ import react from '@vitejs/plugin-react-swc';
 
 import { VitePWA } from 'vite-plugin-pwa';
 
+const INSTANT_APP_ID = process.env.INSTANT_APP_ID;
+
+if (!INSTANT_APP_ID) {
+  throw new Error('process.env.INSTANT_APP_ID is not set');
+}
+
 // https://vitejs.dev/config/
 export default defineConfig({
   // https://github.com/vitejs/vite/issues/18164#issuecomment-2365310242
@@ -16,7 +22,7 @@ export default defineConfig({
   },
 
   define: {
-    'process.env.INSTANT_APP_ID': JSON.stringify(process.env.INSTANT_APP_ID),
+    'process.env.INSTANT_APP_ID': JSON.stringify(INSTANT_APP_ID),
   },
 
   plugins: [
