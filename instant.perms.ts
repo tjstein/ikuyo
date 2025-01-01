@@ -55,4 +55,20 @@ export default {
       update: 'isTripEditor || isTripOwner',
     },
   },
+  accomodation: {
+    bind: [
+      'isTripViewer',
+      "auth.email in data.ref('trip.viewer.email')",
+      'isTripEditor',
+      "auth.email in data.ref('trip.editor.email')",
+      'isTripOwner',
+      "auth.email in data.ref('trip.owner.email')",
+    ],
+    allow: {
+      view: 'isTripViewer || isTripEditor || isTripOwner',
+      create: 'isTripEditor || isTripOwner',
+      delete: 'isTripEditor || isTripOwner',
+      update: 'isTripEditor || isTripOwner',
+    },
+  },
 };

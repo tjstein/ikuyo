@@ -6,7 +6,7 @@ import { i } from '@instantdb/react';
 const schema = i.schema({
   entities: {
     $users: i.entity({
-      email: i.string().unique(),
+      email: i.string().unique().indexed(),
     }),
     activity: i.entity({
       createdAt: i.number(),
@@ -31,6 +31,15 @@ const schema = i.schema({
       email: i.string().unique().indexed(),
       handle: i.string().unique().indexed(),
       lastUpdatedAt: i.number(),
+    }),
+    accomodation: i.entity({
+      name: i.string(),
+      createdAt: i.number(),
+      address: i.string(),
+      timestampCheckIn: i.number(),
+      timestampCheckOut: i.number(),
+      lastUpdatedAt: i.number(),
+      phoneNumber: i.string(),
     }),
   },
   links: {
@@ -92,6 +101,18 @@ const schema = i.schema({
         on: 'user',
         has: 'many',
         label: 'tripViewer',
+      },
+    },
+    tripAccomodation: {
+      forward: {
+        on: 'trip',
+        has: 'many',
+        label: 'accomodation',
+      },
+      reverse: {
+        on: 'accomodation',
+        has: 'one',
+        label: 'trip',
       },
     },
     user$users: {
