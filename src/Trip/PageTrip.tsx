@@ -35,7 +35,8 @@ import { ActivityNewDialog } from '../Activity/ActivityNewDialog';
 import { TripEditDialog } from './TripEditDialog';
 import { TripDeleteDialog } from './TripDeleteDialog';
 import { TripSharingDialog } from './TripSharingDialog';
-import { DbTrip, DbTripWithActivity } from './db';
+import { AccommodationNewDialog } from '../Accommodation/AccommodationNewDialog';
+import { DbTrip, DbTripWithActivityAccommodation } from './db';
 
 export default PageTrip;
 export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
@@ -50,6 +51,7 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
         },
       },
       activity: {},
+      accommodation: {},
       viewer: {},
       editor: {},
       owner: {},
@@ -70,7 +72,7 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
     return false;
   }, [rawTrip, user]);
 
-  const trip: undefined | DbTripWithActivity = useMemo(() => {
+  const trip: undefined | DbTripWithActivityAccommodation = useMemo(() => {
     if (rawTrip) {
       const tripWithActivity = {
         ...rawTrip,
@@ -79,13 +81,20 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
             activity.trip = rawTrip;
             return activity;
           }) ?? [],
-      } as DbTripWithActivity;
+        accommodation:
+          rawTrip.accommodation?.map((accommodation) => {
+            accommodation.trip = rawTrip;
+            return accommodation;
+          }) ?? [],
+      } as DbTripWithActivityAccommodation;
       return tripWithActivity;
     }
     return undefined;
   }, [rawTrip]);
 
   const [newActivityDialogOpen, setNewActivityDialogOpen] = useState(false);
+  const [newAcommodationDialogOpen, setNewAcommodationDialogOpen] =
+    useState(false);
   const [editTripDialogOpen, setEditTripDialogOpen] = useState(false);
   const [deleteTripDialogOpen, setDeleteTripDialogOpen] = useState(false);
   const [shareTripDialogOpen, setShareTripDialogOpen] = useState(false);
@@ -109,6 +118,7 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
             key="menu"
             setEditTripDialogOpen={setEditTripDialogOpen}
             setNewActivityDialogOpen={setNewActivityDialogOpen}
+            setNewAcommodationDialogOpen={setNewAcommodationDialogOpen}
             setDeleteTripDialogOpen={setDeleteTripDialogOpen}
             setShareTripDialogOpen={setShareTripDialogOpen}
             showTripSharing={currentUserIsOwner}
@@ -142,6 +152,14 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
           trip={trip}
           dialogOpen={newActivityDialogOpen}
           setDialogOpen={setNewActivityDialogOpen}
+        />
+      ) : null}
+
+      {newAcommodationDialogOpen && trip ? (
+        <AccommodationNewDialog
+          trip={trip}
+          dialogOpen={newAcommodationDialogOpen}
+          setDialogOpen={setNewAcommodationDialogOpen}
         />
       ) : null}
 

@@ -32,14 +32,15 @@ const schema = i.schema({
       handle: i.string().unique().indexed(),
       lastUpdatedAt: i.number(),
     }),
-    accomodation: i.entity({
+    accommodation: i.entity({
       name: i.string(),
       createdAt: i.number(),
+      lastUpdatedAt: i.number(),
       address: i.string(),
       timestampCheckIn: i.number(),
       timestampCheckOut: i.number(),
-      lastUpdatedAt: i.number(),
       phoneNumber: i.string(),
+      notes: i.string(),
     }),
   },
   links: {
@@ -103,14 +104,14 @@ const schema = i.schema({
         label: 'tripViewer',
       },
     },
-    tripAccomodation: {
+    tripAccommodation: {
       forward: {
         on: 'trip',
         has: 'many',
-        label: 'accomodation',
+        label: 'accommodation',
       },
       reverse: {
-        on: 'accomodation',
+        on: 'accommodation',
         has: 'one',
         label: 'trip',
       },

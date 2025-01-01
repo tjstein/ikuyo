@@ -11,6 +11,7 @@ describe('Trip', () => {
     timestampEnd: new Date('2024-09-25T00:00:00Z').getTime(),
     timeZone: 'UTC',
     activity: [],
+    accommodation: [],
     owner: undefined,
     viewer: undefined,
     editor: undefined,

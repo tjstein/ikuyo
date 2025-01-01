@@ -12,8 +12,14 @@ import {
 import { DayGroups, groupActivitiesByDays } from '../Activity/eventGrouping';
 import { TripViewMode } from '../Trip/TripViewMode';
 import { pad2 } from './time';
-import { ClockIcon } from '@radix-ui/react-icons';
-import { DbTripWithActivity } from '../Trip/db';
+import { ClockIcon, HomeIcon } from '@radix-ui/react-icons';
+import {
+  DbTripWithAccommodation,
+  DbTripWithActivityAccommodation,
+} from '../Trip/db';
+import { Accommodation } from '../Accommodation/Accommodation';
+import { DateTime } from 'luxon';
+import { DbAccommodationWithTrip } from '../Accommodation/db';
 
 const times = new Array(24).fill(0).map((_, i) => {
   return (
@@ -29,21 +35,24 @@ export function Timetable({
   trip,
   setNewActivityDialogOpen,
 }: {
-  trip: DbTripWithActivity;
+  trip: DbTripWithActivityAccommodation;
   setNewActivityDialogOpen: (newValue: boolean) => void;
 }) {
   const dayGroups = useMemo(() => groupActivitiesByDays(trip), [trip]);
+  const acommodations = useMemo(() => getAccommodationIndexes(trip), [trip]);
+
   const timetableStyle = useMemo(() => {
     return {
       gridTemplateColumns: generateGridTemplateColumns(dayGroups),
     };
   }, [dayGroups]);
+
   return (
     <Section py="0">
       <ContextMenu.Root>
         <ContextMenu.Trigger>
           <div className={s.timetable} style={timetableStyle}>
-            <TimetableHeader />
+            <TimetableTimeHeader />
 
             {dayGroups.map((dayGroup, i) => {
               return (
@@ -56,6 +65,22 @@ export function Timetable({
                     `ccc, dd LLL yyyy`
                   )}
                   key={dayGroup.startDateTime.toISODate()}
+                />
+              );
+            })}
+
+            <TimetableAccommodationHeader />
+
+            {acommodations.map(({ accommodation, columnIndex }) => {
+              return (
+                <Accommodation
+                  className={clsx([
+                    dayStartMapping[columnIndex.start],
+                    dayEndMapping[columnIndex.end],
+                  ])}
+                  key={accommodation.id}
+                  accommodation={accommodation}
+                  tripViewMode={TripViewMode.Timetable}
                 />
               );
             })}
@@ -153,9 +178,16 @@ function TimetableDayHeader({
   );
 }
 
-function TimetableHeader() {
+function TimetableAccommodationHeader() {
   return (
-    <Text as="div" size="1" className={clsx(s.timetableHeader)}>
+    <Text as="div" size="1" className={clsx(s.timetableAccommodationHeader)}>
+      <HomeIcon />
+    </Text>
+  );
+}
+function TimetableTimeHeader() {
+  return (
+    <Text as="div" size="1" className={clsx(s.timetableTimeHeader)}>
       <ClockIcon />
     </Text>
   );
@@ -176,4 +208,49 @@ function TimetableTime({
       {time}
     </Text>
   );
+}
+
+function getAccommodationIndexes(trip: DbTripWithAccommodation) {
+  const res: Array<{
+    accommodation: DbAccommodationWithTrip;
+    columnIndex: { start: number; end: number };
+  }> = [];
+  const tripStartDateTime = DateTime.fromMillis(trip.timestampStart).setZone(
+    trip.timeZone
+  );
+  const tripEndDateTime = DateTime.fromMillis(trip.timestampEnd).setZone(
+    trip.timeZone
+  );
+  const tripEndDay = tripEndDateTime.diff(tripStartDateTime, 'days').days;
+
+  for (const accommodation of trip.accommodation) {
+    const accommodationCheckInDateTime = DateTime.fromMillis(
+      accommodation.timestampCheckIn
+    ).setZone(trip.timeZone);
+    const accommodationCheckInDay =
+      accommodationCheckInDateTime
+        .startOf('day')
+        .diff(tripStartDateTime, 'days').days + 1;
+    const accommodationCheckOutDateTime = DateTime.fromMillis(
+      accommodation.timestampCheckOut
+    ).setZone(trip.timeZone);
+    const accommodationCheckOutDay =
+      accommodationCheckOutDateTime
+        .startOf('day')
+        .diff(tripStartDateTime, 'days').days + 1;
+
+    res.push({
+      accommodation,
+      columnIndex: {
+        start: accommodationCheckInDay,
+        end:
+          // For accommodation that didn't end at the trip's final day, it is displayed until the day before check out. This is so that we won't display overlapping accommodation
+          accommodationCheckOutDay === tripEndDay
+            ? accommodationCheckOutDay
+            : accommodationCheckOutDay - 1,
+      },
+    });
+  }
+
+  return res;
 }

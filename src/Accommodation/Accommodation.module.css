@@ -1,0 +1,17 @@
+.accommodation {
+  border: 1px solid var(--gray-9);
+  background-color: var(--color-panel-solid);
+  border-radius: var(--radius-2);
+  overflow: hidden;
+  cursor: var(--cursor-link);
+  display: block;
+  text-align: start;
+
+  grid-row: accommodation / span 1;
+}
+.accommodation:focus-visible {
+  outline-style: solid;
+  outline-offset: 2px;
+  outline-width: 2px;
+  outline-color: var(--accent-9);
+}

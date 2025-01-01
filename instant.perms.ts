@@ -55,7 +55,7 @@ export default {
       update: 'isTripEditor || isTripOwner',
     },
   },
-  accomodation: {
+  accommodation: {
     bind: [
       'isTripViewer',
       "auth.email in data.ref('trip.viewer.email')",

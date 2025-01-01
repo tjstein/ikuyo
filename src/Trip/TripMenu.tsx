@@ -8,6 +8,7 @@ export function TripMenu({
   setEditTripDialogOpen,
   setShareTripDialogOpen,
   setNewActivityDialogOpen,
+  setNewAcommodationDialogOpen,
   setDeleteTripDialogOpen,
   showTripSharing,
   tripViewMode,
@@ -16,6 +17,7 @@ export function TripMenu({
   setEditTripDialogOpen: (v: boolean) => void;
   setShareTripDialogOpen: (v: boolean) => void;
   setNewActivityDialogOpen: (v: boolean) => void;
+  setNewAcommodationDialogOpen: (v: boolean) => void;
   setDeleteTripDialogOpen: (v: boolean) => void;
   showTripSharing: boolean;
   tripViewMode: TripViewMode;
@@ -62,6 +64,15 @@ export function TripMenu({
           }}
         >
           Edit trip
+        </DropdownMenu.Item>
+
+        
+        <DropdownMenu.Item
+          onClick={() => {
+            setNewAcommodationDialogOpen(true);
+          }}
+        >
+          Add accommodation
         </DropdownMenu.Item>
 
         {showTripSharing ? (

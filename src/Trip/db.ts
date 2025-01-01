@@ -4,7 +4,19 @@ import { DbActivityWithTrip, DbActivity } from '../Activity/db';
 import { db } from '../data/db';
 import { TripUserRole } from '../data/TripUserRole';
 import { DbUser } from '../data/types';
+import { DbAccommodation, DbAccommodationWithTrip } from '../Accommodation/db';
 
+export type DbTripWithActivityAccommodation = Omit<
+  DbTrip,
+  'activity' | 'accommodation'
+> & {
+  accommodation: DbAccommodationWithTrip[];
+  activity: DbActivityWithTrip[];
+};
+
+export type DbTripWithAccommodation = Omit<DbTrip, 'accommodation'> & {
+  accommodation: DbAccommodationWithTrip[];
+};
 export type DbTripWithActivity = Omit<DbTrip, 'activity'> & {
   activity: DbActivityWithTrip[];
 };
@@ -18,6 +30,7 @@ export type DbTrip = {
   timeZone: string;
 
   activity: DbActivity[] | undefined;
+  accommodation: DbAccommodation[] | undefined;
 
   viewer: DbUser[] | undefined;
   editor: DbUser[] | undefined;
@@ -115,9 +128,12 @@ export async function dbUpdateTrip(
 
   return db.transact(transactions);
 }
-export async function dbDeleteTrip(trip: DbTripWithActivity) {
+export async function dbDeleteTrip(trip: DbTripWithActivityAccommodation) {
   return db.transact([
     ...trip.activity.map((activity) => db.tx.activity[activity.id].delete()),
+    ...trip.accommodation.map((accommodation) =>
+      db.tx.accommodation[accommodation.id].delete()
+    ),
     db.tx.trip[trip.id].delete(),
   ]);
 }

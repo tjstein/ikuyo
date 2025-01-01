@@ -54,7 +54,7 @@
     display: grid;
     // grid-template-columns will be overridden in "style" at <Timetable />
     grid-template-columns: [time] 45px repeat(5, [d] 1fr);
-    grid-template-rows: [header] 50px string.unquote(timeTemplateRow());
+    grid-template-rows: [header] 50px [accommodation] 30px string.unquote(timeTemplateRow());
     gap: 0;
     justify-items: stretch;
     align-items: stretch;
@@ -73,7 +73,7 @@
     }
   }
 
-  .timetableHeader {
+  .timetableTimeHeader {
     grid-row: header / span 1;
     grid-column: time / span 1;
     position: sticky;
@@ -87,6 +87,12 @@
     background: var(--color-panel-solid);
     font-weight: bold;
     border: 1px solid var(--gray-6);
+    z-index: 3;
+  }
+  .timetableAccommodationHeader {
+    @extend .timetableTimeHeader;
+    grid-column: 1 / span 1;
+    grid-row: accommodation / span 1;
     z-index: 2;
   }
 
