@@ -44,6 +44,7 @@ export async function dbAddTrip(
     | 'createdAt'
     | 'lastUpdatedAt'
     | 'activity'
+    | 'accommodation'
     | 'user'
     | 'owner'
     | 'editor'
@@ -76,6 +77,7 @@ export async function dbUpdateTrip(
     DbTrip,
     | 'createdAt'
     | 'lastUpdatedAt'
+    | 'accommodation'
     | 'activity'
     | 'user'
     | 'owner'

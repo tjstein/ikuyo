@@ -4,14 +4,14 @@ import { useBoundStore } from '../data/store';
 import { ROUTES } from '../routes';
 import { useLocation } from 'wouter';
 import { CommonDialogMaxWidth } from '../dialog';
-import { dbDeleteTrip, DbTripWithActivity } from './db';
+import { dbDeleteTrip, DbTripWithActivityAccommodation } from './db';
 
 export function TripDeleteDialog({
   trip,
   dialogOpen,
   setDialogOpen,
 }: {
-  trip: DbTripWithActivity;
+  trip: DbTripWithActivityAccommodation;
   dialogOpen: boolean;
   setDialogOpen: (newValue: boolean) => void;
 }) {
