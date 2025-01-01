@@ -206,7 +206,7 @@ function Email({
         return;
       }
       const formData = new FormData(elForm);
-      const email = formData.get('email') as string | null ?? '';
+      const email = (formData.get('email') as string | null) ?? '';
 
       db.auth
         .sendMagicCode({ email })
@@ -285,7 +285,7 @@ function MagicCode({
         return;
       }
       const formData = new FormData(elForm);
-      const code = formData.get('code') as string | null  ?? '';
+      const code = (formData.get('code') as string | null) ?? '';
       db.auth
         .signInWithMagicCode({ email: sentEmail, code })
         .catch((err: unknown) => {
@@ -321,6 +321,9 @@ function MagicCode({
         </Heading>
         <Text as="label" htmlFor={idCode}>
           Enter the code we sent to your email ({sentEmail}):
+        </Text>
+        <Text weight="light" size="1">
+          Check your spam folder too if you can't find it in your inbox.
         </Text>
         <TextField.Root
           type="text"
