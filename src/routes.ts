@@ -6,3 +6,7 @@ export enum ROUTES {
     Privacy = '/privacy',
     Terms = '/terms',
 }
+export enum ROUTES_TRIP {   
+    ListView = '/list',
+    TimetableView = '/timetable',
+}

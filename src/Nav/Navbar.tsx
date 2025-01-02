@@ -18,7 +18,7 @@ export function Navbar({
       <Flex gap="3" align="center" className={s.flexContainer}>
         <Box className={s.logoBox}>
           <Heading asChild as="h1" size="6">
-            <Link to={ROUTES.Trips}>
+            <Link to={`~${ROUTES.Trips}`}>
               <img src={imgUrl} className={s.logo} />
               <span className={s.logoText}>Ikuyo!</span>
             </Link>

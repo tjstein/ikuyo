@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Heading } from '@radix-ui/themes';
 import { Navbar } from '../Nav/Navbar';
-import { RouteComponentProps } from 'wouter';
+import { Redirect, Route, RouteComponentProps, Switch } from 'wouter';
 import { db } from '../data/db';
 import { useMemo, useState } from 'react';
 
@@ -12,7 +12,6 @@ import s from './PageTrip.module.css';
 
 import { TripMenu } from './TripMenu';
 import { UserAvatarMenu } from '../Auth/UserAvatarMenu';
-import { TripViewMode, useTripViewMode } from './TripViewMode';
 
 import { DocTitle } from '../Nav/DocTitle';
 import { withLoading } from '../Loading/withLoading';
@@ -37,6 +36,7 @@ import { TripDeleteDialog } from './TripDeleteDialog';
 import { TripSharingDialog } from './TripSharingDialog';
 import { AccommodationNewDialog } from '../Accommodation/AccommodationNewDialog';
 import { DbTrip, DbTripWithActivityAccommodation } from './db';
+import { ROUTES_TRIP } from '../routes';
 
 export default PageTrip;
 export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
@@ -98,7 +98,6 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
   const [editTripDialogOpen, setEditTripDialogOpen] = useState(false);
   const [deleteTripDialogOpen, setDeleteTripDialogOpen] = useState(false);
   const [shareTripDialogOpen, setShareTripDialogOpen] = useState(false);
-  const [tripViewMode, setTripViewMode] = useTripViewMode();
 
   return (
     <>
@@ -122,22 +121,28 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
             setDeleteTripDialogOpen={setDeleteTripDialogOpen}
             setShareTripDialogOpen={setShareTripDialogOpen}
             showTripSharing={currentUserIsOwner}
-            tripViewMode={tripViewMode}
-            setTripViewMode={setTripViewMode}
           />,
           <UserAvatarMenu user={user} />,
         ]}
       />
       <Container>
         {trip ? (
-          tripViewMode === TripViewMode.Timetable ? (
-            <Timetable
-              trip={trip}
-              setNewActivityDialogOpen={setNewActivityDialogOpen}
+          <Switch>
+            <Route
+              path={ROUTES_TRIP.TimetableView}
+              component={() => (
+                <Timetable
+                  trip={trip}
+                  setNewActivityDialogOpen={setNewActivityDialogOpen}
+                />
+              )}
             />
-          ) : (
-            <ActivityList trip={trip} />
-          )
+            <Route
+              path={ROUTES_TRIP.ListView}
+              component={() => <ActivityList trip={trip} />}
+            />
+            <Redirect to={ROUTES_TRIP.TimetableView.replace(':id', trip.id)} />
+          </Switch>
         ) : isLoading ? (
           'Loading'
         ) : error ? (

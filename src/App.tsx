@@ -28,7 +28,7 @@ function App() {
         <Switch>
           <Route path={ROUTES.Login} component={PageLogin} />
           <Route path={ROUTES.Trips} component={PageTrips} />
-          <Route path={ROUTES.Trip} component={PageTrip} />
+          <Route path={ROUTES.Trip} component={PageTrip} nest />
           <Route path={ROUTES.Account} component={PageAccount} />
           <Route path={ROUTES.Privacy} component={PagePrivacy} />
           <Route path={ROUTES.Terms} component={PageTerms} />

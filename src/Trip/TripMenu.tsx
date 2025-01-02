@@ -1,7 +1,6 @@
 import { Button, DropdownMenu } from '@radix-ui/themes';
 import { useLocation } from 'wouter';
-import { ROUTES } from '../routes';
-import { TripViewMode } from './TripViewMode';
+import { ROUTES, ROUTES_TRIP } from '../routes';
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 
 export function TripMenu({
@@ -11,8 +10,6 @@ export function TripMenu({
   setNewAcommodationDialogOpen,
   setDeleteTripDialogOpen,
   showTripSharing,
-  tripViewMode,
-  setTripViewMode,
 }: {
   setEditTripDialogOpen: (v: boolean) => void;
   setShareTripDialogOpen: (v: boolean) => void;
@@ -20,10 +17,8 @@ export function TripMenu({
   setNewAcommodationDialogOpen: (v: boolean) => void;
   setDeleteTripDialogOpen: (v: boolean) => void;
   showTripSharing: boolean;
-  tripViewMode: TripViewMode;
-  setTripViewMode: (newMode: TripViewMode) => void;
 }) {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
@@ -48,14 +43,15 @@ export function TripMenu({
 
         <DropdownMenu.Item
           onClick={() => {
-            if (tripViewMode === TripViewMode.List) {
-              setTripViewMode(TripViewMode.Timetable);
+            if (location === (ROUTES_TRIP.ListView as string)) {
+              setLocation(ROUTES_TRIP.TimetableView as string);
             } else {
-              setTripViewMode(TripViewMode.List);
+              setLocation(ROUTES_TRIP.ListView as string);
             }
           }}
         >
-          View as {tripViewMode === TripViewMode.List ? 'timetable' : 'list'}
+          View as{' '}
+          {location === (ROUTES_TRIP.ListView as string) ? 'timetable' : 'list'}
         </DropdownMenu.Item>
 
         <DropdownMenu.Item
@@ -66,7 +62,6 @@ export function TripMenu({
           Edit trip
         </DropdownMenu.Item>
 
-        
         <DropdownMenu.Item
           onClick={() => {
             setNewAcommodationDialogOpen(true);
