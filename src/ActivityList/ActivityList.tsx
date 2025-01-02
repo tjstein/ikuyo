@@ -18,14 +18,19 @@ export function ActivityList({
     <Flex className={s.list} direction="column" gap="2">
       {dayGroups.map((dayGroup) => {
         return [
-          <Heading as="h2" size="4" className={s.listSubheader}>
+          <Heading
+            key={dayGroup.startDateTime.toISO()}
+            as="h2"
+            size="4"
+            className={s.listSubheader}
+          >
             {dayGroup.startDateTime.toFormat(`cccc, dd LLLL yyyy`)}
           </Heading>,
-          ...Object.values(dayGroup.accommodations).map((accommodation) => {
+          ...Object.values(dayGroup.accommodations).map((accommodation, i) => {
             const props = dayGroup.accommodationProps.get(accommodation.id);
             return (
               <Accommodation
-                key={accommodation.id}
+                key={`${accommodation.id}-${String(i)}`}
                 accommodation={accommodation}
                 tripViewMode={TripViewMode.List}
                 className={s.listItem}
