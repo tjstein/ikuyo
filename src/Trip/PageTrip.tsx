@@ -11,7 +11,6 @@ import { DbUser } from '../data/types';
 import s from './PageTrip.module.css';
 
 import { TripMenu } from './TripMenu';
-import { UserAvatarMenu } from '../Auth/UserAvatarMenu';
 
 import { DocTitle } from '../Nav/DocTitle';
 import { withLoading } from '../Loading/withLoading';
