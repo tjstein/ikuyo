@@ -1,0 +1,18 @@
+.actionsTitle {
+  display: none;
+}
+.userAvatar {
+  display: none;
+}
+@media (min-width: 520px) {
+  .actionsTitle {
+    display: inline-block;
+  }
+  .onlyForXs {
+    display: none;
+  }
+  .userAvatar {
+    display: inline-block;
+    margin-left: var(--space-3);
+  }
+}

@@ -115,6 +115,7 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
         rightItems={[
           <TripMenu
             key="menu"
+            user={user}
             setEditTripDialogOpen={setEditTripDialogOpen}
             setNewActivityDialogOpen={setNewActivityDialogOpen}
             setNewAcommodationDialogOpen={setNewAcommodationDialogOpen}
@@ -122,7 +123,6 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
             setShareTripDialogOpen={setShareTripDialogOpen}
             showTripSharing={currentUserIsOwner}
           />,
-          <UserAvatarMenu user={user} />,
         ]}
       />
       <Container>
