@@ -7,16 +7,10 @@ import {
   SewingPinIcon,
 } from '@radix-ui/react-icons';
 
-import { Text, Box, ContextMenu } from '@radix-ui/themes'; 
+import { Text, Box, ContextMenu } from '@radix-ui/themes';
 import { formatTime } from './time';
 import { DateTime } from 'luxon';
-import {
-  dayColMapping,
-  dayEndMapping,
-  dayStartMapping,
-  timeEndMapping,
-  timeStartMapping,
-} from '../Timetable/TimetableStyles';
+
 import { TripViewMode } from '../Trip/TripViewMode';
 
 import { ActivityViewDialog } from './ActivityViewDialog';
@@ -60,16 +54,20 @@ export function Activity({
             tabIndex={0}
             className={clsx(
               style.activity,
-              timeStartMapping[timeStart],
-              timeEndMapping[timeEnd],
-              dayStartMapping[dayStart],
-              dayColMapping[dayStart][columnIndex],
-              columnIndex === columnEndIndex ? '' : dayEndMapping[dayEnd],
               isActivityOngoing ? style.activityOngoing : '',
               className
             )}
             onClick={() => {
               setViewDialogOpen(true);
+            }}
+            style={{
+              gridRowStart: `t${timeStart}`,
+              gridRowEnd: `te${timeEnd}`,
+              gridColumnStart: `d${String(dayStart)}-c${String(columnIndex)}`,
+              gridColumnEnd:
+                columnIndex === columnEndIndex
+                  ? undefined
+                  : `de${String(dayEnd)}`,
             }}
           >
             {tripViewMode === TripViewMode.List ? (

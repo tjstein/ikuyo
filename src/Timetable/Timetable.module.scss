@@ -54,7 +54,8 @@
     display: grid;
     // grid-template-columns will be overridden in "style" at <Timetable />
     grid-template-columns: [time] 45px repeat(5, [d] 1fr);
-    grid-template-rows: [header] 50px [accommodation] 30px string.unquote(timeTemplateRow());
+    // "[accommodation] min-content" so it can "collapse" when there is no content in accommodation
+    grid-template-rows: [header] 50px [accommodation] min-content string.unquote(timeTemplateRow());
     gap: 0;
     justify-items: stretch;
     align-items: stretch;
@@ -94,6 +95,8 @@
     grid-column: 1 / span 1;
     grid-row: accommodation / span 1;
     z-index: 2;
+    min-height: 30px;
+    height: fill-available;
   }
 
   .timetableColumn {
@@ -134,5 +137,15 @@
   .timetableItem {
     grid-column-end: span 1;
     grid-row-end: span 1;
+  }
+
+  .accommodationGrid {
+    display: grid;
+    grid-column-start: d1;
+    grid-column-end: -1;
+    box-sizing: border-box;
+    min-height: 30px;
+    grid-auto-flow: row;
+    grid-auto-columns: 30px;
   }
 }

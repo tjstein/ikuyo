@@ -2,7 +2,7 @@ import { TripViewMode } from '../Trip/TripViewMode';
 import { DbAccommodationWithTrip } from './db';
 import clsx from 'clsx';
 import { Text, Box, ContextMenu } from '@radix-ui/themes';
-import style from './Accommodation.module.css';
+import s from './Accommodation.module.css';
 import { useState } from 'react';
 import { AccommodationViewDialog } from './AccommodationViewDialog';
 import { AccommodationEditDialog } from './AccommodationEditDialog';
@@ -16,11 +16,13 @@ export function Accommodation({
   accommodation,
   tripViewMode,
   displayTimeMode,
+  style
 }: {
   className?: string;
   accommodation: DbAccommodationWithTrip;
   tripViewMode: TripViewMode;
   displayTimeMode?: AccommodationDisplayTimeMode;
+  style?: React.CSSProperties
 }) {
   const responsiveTextSize = { initial: '1' as const };
 
@@ -37,7 +39,8 @@ export function Accommodation({
             as="div"
             role="button"
             tabIndex={0}
-            className={clsx(style.accommodation, className)}
+            className={clsx(s.accommodation, className)}
+            style={style}
             onClick={() => {
               setViewDialogOpen(true);
             }}

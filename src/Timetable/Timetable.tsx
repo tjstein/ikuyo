@@ -1,14 +1,10 @@
 import clsx from 'clsx';
 import { Activity } from '../Activity/Activity';
 import s from './Timetable.module.scss';
+
 import { ContextMenu, Section, Text } from '@radix-ui/themes';
 
 import { useMemo } from 'react';
-import {
-  dayEndMapping,
-  dayStartMapping,
-  timeColumnMapping,
-} from './TimetableStyles';
 import { DayGroups, groupActivitiesByDays } from '../Activity/eventGrouping';
 import { TripViewMode } from '../Trip/TripViewMode';
 import { pad2 } from './time';
@@ -24,9 +20,11 @@ import { DbAccommodationWithTrip } from '../Accommodation/db';
 const times = new Array(24).fill(0).map((_, i) => {
   return (
     <TimetableTime
-      className={timeColumnMapping[i]}
       timeStart={`${pad2(i)}:00`}
       key={i}
+      style={{
+        gridRowStart: `t${pad2(i)}00`,
+      }}
     />
   );
 });
@@ -43,7 +41,12 @@ export function Timetable({
 
   const timetableStyle = useMemo(() => {
     return {
-      gridTemplateColumns: generateGridTemplateColumns(dayGroups),
+      gridTemplateColumns: generateMainGridTemplateColumns(dayGroups),
+    };
+  }, [dayGroups]);
+  const timetableAccommodationStyle = useMemo(() => {
+    return {
+      gridTemplateColumns: generateAccommodationGridTemplateColumns(dayGroups),
     };
   }, [dayGroups]);
 
@@ -57,33 +60,39 @@ export function Timetable({
             {dayGroups.map((dayGroup, i) => {
               return (
                 <TimetableDayHeader
-                  className={clsx([
-                    dayStartMapping[i + 1],
-                    dayEndMapping[i + 1],
-                  ])}
                   dateString={dayGroup.startDateTime.toFormat(
                     `ccc, dd LLL yyyy`
                   )}
                   key={dayGroup.startDateTime.toISODate()}
+                  style={{
+                    gridColumnStart: `d${String(i + 1)}`,
+                    gridColumnEnd: `de${String(i + 1)}`,
+                  }}
                 />
               );
             })}
+            {acommodations.length > 0 ? <TimetableAccommodationHeader /> : null}
 
-            <TimetableAccommodationHeader />
-
-            {acommodations.map(({ accommodation, columnIndex }) => {
-              return (
-                <Accommodation
-                  className={clsx([
-                    dayStartMapping[columnIndex.start],
-                    dayEndMapping[columnIndex.end],
-                  ])}
-                  key={accommodation.id}
-                  accommodation={accommodation}
-                  tripViewMode={TripViewMode.Timetable}
-                />
-              );
-            })}
+            {acommodations.length > 0 ? (
+              <div
+                className={s.accommodationGrid}
+                style={timetableAccommodationStyle}
+              >
+                {acommodations.map(({ accommodation, day: columnIndex }) => {
+                  return (
+                    <Accommodation
+                      key={accommodation.id}
+                      accommodation={accommodation}
+                      tripViewMode={TripViewMode.Timetable}
+                      style={{
+                        gridColumnStart: `d${String(columnIndex.start)}-c${String(columnIndex.startColumn)}`,
+                        gridColumnEnd: `d${String(columnIndex.end)}-ce${String(columnIndex.endColumn)}`,
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            ) : null}
 
             {times}
 
@@ -122,7 +131,7 @@ export function Timetable({
   );
 }
 
-function generateGridTemplateColumns(dayGroups: DayGroups): string {
+function generateMainGridTemplateColumns(dayGroups: DayGroups): string {
   let str = `[time] 45px`;
 
   // Generate something like:
@@ -160,18 +169,59 @@ function generateGridTemplateColumns(dayGroups: DayGroups): string {
   return str;
 }
 
+function generateAccommodationGridTemplateColumns(
+  dayGroups: DayGroups
+): string {
+  let str = ``;
+
+  // 1 day always have 2 columns
+  // Generate something like:
+  // [d1-c1]     360 / 2 fr
+  // [d1-ce1 d1-c2] 360 / 2 fr
+  // [d1-ce2 d2-c1] 360 / 2 fr
+  // [d2-ce1 d2-c2] 360 / 2 fr
+  // [d2-ce2 d3-c1] 360 / 2 fr
+  // [d3-ce1 d3-c2] 360 / 2 fr
+  // [d3-ce2 d4-c1] 360 / 2 fr
+  // [d4-ce1 d4-c2] 360 / 2 fr
+  // [d4-ce2]
+
+  const maxColumns = 2;
+  for (let dayIndex = 0; dayIndex < dayGroups.length; dayIndex++) {
+    const colWidth = `minmax(${String(120 / 2)}px,${String(360 / 2)}fr)`;
+    for (let colIndex = 0; colIndex < maxColumns; colIndex++) {
+      const lineNames: string[] = [];
+      if (colIndex === 0 && dayIndex > 0) {
+        lineNames.push(`d${String(dayIndex)}-ce${String(maxColumns)}`);
+      }
+      if (colIndex > 0) {
+        lineNames.push(`d${String(dayIndex + 1)}-ce${String(colIndex)}`);
+      }
+
+      lineNames.push(`d${String(dayIndex + 1)}-c${String(colIndex + 1)}`);
+
+      str += ` [${lineNames.join(' ')}] ${colWidth}`;
+    }
+  }
+
+  str += ` [d${String(dayGroups.length)}-ce${String(maxColumns)}]`;
+
+  return str;
+}
+
 function TimetableDayHeader({
-  className,
   dateString,
+  style,
 }: {
-  className: string;
   dateString: string;
+  style: React.CSSProperties;
 }) {
   return (
     <Text
       as="div"
       size={{ initial: '1', sm: '3' }}
-      className={clsx(s.timetableColumn, className)}
+      className={s.timetableColumn}
+      style={style}
     >
       {dateString}
     </Text>
@@ -193,17 +243,18 @@ function TimetableTimeHeader() {
   );
 }
 function TimetableTime({
-  className,
   timeStart: time,
+  style,
 }: {
-  className: string[];
   timeStart: string;
+  style: React.CSSProperties;
 }) {
   return (
     <Text
       as="div"
       size={{ initial: '1', sm: '3' }}
-      className={clsx(s.timetableTime, className)}
+      className={s.timetableTime}
+      style={style}
     >
       {time}
     </Text>
@@ -213,7 +264,12 @@ function TimetableTime({
 function getAccommodationIndexes(trip: DbTripWithAccommodation) {
   const res: Array<{
     accommodation: DbAccommodationWithTrip;
-    columnIndex: { start: number; end: number };
+    day: {
+      start: number;
+      end: number;
+      startColumn: number;
+      endColumn: number | undefined;
+    };
   }> = [];
   const tripStartDateTime = DateTime.fromMillis(trip.timestampStart).setZone(
     trip.timeZone
@@ -241,13 +297,11 @@ function getAccommodationIndexes(trip: DbTripWithAccommodation) {
 
     res.push({
       accommodation,
-      columnIndex: {
+      day: {
         start: accommodationCheckInDay,
-        end:
-          // For accommodation that didn't end at the trip's final day, it is displayed until the day before check out. This is so that we won't display overlapping accommodation
-          accommodationCheckOutDay === tripEndDay
-            ? accommodationCheckOutDay
-            : accommodationCheckOutDay - 1,
+        end: accommodationCheckOutDay,
+        startColumn: accommodationCheckInDay === 1 ? 1 : 2,
+        endColumn: accommodationCheckOutDay === tripEndDay ? 2 : 1,
       },
     });
   }

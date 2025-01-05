@@ -6,8 +6,8 @@
   cursor: var(--cursor-link);
   display: block;
   text-align: start;
-
-  grid-row: accommodation / span 1;
+  height: 30px;
+  box-sizing: border-box;
 }
 .accommodation:focus-visible {
   outline-style: solid;
