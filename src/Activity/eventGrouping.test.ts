@@ -12,6 +12,8 @@ describe('Trip', () => {
     timestampStart: new Date('2024-09-23T00:00:00Z').getTime(),
     timestampEnd: new Date('2024-09-25T00:00:00Z').getTime(),
     timeZone: 'UTC',
+    currency: 'GBP',
+    originCurrency: 'USD',
     activity: [],
     accommodation: [],
     owner: undefined,

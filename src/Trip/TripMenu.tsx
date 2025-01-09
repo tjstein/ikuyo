@@ -63,6 +63,17 @@ export function TripMenu({
               : 'list'}
           </DropdownMenu.Item>
 
+          {/* TODO: Only open on dev mode for now while feature in development */}
+          {import.meta.env.DEV ? (
+            <DropdownMenu.Item
+              onClick={() => {
+                setLocation(ROUTES_TRIP.Expenses as string);
+              }}
+            >
+              View expenses
+            </DropdownMenu.Item>
+          ) : null}
+
           <DropdownMenu.Item
             onClick={() => {
               setEditTripDialogOpen(true);

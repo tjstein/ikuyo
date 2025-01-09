@@ -36,6 +36,7 @@ import { TripSharingDialog } from './TripSharingDialog';
 import { AccommodationNewDialog } from '../Accommodation/AccommodationNewDialog';
 import { DbTrip, DbTripWithActivityAccommodation } from './db';
 import { ROUTES_TRIP } from '../routes';
+import { ExpenseList } from '../Expense/ExpenseList';
 
 export default PageTrip;
 export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
@@ -140,7 +141,11 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
               path={ROUTES_TRIP.ListView}
               component={() => <ActivityList trip={trip} />}
             />
-            <Redirect to={ROUTES_TRIP.TimetableView.replace(':id', trip.id)} />
+            <Route
+              path={ROUTES_TRIP.Expenses}
+              component={() => <ExpenseList trip={trip} />}
+            />
+            <Redirect replace to={ROUTES_TRIP.TimetableView.replace(':id', trip.id)} />
           </Switch>
         ) : isLoading ? (
           'Loading'

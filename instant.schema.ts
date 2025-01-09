@@ -24,6 +24,8 @@ const schema = i.schema({
       timestampStart: i.number(),
       timeZone: i.string(),
       title: i.string(),
+      currency: i.string(),
+      originCurrency: i.string(),
     }),
     user: i.entity({
       activated: i.boolean(),
@@ -44,15 +46,15 @@ const schema = i.schema({
     }),
     expense: i.entity({
       title: i.string(),
-      desscription: i.string(),
+      description: i.string(),
       createdAt: i.number(),
       lastUpdatedAt: i.number(),
       timestampIncurred: i.number(),
 
       currency: i.string(),
       amount: i.number(),
-      currencyConversionFactor: i.number().optional(),
-      amountInDefaultCurrency: i.number().optional(),
+      currencyConversionFactor: i.number(),
+      amountInOriginCurrency: i.number(),
     }),
   },
   links: {

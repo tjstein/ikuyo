@@ -5,6 +5,7 @@ import { DbTrip } from '../Trip/db';
 export type DbExpenseWithTrip = Omit<DbExpense, 'trip'> & {
   trip: DbTrip;
 };
+
 export type DbExpense = {
   id: string;
 
@@ -14,10 +15,12 @@ export type DbExpense = {
   lastUpdatedAt: number;
   /** ms. Time the transaction occurred */
   timestampIncurred: number;
+  /** default: trip.currency */
   currency: string;
   amount: number;
   currencyConversionFactor: number | undefined;
-  amountInDefaultCurrency: number | undefined;
+  /** default: trip.originCurrency */
+  amountInOriginCurrency: number | undefined;
   trip: DbTrip | undefined;
 };
 

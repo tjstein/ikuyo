@@ -40,6 +40,8 @@ export function TripEditDialog({
           dialogOpen={dialogOpen}
           setDialogOpen={setDialogOpen}
           tripTimeZone={trip.timeZone}
+          tripCurrency={trip.currency}
+          tripOriginCurrency={trip.originCurrency}
           activities={trip.activity}
         />
       </Dialog.Content>

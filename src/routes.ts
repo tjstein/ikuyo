@@ -9,4 +9,5 @@ export enum ROUTES {
 export enum ROUTES_TRIP {   
     ListView = '/list',
     TimetableView = '/timetable',
+    Expenses = '/expenses',
 }

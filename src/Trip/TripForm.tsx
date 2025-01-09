@@ -1,5 +1,5 @@
 import { Flex, Text, TextField, Button, Select } from '@radix-ui/themes';
-import { useId, useCallback, useState } from 'react';
+import { useId, useCallback, useState, useMemo } from 'react';
 import { useBoundStore } from '../data/store';
 import { TripFormMode } from './TripFormMode';
 import { getDateTimeFromDateInput } from './time';
@@ -16,6 +16,8 @@ export function TripForm({
   tripEndStr,
   tripTitle,
   tripTimeZone,
+  tripCurrency,
+  tripOriginCurrency,
   userId,
   activities,
 }: {
@@ -27,6 +29,8 @@ export function TripForm({
   tripEndStr: string;
   tripTitle: string;
   tripTimeZone: string;
+  tripCurrency: string;
+  tripOriginCurrency: string;
   userId?: string;
   activities?: DbActivity[];
 }) {
@@ -35,12 +39,15 @@ export function TripForm({
   const idTimeStart = useId();
   const idTimeEnd = useId();
   const idTimeZone = useId();
+  const idCurrency = useId();
+  const idOriginCurrency = useId();
   const publishToast = useBoundStore((state) => state.publishToast);
   const closeDialog = useCallback(() => {
     setDialogOpen(false);
   }, [setDialogOpen]);
   const [errorMessage, setErrorMessage] = useState('');
-  const timeZones = Intl.supportedValuesOf('timeZone');
+  const timeZones = useMemo(() => Intl.supportedValuesOf('timeZone'), []);
+  const currencies = useMemo(() => Intl.supportedValuesOf('currency'), []);
   const handleForm = useCallback(() => {
     return async (elForm: HTMLFormElement) => {
       setErrorMessage('');
@@ -52,6 +59,9 @@ export function TripForm({
       const dateStartStr = (formData.get('startDate') as string | null) ?? '';
       const dateEndStr = (formData.get('endDate') as string | null) ?? '';
       const timeZone = (formData.get('timeZone') as string | null) ?? '';
+      const currency = (formData.get('currency') as string | null) ?? '';
+      const originCurrency =
+        (formData.get('originCurrency') as string | null) ?? '';
 
       const dateStartDateTime = getDateTimeFromDateInput(
         dateStartStr,
@@ -67,12 +77,21 @@ export function TripForm({
         tripId,
         title,
         timeZone,
+        currency,
+        originCurrency,
         dateStartStr,
         dateEndStr,
         dateStartDateTime,
         dateEndDateTime,
       });
-      if (!title || !dateStartStr || !dateEndStr || !timeZone) {
+      if (
+        !title ||
+        !dateStartStr ||
+        !dateEndStr ||
+        !timeZone ||
+        !currency ||
+        !originCurrency
+      ) {
         return;
       }
       if (dateEndDateTime.diff(dateStartDateTime).as('minute') < 0) {
@@ -87,6 +106,8 @@ export function TripForm({
             timeZone,
             timestampStart: dateStartDateTime.toMillis(),
             timestampEnd: dateEndDateTime.toMillis(),
+            currency,
+            originCurrency,
           },
           {
             activities,
@@ -107,6 +128,8 @@ export function TripForm({
             timeZone,
             timestampStart: dateStartDateTime.toMillis(),
             timestampEnd: dateEndDateTime.toMillis(),
+            currency,
+            originCurrency,
           },
           {
             userId,
@@ -174,6 +197,15 @@ export function TripForm({
           <Text weight="light" size="1">
             (required)
           </Text>
+          {mode === TripFormMode.Edit ? (
+            <>
+              <br />
+              <Text weight="light" size="1">
+                Editing this value will adjust all the activities to this local
+                time zone
+              </Text>
+            </>
+          ) : null}
         </Text>
         <Select.Root name="timeZone" defaultValue={tripTimeZone} required>
           <Select.Trigger id={idTimeZone} />
@@ -213,6 +245,62 @@ export function TripForm({
           defaultValue={tripEndStr}
           required
         />
+
+        <Text as="label" htmlFor={idCurrency}>
+          Destination's currency{' '}
+          <Text weight="light" size="1">
+            (required)
+          </Text>
+          <br />
+          <Text weight="light" size="1">
+            This will be used as the default currency in expenses.
+            {mode === TripFormMode.Edit
+              ? ` Editing this value will not change existing expenses `
+              : null}
+          </Text>
+        </Text>
+        <Select.Root name="currency" defaultValue={tripCurrency} required>
+          <Select.Trigger id={idCurrency} />
+          <Select.Content>
+            {currencies.map((currency) => {
+              return (
+                <Select.Item key={currency} value={currency}>
+                  {currency}
+                </Select.Item>
+              );
+            })}
+          </Select.Content>
+        </Select.Root>
+
+        <Text as="label" htmlFor={idOriginCurrency}>
+          Origin's currency{' '}
+          <Text weight="light" size="1">
+            (required)
+          </Text>
+          <br />
+          <Text weight="light" size="1">
+            This will be used as the default origin's currency in expenses.
+            {mode === TripFormMode.Edit
+              ? ` Editing this value will not change existing expenses `
+              : null}
+          </Text>
+        </Text>
+        <Select.Root
+          name="originCurrency"
+          defaultValue={tripOriginCurrency}
+          required
+        >
+          <Select.Trigger id={idOriginCurrency} />
+          <Select.Content>
+            {currencies.map((currency) => {
+              return (
+                <Select.Item key={currency} value={currency}>
+                  {currency}
+                </Select.Item>
+              );
+            })}
+          </Select.Content>
+        </Select.Root>
       </Flex>
       <Flex gap="3" mt="5" justify="end">
         <Button
