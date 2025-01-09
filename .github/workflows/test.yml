@@ -12,6 +12,8 @@ jobs:
       group: ci-${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
     runs-on: ubuntu-20.04
+    outputs:
+      build-artifact-id: ${{ steps.artifact-upload-step.outputs.artifact-id }}
     env:
       INSTANT_APP_ID: ${{ vars.INSTANT_APP_ID }}
     steps:
@@ -26,7 +28,15 @@ jobs:
         run: pnpm install
       - name: Lint
         run: pnpm lint
+      - name: Typecheck
+        run: pnpm typecheck
       - name: Test
         run: pnpm test
       - name: Build
         run: pnpm build
+      - uses: actions/upload-artifact@v4
+        id: artifact-upload-step
+        with:
+          name: build-artifact
+          path: dist/
+          if-no-files-found: error

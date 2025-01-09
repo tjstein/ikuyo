@@ -1,11 +1,14 @@
 name: Deploy
 
 on:
-  push:
-    branches: ['main']
+  workflow_run:
+    workflows: [Testing]
+    types: [completed]
+    branches: [main]
 
 jobs:
   deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     concurrency:
       group: ci-${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
@@ -21,6 +24,8 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
+      # TODO: Use the artifact from the Testing workflow... seems quite complicated for now
+      # https://stackoverflow.com/questions/67973057/github-actions-workflow-run-outputs
       - name: Install dependencies
         run: pnpm install
       - name: Build
