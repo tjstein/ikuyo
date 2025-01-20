@@ -25,7 +25,7 @@ export type DbExpense = {
 };
 
 export async function dbAddExpense(
-  newExpense: Omit<DbExpense, 'createdAt' | 'lastUpdatedAt' | 'trip'>,
+  newExpense: Omit<DbExpense, 'id' | 'createdAt' | 'lastUpdatedAt' | 'trip'>,
   { tripId }: { tripId: string }
 ) {
   const newId = id();
@@ -54,11 +54,17 @@ export async function dbUpdateExpense(
     })
   );
 }
-export async function dbDeleteExpense(expense: DbExpenseWithTrip) {
+export async function dbDeleteExpense({
+  expenseId,
+  tripId,
+}: {
+  expenseId: string;
+  tripId: string;
+}) {
   return db.transact([
-    db.tx.trip[expense.trip.id].unlink({
-      expense: [expense.id],
+    db.tx.trip[tripId].unlink({
+      expense: [expenseId],
     }),
-    db.tx.expense[expense.id].delete(),
+    db.tx.expense[expenseId].delete(),
   ]);
 }

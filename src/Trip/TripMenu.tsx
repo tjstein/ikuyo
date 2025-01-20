@@ -52,19 +52,21 @@ export function TripMenu({
             onClick={() => {
               if (location === (ROUTES_TRIP.ListView as string)) {
                 setLocation(ROUTES_TRIP.TimetableView as string);
-              } else {
+              } else if (location === (ROUTES_TRIP.TimetableView as string)) {
                 setLocation(ROUTES_TRIP.ListView as string);
+              } else {
+                setLocation(ROUTES_TRIP.TimetableView as string);
               }
             }}
           >
-            View as{' '}
             {location === (ROUTES_TRIP.ListView as string)
-              ? 'timetable'
-              : 'list'}
+              ? 'View as timetable'
+              : location === (ROUTES_TRIP.TimetableView as string)
+                ? 'View as list'
+                : 'View trip activities'}
           </DropdownMenu.Item>
 
-          {/* TODO: Only open on dev mode for now while feature in development */}
-          {import.meta.env.DEV ? (
+          {location !== (ROUTES_TRIP.Expenses as string) ? (
             <DropdownMenu.Item
               onClick={() => {
                 setLocation(ROUTES_TRIP.Expenses as string);
