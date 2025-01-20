@@ -199,6 +199,7 @@ export function ExpenseList({
               <Table.Cell>{expense.currencyConversionFactor}</Table.Cell>
               <Table.Cell>{expense.amountInOriginCurrency}</Table.Cell>
               <Table.Cell>
+                {/* TODO: implement Edit, make it inline edit? */}
                 <Popover.Root>
                   <Popover.Trigger>
                     <Button variant="outline">
@@ -210,6 +211,7 @@ export function ExpenseList({
                       Delete expense "{expense.title}"?
                     </Text>
                     <Text as="p" size="2" color="red">
+                      {/* TODO: implement undo delete */}
                       This action is irreversible!
                     </Text>
                     <Flex gap="3" mt="4" justify="end">
@@ -388,6 +390,10 @@ export function ExpenseList({
               </Table.Cell>
               <Table.Cell>
                 <TextField.Root
+                  // TODO: make the width of the text fields fixed
+                  // TODO: on small screen, make the table scrollable?
+                  // TODO: sticky header
+                  // TODO: the UX for new entry is not good, there is a "blank" phase before user sees it... maybe need our own zustand store to make it optimistic
                   name="amountInOriginCurrency"
                   type="number"
                   value={formState.amountInOriginCurrency}
@@ -420,6 +426,7 @@ export function ExpenseList({
                   Add
                 </Button>
                 <Button
+                  ml="2"
                   type="button"
                   size="2"
                   variant="soft"
