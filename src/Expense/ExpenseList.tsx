@@ -1,6 +1,8 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useId } from 'react';
 import {
   Button,
+  Flex,
+  Popover,
   Section,
   Select,
   Table,
@@ -39,6 +41,8 @@ export function ExpenseList({
       },
     },
   });
+
+  const idForm = useId();
 
   const expenses = data?.expense ?? [];
 
@@ -96,6 +100,7 @@ export function ExpenseList({
         currencyConversionFactor,
         amountInOriginCurrency,
       } = formState;
+      console.log('aaa');
 
       const dateTimestampIncurred = getDateTimeFromDateInput(
         timestampIncurred,
@@ -106,6 +111,16 @@ export function ExpenseList({
         currencyConversionFactor
       );
       const amountInOriginCurrencyFloat = parseFloat(amountInOriginCurrency);
+
+      console.log({
+        timestampIncurred,
+        title,
+        description,
+        currency,
+        amountFloat,
+        currencyConversionFactorFloat,
+        amountInOriginCurrencyFloat,
+      });
 
       if (
         !timestampIncurred ||
@@ -184,39 +199,62 @@ export function ExpenseList({
               <Table.Cell>{expense.currencyConversionFactor}</Table.Cell>
               <Table.Cell>{expense.amountInOriginCurrency}</Table.Cell>
               <Table.Cell>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    dbDeleteExpense({
-                      expenseId: expense.id,
-                      tripId: trip.id,
-                    })
-                      .then(() => {
-                        publishToast({
-                          root: {},
-                          title: {
-                            children: `Deleted expense: ${expense.title}`,
-                          },
-                          close: {},
-                        });
-                      })
-                      .catch((error: unknown) => {
-                        console.error(
-                          `Error deleting expense "${expense.title}"`,
-                          error
-                        );
-                        publishToast({
-                          root: {},
-                          title: {
-                            children: `Error deleting expense: ${expense.title}`,
-                          },
-                          close: {},
-                        });
-                      });
-                  }}
-                >
-                  <TrashIcon />
-                </Button>
+                <Popover.Root>
+                  <Popover.Trigger>
+                    <Button variant="outline">
+                      <TrashIcon />
+                    </Button>
+                  </Popover.Trigger>
+                  <Popover.Content>
+                    <Text as="p" size="2">
+                      Delete expense "{expense.title}"?
+                    </Text>
+                    <Text as="p" size="2" color="red">
+                      This action is irreversible!
+                    </Text>
+                    <Flex gap="3" mt="4" justify="end">
+                      <Popover.Close>
+                        <Button variant="soft" color="gray">
+                          Cancel
+                        </Button>
+                      </Popover.Close>
+                      <Button
+                        variant="solid"
+                        color="red"
+                        onClick={() => {
+                          dbDeleteExpense({
+                            expenseId: expense.id,
+                            tripId: trip.id,
+                          })
+                            .then(() => {
+                              publishToast({
+                                root: {},
+                                title: {
+                                  children: `Deleted expense: ${expense.title}`,
+                                },
+                                close: {},
+                              });
+                            })
+                            .catch((error: unknown) => {
+                              console.error(
+                                `Error deleting expense "${expense.title}"`,
+                                error
+                              );
+                              publishToast({
+                                root: {},
+                                title: {
+                                  children: `Error deleting expense: ${expense.title}`,
+                                },
+                                close: {},
+                              });
+                            });
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </Flex>
+                  </Popover.Content>
+                </Popover.Root>
               </Table.Cell>
             </Table.Row>
           ))}
@@ -244,6 +282,7 @@ export function ExpenseList({
                   value={formState.timestampIncurred}
                   onChange={handleInputChange}
                   required
+                  form={idForm}
                 />
               </Table.Cell>
               <Table.Cell>
@@ -253,6 +292,7 @@ export function ExpenseList({
                   value={formState.title}
                   onChange={handleInputChange}
                   required
+                  form={idForm}
                 />
               </Table.Cell>
               <Table.Cell>
@@ -262,6 +302,7 @@ export function ExpenseList({
                   value={formState.description}
                   onChange={handleInputChange}
                   required
+                  form={idForm}
                 />
               </Table.Cell>
               <Table.Cell>
@@ -272,6 +313,7 @@ export function ExpenseList({
                     setFormState((prev) => ({ ...prev, currency: value }));
                   }}
                   required
+                  form={idForm}
                 >
                   <Select.Trigger />
                   <Select.Content>
@@ -289,6 +331,7 @@ export function ExpenseList({
                   type="number"
                   value={formState.amount}
                   onChange={handleInputChange}
+                  form={idForm}
                   onFocus={() => {
                     // If the other two values are available & this is empty, then calculate it
                     if (
@@ -320,6 +363,7 @@ export function ExpenseList({
                   type="number"
                   value={formState.currencyConversionFactor}
                   onChange={handleInputChange}
+                  form={idForm}
                   onFocus={() => {
                     // If the other two values are available & this is empty, then calculate it
                     if (
@@ -348,6 +392,7 @@ export function ExpenseList({
                   type="number"
                   value={formState.amountInOriginCurrency}
                   onChange={handleInputChange}
+                  form={idForm}
                   onFocus={() => {
                     // If the other two values are available & this is empty, then calculate it
                     if (
@@ -371,7 +416,7 @@ export function ExpenseList({
                 />
               </Table.Cell>
               <Table.Cell>
-                <Button type="submit" size="2" variant="solid">
+                <Button type="submit" size="2" variant="solid" form={idForm}>
                   Add
                 </Button>
                 <Button
@@ -379,6 +424,7 @@ export function ExpenseList({
                   size="2"
                   variant="soft"
                   color="gray"
+                  form={idForm}
                   onClick={() => {
                     setExpenseMode(ExpenseMode.View);
                     resetFormState();
@@ -392,6 +438,7 @@ export function ExpenseList({
         </Table.Body>
       </Table.Root>
       <form
+        id={idForm}
         onInput={() => {
           setErrorMessage('');
         }}
