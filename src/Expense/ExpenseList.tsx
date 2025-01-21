@@ -1,13 +1,11 @@
-import React, { useState, useCallback, useMemo, useId } from 'react';
+import { useState } from 'react';
 import {
   Button,
   Flex,
   Popover,
   Section,
-  Select,
   Table,
   Text,
-  TextField,
   Tooltip,
 } from '@radix-ui/themes';
 import { db } from '../data/db';
@@ -18,14 +16,12 @@ import {
   TrashIcon,
 } from '@radix-ui/react-icons';
 import { ExpenseMode } from './ExpenseMode';
-import {
-  formatTimestampToReadableDate,
-  formatToDateInput,
-  getDateTimeFromDateInput,
-} from './time';
+import { formatTimestampToReadableDate } from './time';
 import { DateTime } from 'luxon';
 import { useBoundStore } from '../data/store';
-import { dbAddExpense, dbDeleteExpense } from './db';
+import { dbDeleteExpense } from './db';
+import s from './ExpenseList.module.css';
+import { ExpenseInlineForm } from './ExpenseInlineForm';
 
 export function ExpenseList({
   trip,
@@ -42,125 +38,26 @@ export function ExpenseList({
     },
   });
 
-  const idForm = useId();
-
   const expenses = data?.expense ?? [];
 
-  const tripStartStr = formatToDateInput(
-    DateTime.fromMillis(trip.timestampStart).setZone(trip.timeZone)
-  );
   const publishToast = useBoundStore((state) => state.publishToast);
 
   const [expenseMode, setExpenseMode] = useState(ExpenseMode.View);
-  const [formState, setFormState] = useState({
-    timestampIncurred: tripStartStr,
-    title: '',
-    description: '',
-    currency: trip.currency,
-    amount: '',
-    currencyConversionFactor: '1',
-    amountInOriginCurrency: '',
-  });
-  const [errorMessage, setErrorMessage] = useState('');
-  const currencies = useMemo(() => Intl.supportedValuesOf('currency'), []);
-
-  const resetFormState = useCallback(() => {
-    setFormState({
-      timestampIncurred: tripStartStr,
-      title: '',
-      description: '',
-      currency: trip.currency,
-      amount: '',
-      currencyConversionFactor: '1',
-      amountInOriginCurrency: '',
-    });
-  }, [trip.currency, tripStartStr]);
-
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-      const { name, value } = e.target;
-      setFormState((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    },
-    []
-  );
-
-  const handleForm = useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      setErrorMessage('');
-      const {
-        timestampIncurred,
-        title,
-        description,
-        currency,
-        amount,
-        currencyConversionFactor,
-        amountInOriginCurrency,
-      } = formState;
-      console.log('aaa');
-
-      const dateTimestampIncurred = getDateTimeFromDateInput(
-        timestampIncurred,
-        trip.timeZone
-      );
-      const amountFloat = parseFloat(amount);
-      const currencyConversionFactorFloat = parseFloat(
-        currencyConversionFactor
-      );
-      const amountInOriginCurrencyFloat = parseFloat(amountInOriginCurrency);
-
-      console.log({
-        timestampIncurred,
-        title,
-        description,
-        currency,
-        amountFloat,
-        currencyConversionFactorFloat,
-        amountInOriginCurrencyFloat,
-      });
-
-      if (
-        !timestampIncurred ||
-        !title ||
-        !description ||
-        !currency ||
-        isNaN(amountFloat)
-      ) {
-        setErrorMessage('Please fill in all required fields.');
-        return;
-      }
-
-      await dbAddExpense(
-        {
-          title,
-          description,
-          currency,
-          amount: amountFloat,
-          currencyConversionFactor: currencyConversionFactorFloat,
-          amountInOriginCurrency: amountInOriginCurrencyFloat,
-          timestampIncurred: dateTimestampIncurred.toMillis(),
-        },
-        { tripId: trip.id }
-      );
-
-      publishToast({
-        root: {},
-        title: { children: `Added expense: ${title}` },
-        close: {},
-      });
-
-      resetFormState();
-    },
-    [formState, publishToast, trip.id, trip.timeZone, resetFormState]
-  );
 
   return (
     <Section py="0">
       <Table.Root>
-        <Table.Header>
+        <colgroup>
+          <col className={s.tableCellDateIncurred} />
+          <col className={s.tableCellTitle} />
+          <col className={s.tableCellDescription} />
+          <col className={s.tableCellCurrency} />
+          <col className={s.tableCellAmount} />
+          <col className={s.tableCellCurrencyConversionFactor} />
+          <col className={s.tableCellAmountInOriginCurrency} />
+          <col className={s.tableCellActions} />
+        </colgroup>
+        <Table.Header className={s.tableHeader}>
           <Table.Row>
             <Table.ColumnHeaderCell>Date Incurred</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>Title</Table.ColumnHeaderCell>
@@ -170,7 +67,7 @@ export function ExpenseList({
             <Table.ColumnHeaderCell>
               Currency Conversion Factor
               <Tooltip
-                content={`How much does 1 unit of Currency is worth in Origin's Currency. This is equal to Amount divided by Amount in Origin's Currency.`}
+                content={`How much does 1 unit of origin's currency is worth in the entry's currency. This is equal to "Amount" divided by "Amount in Origin's Currency".`}
               >
                 <QuestionMarkCircledIcon
                   style={{ verticalAlign: `-3px`, marginLeft: '3px' }}
@@ -178,7 +75,8 @@ export function ExpenseList({
               </Tooltip>
             </Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>
-              Amount in Origin's Currency ({trip.originCurrency})
+              Amount in Origin's Currency
+              {trip.originCurrency ? ` (${trip.originCurrency})` : ''}
             </Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
           </Table.Row>
@@ -271,192 +169,17 @@ export function ExpenseList({
                   }}
                 >
                   <PlusIcon />
-                  Add Expense Mode
+                  Add Expense
                 </Button>
               </Table.Cell>
             </Table.Row>
           ) : (
             <Table.Row key={'add'}>
-              <Table.Cell>
-                <TextField.Root
-                  name="timestampIncurred"
-                  type="date"
-                  value={formState.timestampIncurred}
-                  onChange={handleInputChange}
-                  required
-                  form={idForm}
-                />
-              </Table.Cell>
-              <Table.Cell>
-                <TextField.Root
-                  name="title"
-                  type="text"
-                  value={formState.title}
-                  onChange={handleInputChange}
-                  required
-                  form={idForm}
-                />
-              </Table.Cell>
-              <Table.Cell>
-                <TextField.Root
-                  name="description"
-                  type="text"
-                  value={formState.description}
-                  onChange={handleInputChange}
-                  required
-                  form={idForm}
-                />
-              </Table.Cell>
-              <Table.Cell>
-                <Select.Root
-                  name="currency"
-                  value={formState.currency}
-                  onValueChange={(value) => {
-                    setFormState((prev) => ({ ...prev, currency: value }));
-                  }}
-                  required
-                  form={idForm}
-                >
-                  <Select.Trigger />
-                  <Select.Content>
-                    {currencies.map((currency) => (
-                      <Select.Item key={currency} value={currency}>
-                        {currency}
-                      </Select.Item>
-                    ))}
-                  </Select.Content>
-                </Select.Root>
-              </Table.Cell>
-              <Table.Cell>
-                <TextField.Root
-                  name="amount"
-                  type="number"
-                  value={formState.amount}
-                  onChange={handleInputChange}
-                  form={idForm}
-                  onFocus={() => {
-                    // If the other two values are available & this is empty, then calculate it
-                    if (
-                      !formState.amount &&
-                      formState.currencyConversionFactor &&
-                      formState.amountInOriginCurrency
-                    ) {
-                      const amountInOriginCurrencyFloat = parseFloat(
-                        formState.amountInOriginCurrency
-                      );
-                      const currencyConversionFactorFloat = parseFloat(
-                        formState.currencyConversionFactor
-                      );
-                      setFormState((prev) => ({
-                        ...prev,
-                        amount: (
-                          amountInOriginCurrencyFloat *
-                          currencyConversionFactorFloat
-                        ).toFixed(2),
-                      }));
-                    }
-                  }}
-                  required
-                />
-              </Table.Cell>
-              <Table.Cell>
-                <TextField.Root
-                  name="currencyConversionFactor"
-                  type="number"
-                  value={formState.currencyConversionFactor}
-                  onChange={handleInputChange}
-                  form={idForm}
-                  onFocus={() => {
-                    // If the other two values are available & this is empty, then calculate it
-                    if (
-                      formState.amount &&
-                      !formState.currencyConversionFactor &&
-                      formState.amountInOriginCurrency
-                    ) {
-                      const amountFloat = parseFloat(formState.amount);
-                      const amountInOriginCurrencyFloat = parseFloat(
-                        formState.amountInOriginCurrency
-                      );
-                      setFormState((prev) => ({
-                        ...prev,
-                        currencyConversionFactor: (
-                          amountFloat / amountInOriginCurrencyFloat
-                        ).toFixed(2),
-                      }));
-                    }
-                  }}
-                  required
-                />
-              </Table.Cell>
-              <Table.Cell>
-                <TextField.Root
-                  // TODO: make the width of the text fields fixed
-                  // TODO: on small screen, make the table scrollable?
-                  // TODO: sticky header
-                  // TODO: the UX for new entry is not good, there is a "blank" phase before user sees it... maybe need our own zustand store to make it optimistic
-                  name="amountInOriginCurrency"
-                  type="number"
-                  value={formState.amountInOriginCurrency}
-                  onChange={handleInputChange}
-                  form={idForm}
-                  onFocus={() => {
-                    // If the other two values are available & this is empty, then calculate it
-                    if (
-                      formState.amount &&
-                      formState.currencyConversionFactor &&
-                      !formState.amountInOriginCurrency
-                    ) {
-                      const amountFloat = parseFloat(formState.amount);
-                      const currencyConversionFactorFloat = parseFloat(
-                        formState.currencyConversionFactor
-                      );
-                      setFormState((prev) => ({
-                        ...prev,
-                        amountInOriginCurrency: (
-                          amountFloat / currencyConversionFactorFloat
-                        ).toFixed(2),
-                      }));
-                    }
-                  }}
-                  required
-                />
-              </Table.Cell>
-              <Table.Cell>
-                <Button type="submit" size="2" variant="solid" form={idForm}>
-                  Add
-                </Button>
-                <Button
-                  ml="2"
-                  type="button"
-                  size="2"
-                  variant="soft"
-                  color="gray"
-                  form={idForm}
-                  onClick={() => {
-                    setExpenseMode(ExpenseMode.View);
-                    resetFormState();
-                  }}
-                >
-                  Back
-                </Button>
-              </Table.Cell>
+              <ExpenseInlineForm trip={trip} setExpenseMode={setExpenseMode} />
             </Table.Row>
           )}
         </Table.Body>
       </Table.Root>
-      <form
-        id={idForm}
-        onInput={() => {
-          setErrorMessage('');
-        }}
-        onSubmit={(e) => {
-          void handleForm(e);
-        }}
-      >
-        <Text color="red" size="2">
-          {errorMessage}
-        </Text>
-      </form>
       {isLoading ? 'Loading expenses' : error ? `Error: ${error.message}` : ''}
     </Section>
   );
