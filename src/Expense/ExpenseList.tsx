@@ -1,27 +1,13 @@
 import { useState } from 'react';
-import {
-  Button,
-  Flex,
-  Popover,
-  Section,
-  Table,
-  Text,
-  Tooltip,
-} from '@radix-ui/themes';
+import { Button, Section, Table, Tooltip } from '@radix-ui/themes';
 import { db } from '../data/db';
 import { DbTripWithActivityAccommodation } from '../Trip/db';
-import {
-  PlusIcon,
-  QuestionMarkCircledIcon,
-  TrashIcon,
-} from '@radix-ui/react-icons';
+import { PlusIcon, QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { ExpenseMode } from './ExpenseMode';
-import { formatTimestampToReadableDate } from './time';
-import { DateTime } from 'luxon';
-import { useBoundStore } from '../data/store';
-import { dbDeleteExpense } from './db';
 import s from './ExpenseList.module.css';
 import { ExpenseInlineForm } from './ExpenseInlineForm';
+import { ExpenseRow } from './ExpenseRow';
+import { DbExpense } from './db';
 
 export function ExpenseList({
   trip,
@@ -38,9 +24,7 @@ export function ExpenseList({
     },
   });
 
-  const expenses = data?.expense ?? [];
-
-  const publishToast = useBoundStore((state) => state.publishToast);
+  const expenses = (data?.expense ?? []) as DbExpense[];
 
   const [expenseMode, setExpenseMode] = useState(ExpenseMode.View);
 
@@ -84,79 +68,7 @@ export function ExpenseList({
 
         <Table.Body>
           {expenses.map((expense) => (
-            <Table.Row key={expense.id}>
-              <Table.RowHeaderCell>
-                {formatTimestampToReadableDate(
-                  DateTime.fromMillis(expense.timestampIncurred)
-                )}
-              </Table.RowHeaderCell>
-              <Table.Cell>{expense.title}</Table.Cell>
-              <Table.Cell>{expense.description}</Table.Cell>
-              <Table.Cell>{expense.currency}</Table.Cell>
-              <Table.Cell>{expense.amount}</Table.Cell>
-              <Table.Cell>{expense.currencyConversionFactor}</Table.Cell>
-              <Table.Cell>{expense.amountInOriginCurrency}</Table.Cell>
-              <Table.Cell>
-                {/* TODO: implement Edit, make it inline edit? */}
-                <Popover.Root>
-                  <Popover.Trigger>
-                    <Button variant="outline">
-                      <TrashIcon />
-                    </Button>
-                  </Popover.Trigger>
-                  <Popover.Content>
-                    <Text as="p" size="2">
-                      Delete expense "{expense.title}"?
-                    </Text>
-                    <Text as="p" size="2" color="red">
-                      {/* TODO: implement undo delete */}
-                      This action is irreversible!
-                    </Text>
-                    <Flex gap="3" mt="4" justify="end">
-                      <Popover.Close>
-                        <Button variant="soft" color="gray">
-                          Cancel
-                        </Button>
-                      </Popover.Close>
-                      <Button
-                        variant="solid"
-                        color="red"
-                        onClick={() => {
-                          dbDeleteExpense({
-                            expenseId: expense.id,
-                            tripId: trip.id,
-                          })
-                            .then(() => {
-                              publishToast({
-                                root: {},
-                                title: {
-                                  children: `Deleted expense: ${expense.title}`,
-                                },
-                                close: {},
-                              });
-                            })
-                            .catch((error: unknown) => {
-                              console.error(
-                                `Error deleting expense "${expense.title}"`,
-                                error
-                              );
-                              publishToast({
-                                root: {},
-                                title: {
-                                  children: `Error deleting expense: ${expense.title}`,
-                                },
-                                close: {},
-                              });
-                            });
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </Flex>
-                  </Popover.Content>
-                </Popover.Root>
-              </Table.Cell>
-            </Table.Row>
+            <ExpenseRow key={expense.id} expense={expense} trip={trip} />
           ))}
 
           {expenseMode === ExpenseMode.View ? (
@@ -165,7 +77,7 @@ export function ExpenseList({
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setExpenseMode(ExpenseMode.Edit);
+                    setExpenseMode(ExpenseMode.Add);
                   }}
                 >
                   <PlusIcon />
@@ -175,7 +87,12 @@ export function ExpenseList({
             </Table.Row>
           ) : (
             <Table.Row key={'add'}>
-              <ExpenseInlineForm trip={trip} setExpenseMode={setExpenseMode} />
+              <ExpenseInlineForm
+                trip={trip}
+                expenseMode={ExpenseMode.Add}
+                expense={undefined}
+                setExpenseMode={setExpenseMode}
+              />
             </Table.Row>
           )}
         </Table.Body>

@@ -1,42 +1,68 @@
 import { Button, Select, Table, TextField, Text } from '@radix-ui/themes';
 import { ExpenseMode } from './ExpenseMode';
 import { useState, useMemo, useCallback, useId } from 'react';
-import { dbAddExpense } from './db';
+import { dbAddExpense, DbExpense, dbUpdateExpense } from './db';
 import { formatToDateInput, getDateTimeFromDateInput } from './time';
 import { DbTripWithActivityAccommodation } from '../Trip/db';
 import { DateTime } from 'luxon';
 import { useBoundStore } from '../data/store';
 export function ExpenseInlineForm({
   trip,
+  expense,
+  expenseMode,
   setExpenseMode,
 }: {
   trip: DbTripWithActivityAccommodation;
+  expense: DbExpense | undefined;
+  expenseMode: ExpenseMode;
   setExpenseMode: (mode: ExpenseMode) => void;
 }) {
-  const tripStartStr = useMemo(
+  const timestampIncurredStr = useMemo(
     () =>
       formatToDateInput(
-        DateTime.fromMillis(trip.timestampStart).setZone(trip.timeZone)
+        DateTime.fromMillis(
+          expenseMode === ExpenseMode.Edit && expense
+            ? expense.timestampIncurred
+            : trip.timestampStart
+        ).setZone(trip.timeZone)
       ),
-    [trip.timestampStart, trip.timeZone]
+    [trip.timestampStart, trip.timeZone, expense, expenseMode]
   );
   const publishToast = useBoundStore((state) => state.publishToast);
   const idForm = useId();
-  const [formState, setFormState] = useState({
-    timestampIncurred: tripStartStr,
-    title: '',
-    description: '',
-    currency: trip.currency,
-    amount: '',
-    currencyConversionFactor: '1',
-    amountInOriginCurrency: '',
-  });
+  const [formState, setFormState] = useState(
+    expenseMode === ExpenseMode.Edit && expense
+      ? {
+          timestampIncurred: timestampIncurredStr,
+          title: expense.title,
+          description: expense.description,
+          currency: expense.currency,
+          amount: expense.amount.toFixed(2),
+          currencyConversionFactor:
+            expense.currencyConversionFactor != null
+              ? expense.currencyConversionFactor.toFixed(2)
+              : '1',
+          amountInOriginCurrency:
+            expense.amountInOriginCurrency != null
+              ? expense.amountInOriginCurrency.toFixed(2)
+              : '',
+        }
+      : {
+          timestampIncurred: timestampIncurredStr,
+          title: '',
+          description: '',
+          currency: trip.currency,
+          amount: '',
+          currencyConversionFactor: '1',
+          amountInOriginCurrency: '',
+        }
+  );
   const [errorMessage, setErrorMessage] = useState('');
   const currencies = useMemo(() => Intl.supportedValuesOf('currency'), []);
 
   const resetFormState = useCallback(() => {
     setFormState({
-      timestampIncurred: tripStartStr,
+      timestampIncurred: timestampIncurredStr,
       title: '',
       description: '',
       currency: trip.currency,
@@ -44,7 +70,7 @@ export function ExpenseInlineForm({
       currencyConversionFactor: '1',
       amountInOriginCurrency: '',
     });
-  }, [trip.currency, tripStartStr]);
+  }, [trip.currency, timestampIncurredStr]);
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
@@ -101,8 +127,9 @@ export function ExpenseInlineForm({
         return;
       }
 
-      dbAddExpense(
-        {
+      if (expenseMode === ExpenseMode.Edit && expense) {
+        dbUpdateExpense({
+          id: expense.id,
           title,
           description,
           currency,
@@ -110,28 +137,65 @@ export function ExpenseInlineForm({
           currencyConversionFactor: currencyConversionFactorFloat,
           amountInOriginCurrency: amountInOriginCurrencyFloat,
           timestampIncurred: dateTimestampIncurred.toMillis(),
-        },
-        { tripId: trip.id }
-      )
-        .then(() => {
-          publishToast({
-            root: {},
-            title: { children: `Added expense: ${title}` },
-            close: {},
-          });
-
-          resetFormState();
         })
-        .catch((error: unknown) => {
-          console.error(`Error adding expense "${title}"`, error);
-          publishToast({
-            root: {},
-            title: { children: `Error adding expense: ${title}` },
-            close: {},
+          .then(() => {
+            publishToast({
+              root: {},
+              title: { children: `Updated expense: ${title}` },
+              close: {},
+            });
+
+            resetFormState();
+          })
+          .catch((error: unknown) => {
+            console.error(`Error updating expense "${title}"`, error);
+            publishToast({
+              root: {},
+              title: { children: `Error updating expense: ${title}` },
+              close: {},
+            });
           });
-        });
+      } else {
+        dbAddExpense(
+          {
+            title,
+            description,
+            currency,
+            amount: amountFloat,
+            currencyConversionFactor: currencyConversionFactorFloat,
+            amountInOriginCurrency: amountInOriginCurrencyFloat,
+            timestampIncurred: dateTimestampIncurred.toMillis(),
+          },
+          { tripId: trip.id }
+        )
+          .then(() => {
+            publishToast({
+              root: {},
+              title: { children: `Added expense: ${title}` },
+              close: {},
+            });
+
+            resetFormState();
+          })
+          .catch((error: unknown) => {
+            console.error(`Error adding expense "${title}"`, error);
+            publishToast({
+              root: {},
+              title: { children: `Error adding expense: ${title}` },
+              close: {},
+            });
+          });
+      }
     },
-    [formState, publishToast, trip.id, trip.timeZone, resetFormState]
+    [
+      formState,
+      trip.timeZone,
+      trip.id,
+      expenseMode,
+      expense,
+      publishToast,
+      resetFormState,
+    ]
   );
 
   const handleCurrencyChange = useCallback((value: string) => {
@@ -335,9 +399,15 @@ export function ExpenseInlineForm({
       <Table.Cell>{fieldCurrencyConversionFactor}</Table.Cell>
       <Table.Cell>{fieldAmountInOriginCurrency}</Table.Cell>
       <Table.Cell style={{ whiteSpace: 'nowrap' }}>
-        <Button mr="2"
-          mb="2"  type="submit" size="2" variant="solid" form={idForm}>
-          Add
+        <Button
+          mr="2"
+          mb="2"
+          type="submit"
+          size="2"
+          variant="solid"
+          form={idForm}
+        >
+          {expenseMode === ExpenseMode.Edit ? 'Save' : 'Add'}
         </Button>
         <Button
           type="button"

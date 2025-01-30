@@ -7,7 +7,7 @@ export const ImperativeToastRoot = () => {
 
   console.log('ImperativeToastRoot| toasts', toasts);
   return (
-    <ToastPrimitive.Provider>
+    <ToastPrimitive.Provider duration={2500}>
       {toasts.map((toastConfig, index) => (
         <ToastPrimitive.Root
           key={index}
