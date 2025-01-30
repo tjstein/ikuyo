@@ -1,4 +1,4 @@
-import { forwardRef, Suspense } from 'react';
+import React, { forwardRef, Suspense } from 'react';
 
 import { Text } from '@radix-ui/themes';
 
@@ -16,10 +16,14 @@ export function withLoading(
   ): React.ForwardRefExoticComponent<
     React.PropsWithoutRef<T> & React.RefAttributes<unknown>
   > {
-    return forwardRef(function ComponentWithLoading(props: T, ref) {
+    return forwardRef(function ComponentWithLoading(
+      props: React.PropsWithoutRef<T>,
+      ref: React.ForwardedRef<unknown>
+    ) {
+      const ComponentWithoutRef = Component as React.ComponentType<React.PropsWithoutRef<T>>;
       return (
         <Suspense fallback={fallback()}>
-          <Component ref={ref} {...props} />
+          <ComponentWithoutRef ref={ref} {...props} />
         </Suspense>
       );
     });
