@@ -37,6 +37,7 @@ import { AccommodationNewDialog } from '../Accommodation/AccommodationNewDialog'
 import { DbTrip, DbTripWithActivityAccommodation } from './db';
 import { ROUTES_TRIP } from '../routes';
 import { ExpenseList } from '../Expense/ExpenseList';
+import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 
 export default PageTrip;
 export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
@@ -110,6 +111,23 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
             className={s.tripTitle}
           >
             {trip?.title ?? 'Loading trip'}
+            {
+              <Switch>
+                <Route path={ROUTES_TRIP.TimetableView}>
+                  {' '}
+                  <DoubleArrowRightIcon /> Timetable
+                </Route>
+                <Route path={ROUTES_TRIP.ListView}>
+                  {' '}
+                  <DoubleArrowRightIcon />
+                  List
+                </Route>
+                <Route path={ROUTES_TRIP.Expenses}>
+                  {' '}
+                  <DoubleArrowRightIcon /> Expenses
+                </Route>
+              </Switch>
+            }
           </Heading>,
         ]}
         rightItems={[
@@ -145,7 +163,10 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
               path={ROUTES_TRIP.Expenses}
               component={() => <ExpenseList trip={trip} />}
             />
-            <Redirect replace to={ROUTES_TRIP.TimetableView.replace(':id', trip.id)} />
+            <Redirect
+              replace
+              to={ROUTES_TRIP.TimetableView.replace(':id', trip.id)}
+            />
           </Switch>
         ) : isLoading ? (
           'Loading'
