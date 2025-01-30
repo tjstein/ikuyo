@@ -62,9 +62,10 @@ export default defineConfig({
             if (id.includes('luxon')) {
               return 'v-luxon';
             }
-            if (id.includes('@radix-ui')) {
-              return 'v-radix-ui';
-            }
+            // TODO: generating this chunk may cause loading order issue, thus crashing the app
+            // if (id.includes('@radix-ui')) {
+            //   return 'v-radix-ui';
+            // }
             if (id.includes('@instantdb')) {
               return 'v-instantdb';
             }
