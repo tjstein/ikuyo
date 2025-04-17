@@ -30,10 +30,17 @@ export default PageTrips;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function PageTrips(_props: RouteComponentProps) {
   const { user: authUser } = useAuthUser();
+  const [now] = useState(Date.now());
   const { isLoading, data, error } = db.useQuery({
     trip: {
       $: {
-        where: { 'tripUser.user.email': authUser?.email ?? '' },
+        where: {
+          and: [
+            { 'tripUser.user.email': authUser?.email ?? '' },
+            // Fetch upcoming and ongoing only
+            { timestampEnd: { $gte: now } },
+          ],
+        },
       },
       tripUser: {},
     },
@@ -45,10 +52,12 @@ export function PageTrips(_props: RouteComponentProps) {
       },
     },
   });
-  const user = data?.user[0] as DbUser | undefined;
+  const user = data?.user?.[0] as DbUser | undefined;
   const [newTripDialogOpen, setNewTripDialogOpen] = useState(false);
   const tripGroups: Record<TripGroup, DbTrip[]> = useMemo(() => {
-    const trips: DbTrip[] = data?.trip ? (data.trip as unknown as DbTrip[]) : [];
+    const trips: DbTrip[] = data?.trip
+      ? (data.trip as unknown as DbTrip[])
+      : [];
     const groups: Record<TripGroup, DbTrip[]> = {
       [TripGroup.Upcoming]: [],
       [TripGroup.Ongoing]: [],
@@ -103,12 +112,12 @@ export function PageTrips(_props: RouteComponentProps) {
               trips={tripGroups[TripGroup.Upcoming]}
               setNewTripDialogOpen={setNewTripDialogOpen}
             />
-            <Trips
+            {/* <Trips
               type={TripGroup.Past}
               groupTitle="Past Trips"
               trips={tripGroups[TripGroup.Past]}
               setNewTripDialogOpen={setNewTripDialogOpen}
-            />
+            /> */}
           </Flex>
         )}
       </Container>

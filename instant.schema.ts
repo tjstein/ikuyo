@@ -1,12 +1,25 @@
-// Ikuyo
-// https://instantdb.com/dash?s=main&t=home&app=6962735b-d61f-4c3c-a78f-03ca3fa6ba9a
+// Docs: https://www.instantdb.com/docs/modeling-data
 
 import { i } from '@instantdb/react';
 
-const schema = i.schema({
+const _schema = i.schema({
   entities: {
+    $files: i.entity({
+      path: i.string().unique().indexed(),
+      url: i.any(),
+    }),
     $users: i.entity({
       email: i.string().unique().indexed(),
+    }),
+    accommodation: i.entity({
+      address: i.string(),
+      createdAt: i.number(),
+      lastUpdatedAt: i.number(),
+      name: i.string(),
+      notes: i.string(),
+      phoneNumber: i.string(),
+      timestampCheckIn: i.number(),
+      timestampCheckOut: i.number(),
     }),
     activity: i.entity({
       createdAt: i.number(),
@@ -17,15 +30,32 @@ const schema = i.schema({
       timestampStart: i.number(),
       title: i.string(),
     }),
+    expense: i.entity({
+      amount: i.number(),
+      amountInDefaultCurrency: i.number(),
+      amountInOriginCurrency: i.number(),
+      createdAt: i.number(),
+      currency: i.string(),
+      currencyConversionFactor: i.number(),
+      description: i.string(),
+      lastUpdatedAt: i.number(),
+      timestampIncurred: i.number(),
+      title: i.string(),
+    }),
     trip: i.entity({
       createdAt: i.number(),
+      currency: i.string(),
       lastUpdatedAt: i.number(),
-      timestampEnd: i.number(),
+      originCurrency: i.string(),
+      timestampEnd: i.number().indexed(),
       timestampStart: i.number(),
       timeZone: i.string(),
       title: i.string(),
-      currency: i.string(),
-      originCurrency: i.string(),
+    }),
+    tripUser: i.entity({
+      createdAt: i.number(),
+      lastUpdatedAt: i.number(),
+      role: i.string(),
     }),
     user: i.entity({
       activated: i.boolean(),
@@ -33,33 +63,6 @@ const schema = i.schema({
       email: i.string().unique().indexed(),
       handle: i.string().unique().indexed(),
       lastUpdatedAt: i.number(),
-    }),
-    tripUser: i.entity({
-      createdAt: i.number(),
-      lastUpdatedAt: i.number(),
-      role: i.string(),
-    }),
-    accommodation: i.entity({
-      name: i.string(),
-      createdAt: i.number(),
-      lastUpdatedAt: i.number(),
-      address: i.string(),
-      timestampCheckIn: i.number(),
-      timestampCheckOut: i.number(),
-      phoneNumber: i.string(),
-      notes: i.string(),
-    }),
-    expense: i.entity({
-      title: i.string(),
-      description: i.string(),
-      createdAt: i.number(),
-      lastUpdatedAt: i.number(),
-      timestampIncurred: i.number(),
-
-      currency: i.string(),
-      amount: i.number(),
-      currencyConversionFactor: i.number(),
-      amountInOriginCurrency: i.number(),
     }),
   },
   links: {
@@ -73,30 +76,6 @@ const schema = i.schema({
         on: 'trip',
         has: 'many',
         label: 'activity',
-      },
-    },
-    tripTripUser: {
-      forward: {
-        on: 'trip',
-        has: 'many',
-        label: 'tripUser',
-      },
-      reverse: {
-        on: 'tripUser',
-        has: 'many',
-        label: 'trip',
-      },
-    },
-    userTripUser: {
-      forward: {
-        on: 'user',
-        has: 'many',
-        label: 'tripUser',
-      },
-      reverse: {
-        on: 'tripUser',
-        has: 'many',
-        label: 'user',
       },
     },
     tripAccommodation: {
@@ -123,6 +102,18 @@ const schema = i.schema({
         label: 'trip',
       },
     },
+    tripTripUser: {
+      forward: {
+        on: 'trip',
+        has: 'many',
+        label: 'tripUser',
+      },
+      reverse: {
+        on: 'tripUser',
+        has: 'many',
+        label: 'trip',
+      },
+    },
     user$users: {
       forward: {
         on: 'user',
@@ -135,7 +126,27 @@ const schema = i.schema({
         label: 'user',
       },
     },
+    userTripUser: {
+      forward: {
+        on: 'user',
+        has: 'many',
+        label: 'tripUser',
+      },
+      reverse: {
+        on: 'tripUser',
+        has: 'many',
+        label: 'user',
+      },
+    },
   },
+  rooms: {},
 });
 
+// This helps Typescript display nicer intellisense
+type _AppSchema = typeof _schema;
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface AppSchema extends _AppSchema {}
+const schema: AppSchema = _schema;
+
+export type { AppSchema };
 export default schema;
