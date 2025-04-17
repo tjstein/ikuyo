@@ -163,6 +163,40 @@ export function TripForm({
     tripTimeZone,
   ]);
 
+  const fieldSelectCurrency = useMemo(() => {
+    return (
+      <Select.Root name="currency" defaultValue={tripCurrency} required>
+        <Select.Trigger id={idCurrency} />
+        <Select.Content>
+          {currencies.map((currency) => {
+            return (
+              <Select.Item key={currency} value={currency}>
+                {currency}
+              </Select.Item>
+            );
+          })}
+        </Select.Content>
+      </Select.Root>
+    );
+  }, [currencies, tripCurrency, idCurrency]);
+
+  const fieldSelectTimeZone = useMemo(() => {
+    return (
+      <Select.Root name="timeZone" defaultValue={tripTimeZone} required>
+        <Select.Trigger id={idTimeZone} />
+        <Select.Content>
+          {timeZones.map((tz) => {
+            return (
+              <Select.Item key={tz} value={tz}>
+                {tz}
+              </Select.Item>
+            );
+          })}
+        </Select.Content>
+      </Select.Root>
+    );
+  }, [timeZones, tripTimeZone, idTimeZone]);
+
   return (
     <form
       onInput={() => {
@@ -207,18 +241,7 @@ export function TripForm({
             </>
           ) : null}
         </Text>
-        <Select.Root name="timeZone" defaultValue={tripTimeZone} required>
-          <Select.Trigger id={idTimeZone} />
-          <Select.Content>
-            {timeZones.map((tz) => {
-              return (
-                <Select.Item key={tz} value={tz}>
-                  {tz}
-                </Select.Item>
-              );
-            })}
-          </Select.Content>
-        </Select.Root>
+        {fieldSelectTimeZone}
         <Text as="label" htmlFor={idTimeStart}>
           Start date{' '}
           <Text weight="light" size="1">
@@ -259,18 +282,7 @@ export function TripForm({
               : null}
           </Text>
         </Text>
-        <Select.Root name="currency" defaultValue={tripCurrency} required>
-          <Select.Trigger id={idCurrency} />
-          <Select.Content>
-            {currencies.map((currency) => {
-              return (
-                <Select.Item key={currency} value={currency}>
-                  {currency}
-                </Select.Item>
-              );
-            })}
-          </Select.Content>
-        </Select.Root>
+        {fieldSelectCurrency}
 
         <Text as="label" htmlFor={idOriginCurrency}>
           Origin's currency{' '}
