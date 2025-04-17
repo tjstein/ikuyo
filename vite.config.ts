@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { defineConfig } from 'vitest/config'; 
-import preact from '@preact/preset-vite';
+import react from '@vitejs/plugin-react-swc';
 
 import { VitePWA } from 'vite-plugin-pwa';
 
@@ -17,7 +17,7 @@ export default defineConfig({
   },
 
   plugins: [
-    preact(),
+    react(),
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
