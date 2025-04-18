@@ -1,7 +1,7 @@
 import { Button, DropdownMenu } from '@radix-ui/themes';
 import { db } from '../data/db';
 import { Link, useLocation } from 'wouter';
-import { ROUTES } from '../routes';
+import { asRootRoute, ROUTES } from '../routes';
 import { UserAvatar } from './UserAvatar';
 import { DbUser } from '../data/types';
 
@@ -17,13 +17,13 @@ export function UserAvatarMenu({ user }: { user: DbUser | null | undefined }) {
       <DropdownMenu.Content>
         <DropdownMenu.Label>Account</DropdownMenu.Label>
         <DropdownMenu.Item asChild>
-          <Link to={ROUTES.Account}>Edit account</Link>
+          <Link to={asRootRoute(ROUTES.Account)}>Edit account</Link>
         </DropdownMenu.Item>
         <DropdownMenu.Separator />
         <DropdownMenu.Item
           onClick={() => {
             void db.auth.signOut().then(() => {
-              setLocation(ROUTES.Login);
+              setLocation(asRootRoute(ROUTES.Login));
             });
           }}
         >

@@ -12,7 +12,7 @@ import {
 import { useBoundStore } from '../data/store';
 import s from './Auth.module.css';
 import { Link, RouteComponentProps, useLocation } from 'wouter';
-import { ROUTES } from '../routes';
+import { asRootRoute, ROUTES } from '../routes';
 
 import imgUrl from '/ikuyo.svg';
 import { DocTitle } from '../Nav/DocTitle';
@@ -80,7 +80,9 @@ export function PageLogin(_props: RouteComponentProps) {
               altText: 'Go to account details edit page to edit handle',
               children: (
                 <Button asChild>
-                  <Link to={ROUTES.Account}>Edit account details</Link>
+                  <Link to={asRootRoute(ROUTES.Account)}>
+                    Edit account details
+                  </Link>
                 </Button>
               ),
             },
