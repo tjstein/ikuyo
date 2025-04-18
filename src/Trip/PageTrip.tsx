@@ -39,6 +39,7 @@ import { ROUTES_TRIP } from '../routes';
 import { ExpenseList } from '../Expense/ExpenseList';
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import { TripUserRole } from '../data/TripUserRole';
+import { TripMenuFloating } from './TripMenuFloating';
 
 export default PageTrip;
 export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
@@ -180,6 +181,7 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
           ''
         )}
       </Container>
+      <TripMenuFloating />
 
       {newActivityDialogOpen && trip ? (
         <ActivityNewDialog

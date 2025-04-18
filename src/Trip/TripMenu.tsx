@@ -1,6 +1,6 @@
 import { Button, DropdownMenu } from '@radix-ui/themes';
 import { Link, useLocation } from 'wouter';
-import { asRootRoute, ROUTES, ROUTES_TRIP } from '../routes';
+import { asRootRoute, ROUTES } from '../routes';
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import s from './TripMenu.module.css';
 import { db } from '../data/db';
@@ -24,7 +24,7 @@ export function TripMenu({
   setDeleteTripDialogOpen: (v: boolean) => void;
   showTripSharing: boolean;
 }) {
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
   return (
     <>
       <DropdownMenu.Root>
@@ -47,34 +47,6 @@ export function TripMenu({
 
           <DropdownMenu.Separator />
           <DropdownMenu.Label>Trip</DropdownMenu.Label>
-
-          <DropdownMenu.Item
-            onClick={() => {
-              if (location === (ROUTES_TRIP.ListView as string)) {
-                setLocation(ROUTES_TRIP.TimetableView as string);
-              } else if (location === (ROUTES_TRIP.TimetableView as string)) {
-                setLocation(ROUTES_TRIP.ListView as string);
-              } else {
-                setLocation(ROUTES_TRIP.TimetableView as string);
-              }
-            }}
-          >
-            {location === (ROUTES_TRIP.ListView as string)
-              ? 'View as timetable'
-              : location === (ROUTES_TRIP.TimetableView as string)
-                ? 'View as list'
-                : 'View trip activities'}
-          </DropdownMenu.Item>
-
-          {location !== (ROUTES_TRIP.Expenses as string) ? (
-            <DropdownMenu.Item
-              onClick={() => {
-                setLocation(ROUTES_TRIP.Expenses as string);
-              }}
-            >
-              View expenses
-            </DropdownMenu.Item>
-          ) : null}
 
           <DropdownMenu.Item
             onClick={() => {
