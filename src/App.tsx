@@ -1,4 +1,5 @@
 import '@radix-ui/themes/styles.css';
+import './accent.css';
 import s from './App.module.css';
 import { Theme, Portal } from '@radix-ui/themes';
 import { Switch, Route, Redirect } from 'wouter';
@@ -23,7 +24,7 @@ function App() {
     <>
       <Theme
         appearance={theme === ThemeAppearance.Dark ? 'dark' : 'light'}
-        accentColor="plum"
+        accentColor="red"
       >
         <Switch>
           <Route path={ROUTES.Login} component={PageLogin} />
@@ -40,7 +41,7 @@ function App() {
       <Portal className={s.notificationArea} asChild>
         <Theme
           appearance={theme === ThemeAppearance.Dark ? 'dark' : 'light'}
-          accentColor="plum"
+          accentColor="red"
         >
           <ImperativeToastRoot />
         </Theme>

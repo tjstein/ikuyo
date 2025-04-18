@@ -20,7 +20,9 @@ export function Navbar({
           <Heading asChild as="h1" size="6">
             <Link to={`~${ROUTES.Trips}`}>
               <img src={imgUrl} className={s.logo} />
-              <span className={s.logoText}>Ikuyo!</span>
+              <span className={s.logoText}>
+                Ikuyo<span className={s.logoTextExclamation}>!</span>
+              </span>
             </Link>
           </Heading>
         </Box>

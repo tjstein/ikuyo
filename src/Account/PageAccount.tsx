@@ -16,6 +16,7 @@ import { DocTitle } from '../Nav/DocTitle';
 import { RouteComponentProps } from 'wouter';
 import { useId, useState, useCallback } from 'react';
 import { useBoundStore } from '../data/store';
+import { dangerToken } from '../ui';
 
 export default PageAccount;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -103,7 +104,7 @@ export function PageAccount(_props: RouteComponentProps) {
           }}
         >
           <Flex direction="column" gap="2">
-            <Text color="red" size="2">
+            <Text color={dangerToken} size="2">
               {errorMessage}&nbsp;
             </Text>
             <Text as="label" htmlFor={idEmail}>

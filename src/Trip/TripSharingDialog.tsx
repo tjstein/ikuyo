@@ -16,6 +16,7 @@ import { PlusIcon, TrashIcon } from '@radix-ui/react-icons';
 import s from './TripSharingDialog.module.css';
 import { CommonDialogMaxWidth } from '../dialog';
 import { DbTrip, dbRemoveUserFromTrip, dbAddUserToTrip } from './db';
+import { dangerToken } from '../ui';
 
 export function TripSharingDialog({
   dialogOpen,
@@ -141,7 +142,7 @@ export function TripSharingDialog({
             onSubmit={handleFormSubmit}
           >
             <Flex direction="column" gap="2">
-              <Text color="red" size="2">
+              <Text color={dangerToken} size="2">
                 {errorMessage}&nbsp;
               </Text>
 

@@ -6,6 +6,7 @@ import { formatToDateInput, getDateTimeFromDateInput } from './time';
 import { DbTripWithActivityAccommodation } from '../Trip/db';
 import { DateTime } from 'luxon';
 import { useBoundStore } from '../data/store';
+import { dangerToken } from '../ui';
 export function ExpenseInlineForm({
   trip,
   expense,
@@ -420,7 +421,7 @@ export function ExpenseInlineForm({
           Back
         </Button>
         <form id={idForm} onInput={handleFormInput} onSubmit={handleForm}>
-          <Text color="red" size="2">
+          <Text color={dangerToken} size="2">
             {errorMessage}
           </Text>
         </form>

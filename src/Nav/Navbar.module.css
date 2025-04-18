@@ -13,14 +13,32 @@
   flex: 0 0 auto;
   cursor: var(--cursor-link);
 }
+.logoBox > a:focus-visible {
+  outline: 2px solid var(--accent-9);
+  outline-offset: 2px;
+  border-radius: var(--radius-2);
+  color: var(--accent-12);
+}
 .logoText {
   display: none;
   cursor: var(--cursor-link);
-  color: var(--gray-12);
+  color: var(--accent-9);
 }
-@media (min-width: 520px) {
+.logoText:hover,
+.logoBox > a:focus-visible .logoText {
+  color: var(--accent-12);
+}
+.logoTextExclamation {
+  color: var(--accent-9);
+  display: inline-block;
+  transform: rotate(6deg);
+  transform-origin: bottom left;
+}
+@media (min-width: 550px) {
   .logoText {
     display: inline-block;
+    transform: rotate(-6deg) translateY(2px);
+    transform-origin: bottom left;
   }
 }
 .logo {

@@ -10,6 +10,7 @@ import { AccommodationDeleteDialog } from './AccommodationDeleteDialog';
 import { ClockIcon, HomeIcon } from '@radix-ui/react-icons';
 import { formatTime } from './time';
 import { AccommodationDisplayTimeMode } from './AccommodationDisplayTimeMode';
+import { dangerToken } from '../ui';
 
 export function Accommodation({
   className,
@@ -84,7 +85,7 @@ export function Accommodation({
           </ContextMenu.Item>
           <ContextMenu.Separator />
           <ContextMenu.Item
-            color="red"
+            color={dangerToken}
             onClick={() => {
               setDeleteDialogOpen(true);
             }}

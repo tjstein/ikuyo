@@ -17,6 +17,7 @@ import { ActivityViewDialog } from './ActivityViewDialog';
 import { ActivityDeleteDialog } from './ActivityDeleteDialog';
 import { ActivityEditDialog } from './ActivityEditDialog';
 import { DbActivityWithTrip } from './db';
+import { dangerToken } from '../ui';
 
 export function Activity({
   activity,
@@ -121,7 +122,7 @@ export function Activity({
           </ContextMenu.Item>
           <ContextMenu.Separator />
           <ContextMenu.Item
-            color="red"
+            color={dangerToken}
             onClick={() => {
               setDeleteDialogOpen(true);
             }}

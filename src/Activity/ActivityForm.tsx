@@ -5,6 +5,7 @@ import { ActivityFormMode } from './ActivityFormMode';
 import { getDateTimeFromDatetimeLocalInput } from './time';
 import { setNewActivityTimestamp } from './activitiyStorage';
 import { dbUpdateActivity, dbAddActivity } from './db';
+import { dangerToken } from '../ui';
 
 export function ActivityForm({
   mode,
@@ -148,7 +149,7 @@ export function ActivityForm({
       }}
     >
       <Flex direction="column" gap="2">
-        <Text color="red" size="2">
+        <Text color={dangerToken} size="2">
           {errorMessage}&nbsp;
         </Text>
         <Text as="label" htmlFor={idTitle}>

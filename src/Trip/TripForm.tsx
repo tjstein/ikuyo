@@ -7,6 +7,7 @@ import { useLocation } from 'wouter';
 import { ROUTES } from '../routes';
 import { DbActivity } from '../Activity/db';
 import { dbUpdateTrip, dbAddTrip } from './db';
+import { dangerToken } from '../ui';
 
 export function TripForm({
   mode,
@@ -209,7 +210,7 @@ export function TripForm({
       }}
     >
       <Flex direction="column" gap="2">
-        <Text color="red" size="2">
+        <Text color={dangerToken} size="2">
           {errorMessage}&nbsp;
         </Text>
         <Text as="label" htmlFor={idTitle}>

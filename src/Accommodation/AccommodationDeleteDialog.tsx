@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { useBoundStore } from '../data/store';
 import { CommonDialogMaxWidth } from '../dialog';
 import { DbAccommodationWithTrip, dbDeleteAccommodation } from './db';
+import { dangerToken } from '../ui';
 
 export function AccommodationDeleteDialog({
   accommodation,
@@ -55,7 +56,7 @@ export function AccommodationDeleteDialog({
             </Button>
           </AlertDialog.Cancel>
           <AlertDialog.Action onClick={deleteAccommodation}>
-            <Button variant="solid" color="red">
+            <Button variant="solid" color={dangerToken}>
               Delete
             </Button>
           </AlertDialog.Action>

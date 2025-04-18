@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { useBoundStore } from '../data/store';
 import { CommonDialogMaxWidth } from '../dialog';
 import { DbActivity, dbDeleteActivity } from './db';
+import { dangerToken } from '../ui';
 
 export function ActivityDeleteDialog({
   activity,
@@ -55,7 +56,7 @@ export function ActivityDeleteDialog({
             </Button>
           </AlertDialog.Cancel>
           <AlertDialog.Action onClick={deleteActivity}>
-            <Button variant="solid" color="red">
+            <Button variant="solid" color={dangerToken}>
               Delete
             </Button>
           </AlertDialog.Action>

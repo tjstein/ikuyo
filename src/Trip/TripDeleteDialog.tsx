@@ -5,6 +5,7 @@ import { ROUTES } from '../routes';
 import { useLocation } from 'wouter';
 import { CommonDialogMaxWidth } from '../dialog';
 import { dbDeleteTrip, DbTripWithActivityAccommodation } from './db';
+import { dangerToken } from '../ui';
 
 export function TripDeleteDialog({
   trip,
@@ -54,7 +55,7 @@ export function TripDeleteDialog({
           <Text as="p">
             This will also delete all the associated activites in this trip.
           </Text>
-          <Text as="p" color="red">
+          <Text as="p" color={dangerToken}>
             This action is irreversible!
           </Text>
         </AlertDialog.Description>
@@ -66,7 +67,7 @@ export function TripDeleteDialog({
             </Button>
           </AlertDialog.Cancel>
           <AlertDialog.Action onClick={deleteTrip}>
-            <Button variant="solid" color="red">
+            <Button variant="solid" color={dangerToken}>
               Delete
             </Button>
           </AlertDialog.Action>

@@ -8,6 +8,7 @@ import { useBoundStore } from '../data/store';
 import { useState } from 'react';
 import { ExpenseMode } from './ExpenseMode';
 import { ExpenseInlineForm } from './ExpenseInlineForm';
+import { dangerToken } from '../ui';
 
 export function ExpenseRow({
   expense,
@@ -102,7 +103,7 @@ function ExpenseRowView({
             <Text as="p" size="2">
               Delete expense "{expense.title}"?
             </Text>
-            <Text as="p" size="2" color="red">
+            <Text as="p" size="2" color={dangerToken}>
               {/* TODO: implement undo delete */}
               This action is irreversible!
             </Text>
@@ -114,7 +115,7 @@ function ExpenseRowView({
               </Popover.Close>
               <Button
                 variant="solid"
-                color="red"
+                color={dangerToken}
                 onClick={() => {
                   dbDeleteExpense({
                     expenseId: expense.id,

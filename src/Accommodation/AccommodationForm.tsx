@@ -4,6 +4,7 @@ import { useBoundStore } from '../data/store';
 import { AccommodationFormMode } from './AccommodationFormMode';
 import { getDateTimeFromDatetimeLocalInput } from './time';
 import { dbAddAccommodation, dbUpdateAccommodation } from './db';
+import { dangerToken } from '../ui';
 
 export function AccommodationForm({
   mode,
@@ -159,7 +160,7 @@ export function AccommodationForm({
       }}
     >
       <Flex direction="column" gap="2">
-        <Text color="red" size="2">
+        <Text color={dangerToken} size="2">
           {errorMessage}&nbsp;
         </Text>
         <Text as="label" htmlFor={idName}>
