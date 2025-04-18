@@ -1,6 +1,6 @@
 import { Button, DropdownMenu } from '@radix-ui/themes';
 import { Link, useLocation } from 'wouter';
-import { ROUTES, ROUTES_TRIP } from '../routes';
+import { asRootRoute, ROUTES, ROUTES_TRIP } from '../routes';
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import s from './TripMenu.module.css';
 import { db } from '../data/db';
@@ -114,7 +114,7 @@ export function TripMenu({
           <DropdownMenu.Label>Trips</DropdownMenu.Label>
           <DropdownMenu.Item
             onClick={() => {
-              setLocation(ROUTES.Trips);
+              setLocation(asRootRoute(ROUTES.Trips));
             }}
           >
             View trips
@@ -134,7 +134,7 @@ export function TripMenu({
               className={s.onlyForXs}
               onClick={() => {
                 void db.auth.signOut().then(() => {
-                  setLocation(ROUTES.Login);
+                  setLocation(asRootRoute(ROUTES.Login));
                 });
               }}
             >
