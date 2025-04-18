@@ -21,7 +21,7 @@ export type DbExpense = {
   currencyConversionFactor: number | undefined;
   /** default: trip.originCurrency */
   amountInOriginCurrency: number | undefined;
-  trip: DbTrip | undefined;
+  trip?: DbTrip | undefined;
 };
 
 export async function dbAddExpense(
