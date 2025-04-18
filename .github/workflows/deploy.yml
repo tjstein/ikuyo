@@ -12,7 +12,7 @@ jobs:
     concurrency:
       group: ci-${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     environment: production
     env:
       INSTANT_APP_ID: ${{ vars.INSTANT_APP_ID }}
