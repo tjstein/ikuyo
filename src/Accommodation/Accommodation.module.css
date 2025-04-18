@@ -6,7 +6,7 @@
   cursor: var(--cursor-link);
   display: block;
   text-align: start;
-  height: 30px;
+  min-height: 30px;
   box-sizing: border-box;
 }
 .accommodation:focus-visible {
