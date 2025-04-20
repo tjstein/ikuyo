@@ -13,6 +13,26 @@ if (!INSTANT_APP_ID) {
 export default defineConfig({
   html: {
     template: './index.html',
+    appIcon: {
+      name: 'Ikuyo',
+      icons: [
+        {
+          src: './public/ikuyo-180.png',
+          size: 180,
+          target: 'apple-touch-icon',
+        },
+        {
+          src: './public/ikuyo-192.png',
+          size: 192,
+          target: 'web-app-manifest',
+        },
+        {
+          src: './public/ikuyo-512.png',
+          size: 512,
+          target: 'web-app-manifest',
+        },
+      ],
+    },
   },
   server: {
     // For local dev, only localhost:5173 is allowed by the OAuth callback
