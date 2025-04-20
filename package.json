@@ -50,6 +50,7 @@
   "packageManager": "pnpm@10.8.1",
   "pnpm": {
     "overrides": {
+      "esbuild": "0.25.2",
       "@types/react": "19.1.2",
       "@types/react-dom": "19.1.2"
     },
@@ -57,7 +58,11 @@
       "allowAny": ["react", "react-dom", "@types/react", "@types/react-dom"]
     },
     "ignoredBuiltDependencies": ["core-js"],
-    "onlyBuiltDependencies": ["@biomejs/biome"]
+    "onlyBuiltDependencies": ["@biomejs/biome"],
+    "supportedArchitectures": {
+      "os": ["darwin", "linux", "win32", "current"],
+      "cpu": ["x64", "arm64"]
+    }
   },
   "browserslist": ["> 0.2%", "Firefox ESR", "last 4 versions", "not dead"]
 }
