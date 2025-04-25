@@ -4,16 +4,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "rsbuild build",
+    "biome:check": "biome check --write",
+    "biome:ci": "biome ci",
+    "biome:format": "biome format --write",
     "build:rsdoctor": "cross-env RSDOCTOR=true rsbuild build",
-    "biome-ci": "biome ci",
-    "check": "biome check --write",
-    "test": "vitest",
-    "typecheck": "tsc --noEmit",
-    "dev": "rsbuild dev --open",
+    "build": "rsbuild build",
     "dev:rsdoctor": "cross-env RSDOCTOR=true rsbuild dev",
-    "format": "biome format --write",
-    "preview": "rsbuild preview"
+    "dev": "rsbuild dev --open",
+    "preview": "rsbuild preview",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@instantdb/admin": "~0.18.7",
