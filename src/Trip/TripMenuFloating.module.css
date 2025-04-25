@@ -45,9 +45,10 @@
   }
   .controlContainer {
     width: max-content;
-    border: 1px solid var(--gray-9);
+    border: 0;
     border-radius: var(--radius-3);
     padding: var(--space-1);
+    box-shadow: var(--shadow-2);
   }
   .control {
     width: max-content;
