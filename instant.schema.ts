@@ -21,6 +21,14 @@ const _schema = i.schema({
       timestampCheckIn: i.number(),
       timestampCheckOut: i.number(),
     }),
+    macroplan: i.entity({
+      name: i.string(),
+      notes: i.string(),
+      timestampStart: i.number(),
+      timestampEnd: i.number(),
+      createdAt: i.number(),
+      lastUpdatedAt: i.number(),
+    }),
     activity: i.entity({
       createdAt: i.number(),
       description: i.string(),
@@ -86,6 +94,18 @@ const _schema = i.schema({
       },
       reverse: {
         on: 'accommodation',
+        has: 'one',
+        label: 'trip',
+      },
+    },
+    tripMacroplan: {
+      forward: {
+        on: 'trip',
+        has: 'many',
+        label: 'macroplan',
+      },
+      reverse: {
+        on: 'macroplan',
         has: 'one',
         label: 'trip',
       },

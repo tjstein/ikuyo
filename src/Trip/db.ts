@@ -5,6 +5,7 @@ import type {
   DbAccommodationWithTrip,
 } from '../Accommodation/db';
 import type { DbActivity, DbActivityWithTrip } from '../Activity/db';
+import type { DbMacroplan } from '../Macroplan/db';
 import { TripUserRole } from '../data/TripUserRole';
 import { db } from '../data/db';
 import type { DbUser } from '../data/types';
@@ -20,6 +21,11 @@ export type DbTripWithActivityAccommodation = Omit<
 export type DbTripWithAccommodation = Omit<DbTrip, 'accommodation'> & {
   accommodation: DbAccommodationWithTrip[];
 };
+
+export type DbTripWithMacroplan = Omit<DbTrip, 'macroplan'> & {
+  macroplan: DbMacroplan[] | undefined;
+};
+
 export type DbTripWithActivity = Omit<DbTrip, 'activity'> & {
   activity: DbActivityWithTrip[];
 };
@@ -38,6 +44,7 @@ export type DbTrip = {
 
   activity: DbActivity[] | undefined;
   accommodation: DbAccommodation[] | undefined;
+  macroplan: DbMacroplan[] | undefined;
 
   tripUser: DbTripUser[] | undefined;
 };
@@ -62,6 +69,7 @@ export async function dbAddTrip(
     | 'activity'
     | 'accommodation'
     | 'tripUser'
+    | 'macroplan'
   >,
   {
     userId,
@@ -95,7 +103,12 @@ export async function dbAddTrip(
 export async function dbUpdateTrip(
   trip: Omit<
     DbTrip,
-    'createdAt' | 'lastUpdatedAt' | 'accommodation' | 'activity' | 'tripUser'
+    | 'createdAt'
+    | 'lastUpdatedAt'
+    | 'accommodation'
+    | 'activity'
+    | 'tripUser'
+    | 'macroplan'
   >,
   {
     previousTimeZone,

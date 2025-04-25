@@ -17,6 +17,7 @@ describe('Trip', () => {
     activity: [],
     accommodation: [],
     tripUser: [],
+    macroplan: [],
   };
   function createActivity(
     activity: Partial<DbActivityWithTrip>,
