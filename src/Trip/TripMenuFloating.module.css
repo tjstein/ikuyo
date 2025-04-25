@@ -1,4 +1,4 @@
-.menuFloatingContainer {
+.nav {
   display: flex;
   position: fixed;
   z-index: 10;
@@ -8,36 +8,48 @@
   justify-content: center;
   height: 0;
 }
-.menuFloating {
+
+.controlContainer {
   background-color: var(--color-panel-solid);
 }
 
-.navMenuIcon {
+.controlIcon {
   width: 15px;
   height: 15px;
   display: inline-block;
   /* To make it vertically aligned with regard to the container */
   vertical-align: -2px;
 }
+.control :global(.rt-SegmentedControlIndicator)::before {
+  box-shadow: none;
+}
 
 /* For small screen */
-.menuFloatingContainer {
+.nav {
   bottom: 0;
 }
-.menuFloating {
+.controlContainer {
   width: 100%;
   border: 0;
   border-top: 1px solid var(--gray-9);
   border-radius: 0;
 }
+.control {
+  width: 100%;
+  background-color: transparent;
+}
 /* For large screen */
 @media (min-width: 520px) {
-  .menuFloatingContainer {
+  .nav {
     bottom: var(--space-4);
   }
-  .menuFloating {
+  .controlContainer {
     width: max-content;
     border: 1px solid var(--gray-9);
-    border-radius: var(--radius-2);
+    border-radius: var(--radius-3);
+    padding: var(--space-1);
+  }
+  .control {
+    width: max-content;
   }
 }
