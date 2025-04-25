@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginSass } from '@rsbuild/plugin-sass';
-import { pluginTypeCheck } from '@rsbuild/plugin-type-check';
 
 const INSTANT_APP_ID = process.env.INSTANT_APP_ID;
 
@@ -50,5 +49,5 @@ export default defineConfig({
   output: {
     polyfill: 'usage',
   },
-  plugins: [pluginReact(), pluginSass(), pluginTypeCheck()],
+  plugins: [pluginReact(), pluginSass()],
 });
