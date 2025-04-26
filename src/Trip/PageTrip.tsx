@@ -157,6 +157,7 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
               component={() => (
                 <Timetable
                   trip={trip}
+                  setNewAcommodationDialogOpen={setNewAcommodationDialogOpen}
                   setNewActivityDialogOpen={setNewActivityDialogOpen}
                 />
               )}

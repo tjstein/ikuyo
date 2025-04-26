@@ -35,9 +35,11 @@ const times = new Array(24).fill(0).map((_, i) => {
 export function Timetable({
   trip,
   setNewActivityDialogOpen,
+  setNewAcommodationDialogOpen,
 }: {
   trip: DbTripWithActivityAccommodation;
   setNewActivityDialogOpen: (newValue: boolean) => void;
+  setNewAcommodationDialogOpen: (newValue: boolean) => void;
 }) {
   const dayGroups = useMemo(() => groupActivitiesByDays(trip), [trip]);
   const acommodations = useMemo(() => getAccommodationIndexes(trip), [trip]);
@@ -88,8 +90,12 @@ export function Timetable({
                       accommodation={accommodation}
                       tripViewMode={TripViewMode.Timetable}
                       style={{
-                        gridColumnStart: `d${String(columnIndex.start)}-c${String(columnIndex.startColumn)}`,
-                        gridColumnEnd: `d${String(columnIndex.end)}-ce${String(columnIndex.endColumn)}`,
+                        gridColumnStart: `d${String(
+                          columnIndex.start,
+                        )}-c${String(columnIndex.startColumn)}`,
+                        gridColumnEnd: `d${String(columnIndex.end)}-ce${String(
+                          columnIndex.endColumn,
+                        )}`,
                       }}
                     />
                   );
@@ -127,6 +133,14 @@ export function Timetable({
             }}
           >
             New Activity
+          </ContextMenu.Item>
+
+          <ContextMenu.Item
+            onClick={() => {
+              setNewAcommodationDialogOpen(true);
+            }}
+          >
+            New Acommodation
           </ContextMenu.Item>
         </ContextMenu.Content>
       </ContextMenu.Root>
