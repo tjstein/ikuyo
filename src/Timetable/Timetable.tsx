@@ -4,20 +4,24 @@ import s from './Timetable.module.scss';
 
 import { ContextMenu, Section, Text } from '@radix-ui/themes';
 
-import { ClockIcon, HomeIcon } from '@radix-ui/react-icons';
-import { DateTime } from 'luxon';
+import { ClockIcon, HomeIcon, StackIcon } from '@radix-ui/react-icons';
 import { useMemo } from 'react';
 import { Accommodation } from '../Accommodation/Accommodation';
-import type { DbAccommodationWithTrip } from '../Accommodation/db';
 import {
   type DayGroups,
   groupActivitiesByDays,
 } from '../Activity/eventGrouping';
+import { Macroplan } from '../Macroplan/Macroplan';
 import { TripViewMode } from '../Trip/TripViewMode';
-import type {
-  DbTripWithAccommodation,
-  DbTripWithActivityAccommodation,
-} from '../Trip/db';
+import type { DbTripFull } from '../Trip/db';
+import {
+  generateAccommodationGridTemplateColumns,
+  getAccommodationIndexes,
+} from './accommodation';
+import {
+  generateMacroplanGridTemplateColumns,
+  getMacroplanIndexes,
+} from './macroplan';
 import { pad2 } from './time';
 
 const times = new Array(24).fill(0).map((_, i) => {
@@ -36,12 +40,15 @@ export function Timetable({
   trip,
   setNewActivityDialogOpen,
   setNewAcommodationDialogOpen,
+  setNewMacroplanDialogOpen,
 }: {
-  trip: DbTripWithActivityAccommodation;
+  trip: DbTripFull;
   setNewActivityDialogOpen: (newValue: boolean) => void;
   setNewAcommodationDialogOpen: (newValue: boolean) => void;
+  setNewMacroplanDialogOpen: (newValue: boolean) => void;
 }) {
   const dayGroups = useMemo(() => groupActivitiesByDays(trip), [trip]);
+  const macroplans = useMemo(() => getMacroplanIndexes(trip), [trip]);
   const acommodations = useMemo(() => getAccommodationIndexes(trip), [trip]);
 
   const timetableStyle = useMemo(() => {
@@ -52,6 +59,11 @@ export function Timetable({
   const timetableAccommodationStyle = useMemo(() => {
     return {
       gridTemplateColumns: generateAccommodationGridTemplateColumns(dayGroups),
+    };
+  }, [dayGroups]);
+  const timetableMacroplanStyle = useMemo(() => {
+    return {
+      gridTemplateColumns: generateMacroplanGridTemplateColumns(dayGroups),
     };
   }, [dayGroups]);
 
@@ -76,8 +88,29 @@ export function Timetable({
                 />
               );
             })}
-            {acommodations.length > 0 ? <TimetableAccommodationHeader /> : null}
+            {macroplans.length > 0 ? <TimetableMacroplanHeader /> : null}
+            {macroplans.length > 0 ? (
+              <div className={s.macroplanGrid} style={timetableMacroplanStyle}>
+                {macroplans.map(({ macroplan, day: columnIndex }) => {
+                  return (
+                    <Macroplan
+                      key={macroplan.id}
+                      macroplan={macroplan}
+                      style={{
+                        gridColumnStart: `d${String(
+                          columnIndex.start,
+                        )}-c${String(columnIndex.startColumn)}`,
+                        gridColumnEnd: `d${String(columnIndex.end)}-ce${String(
+                          columnIndex.endColumn,
+                        )}`,
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            ) : null}
 
+            {acommodations.length > 0 ? <TimetableAccommodationHeader /> : null}
             {acommodations.length > 0 ? (
               <div
                 className={s.accommodationGrid}
@@ -142,6 +175,14 @@ export function Timetable({
           >
             New Acommodation
           </ContextMenu.Item>
+
+          <ContextMenu.Item
+            onClick={() => {
+              setNewMacroplanDialogOpen(true);
+            }}
+          >
+            New Day Plan
+          </ContextMenu.Item>
         </ContextMenu.Content>
       </ContextMenu.Root>
     </Section>
@@ -186,46 +227,6 @@ function generateMainGridTemplateColumns(dayGroups: DayGroups): string {
   return str;
 }
 
-function generateAccommodationGridTemplateColumns(
-  dayGroups: DayGroups,
-): string {
-  let str = '';
-
-  // 1 day always have 2 columns
-  // Generate something like:
-  // [d1-c1]     360 / 2 fr
-  // [d1-ce1 d1-c2] 360 / 2 fr
-  // [d1-ce2 d2-c1] 360 / 2 fr
-  // [d2-ce1 d2-c2] 360 / 2 fr
-  // [d2-ce2 d3-c1] 360 / 2 fr
-  // [d3-ce1 d3-c2] 360 / 2 fr
-  // [d3-ce2 d4-c1] 360 / 2 fr
-  // [d4-ce1 d4-c2] 360 / 2 fr
-  // [d4-ce2]
-
-  const maxColumns = 2;
-  for (let dayIndex = 0; dayIndex < dayGroups.length; dayIndex++) {
-    const colWidth = `minmax(${String(120 / 2)}px,${String(360 / 2)}fr)`;
-    for (let colIndex = 0; colIndex < maxColumns; colIndex++) {
-      const lineNames: string[] = [];
-      if (colIndex === 0 && dayIndex > 0) {
-        lineNames.push(`d${String(dayIndex)}-ce${String(maxColumns)}`);
-      }
-      if (colIndex > 0) {
-        lineNames.push(`d${String(dayIndex + 1)}-ce${String(colIndex)}`);
-      }
-
-      lineNames.push(`d${String(dayIndex + 1)}-c${String(colIndex + 1)}`);
-
-      str += ` [${lineNames.join(' ')}] ${colWidth}`;
-    }
-  }
-
-  str += ` [d${String(dayGroups.length)}-ce${String(maxColumns)}]`;
-
-  return str;
-}
-
 function TimetableDayHeader({
   dateString,
   style,
@@ -245,6 +246,13 @@ function TimetableDayHeader({
   );
 }
 
+function TimetableMacroplanHeader() {
+  return (
+    <Text as="div" size="1" className={clsx(s.timetableMacroplanHeader)}>
+      <StackIcon />
+    </Text>
+  );
+}
 function TimetableAccommodationHeader() {
   return (
     <Text as="div" size="1" className={clsx(s.timetableAccommodationHeader)}>
@@ -276,52 +284,4 @@ function TimetableTime({
       {time}
     </Text>
   );
-}
-
-function getAccommodationIndexes(trip: DbTripWithAccommodation) {
-  const res: Array<{
-    accommodation: DbAccommodationWithTrip;
-    day: {
-      start: number;
-      end: number;
-      startColumn: number;
-      endColumn: number | undefined;
-    };
-  }> = [];
-  const tripStartDateTime = DateTime.fromMillis(trip.timestampStart).setZone(
-    trip.timeZone,
-  );
-  const tripEndDateTime = DateTime.fromMillis(trip.timestampEnd).setZone(
-    trip.timeZone,
-  );
-  const tripEndDay = tripEndDateTime.diff(tripStartDateTime, 'days').days;
-
-  for (const accommodation of trip.accommodation) {
-    const accommodationCheckInDateTime = DateTime.fromMillis(
-      accommodation.timestampCheckIn,
-    ).setZone(trip.timeZone);
-    const accommodationCheckInDay =
-      accommodationCheckInDateTime
-        .startOf('day')
-        .diff(tripStartDateTime, 'days').days + 1;
-    const accommodationCheckOutDateTime = DateTime.fromMillis(
-      accommodation.timestampCheckOut,
-    ).setZone(trip.timeZone);
-    const accommodationCheckOutDay =
-      accommodationCheckOutDateTime
-        .startOf('day')
-        .diff(tripStartDateTime, 'days').days + 1;
-
-    res.push({
-      accommodation,
-      day: {
-        start: accommodationCheckInDay,
-        end: accommodationCheckOutDay,
-        startColumn: accommodationCheckInDay === 1 ? 1 : 2,
-        endColumn: accommodationCheckOutDay === tripEndDay ? 2 : 1,
-      },
-    });
-  }
-
-  return res;
 }

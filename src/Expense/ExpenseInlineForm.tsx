@@ -1,7 +1,7 @@
 import { Button, Select, Table, Text, TextField } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useCallback, useId, useMemo, useState } from 'react';
-import type { DbTripWithActivityAccommodation } from '../Trip/db';
+import type { DbTripFull } from '../Trip/db';
 import { useBoundStore } from '../data/store';
 import { dangerToken } from '../ui';
 import { ExpenseMode } from './ExpenseMode';
@@ -13,7 +13,7 @@ export function ExpenseInlineForm({
   expenseMode,
   setExpenseMode,
 }: {
-  trip: DbTripWithActivityAccommodation;
+  trip: DbTripFull;
   expense: DbExpense | undefined;
   expenseMode: ExpenseMode;
   setExpenseMode: (mode: ExpenseMode) => void;

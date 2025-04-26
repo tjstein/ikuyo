@@ -2,7 +2,7 @@ import { Pencil1Icon, TrashIcon } from '@radix-ui/react-icons';
 import { Button, Flex, Popover, Table, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useState } from 'react';
-import type { DbTripWithActivityAccommodation } from '../Trip/db';
+import type { DbTripFull } from '../Trip/db';
 import { useBoundStore } from '../data/store';
 import { dangerToken } from '../ui';
 import { ExpenseInlineForm } from './ExpenseInlineForm';
@@ -15,7 +15,7 @@ export function ExpenseRow({
   trip,
 }: {
   expense: DbExpense;
-  trip: DbTripWithActivityAccommodation;
+  trip: DbTripFull;
 }) {
   const [expenseMode, setExpenseMode] = useState(ExpenseMode.View);
 
@@ -44,7 +44,7 @@ function ExpenseRowEdit({
   setExpenseMode,
 }: {
   expense: DbExpense;
-  trip: DbTripWithActivityAccommodation;
+  trip: DbTripFull;
   setExpenseMode: (mode: ExpenseMode) => void;
 }) {
   return (
@@ -63,7 +63,7 @@ function ExpenseRowView({
   setExpenseMode,
 }: {
   expense: DbExpense;
-  trip: DbTripWithActivityAccommodation;
+  trip: DbTripFull;
   setExpenseMode: (mode: ExpenseMode) => void;
 }) {
   const publishToast = useBoundStore((state) => state.publishToast);

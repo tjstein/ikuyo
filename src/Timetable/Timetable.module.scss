@@ -54,8 +54,9 @@
     display: grid;
     // grid-template-columns will be overridden in "style" at <Timetable />
     grid-template-columns: [time] 45px repeat(5, [d] 1fr);
-    // "[accommodation] min-content" so it can "collapse" when there is no content in accommodation
-    grid-template-rows: [header] 50px [accommodation] min-content string.unquote(timeTemplateRow());
+    // "[macroplan] min-content" and "[accommodation] min-content"
+    // so it can "collapse" when there is no content in macroplan and accommodation (respectively)
+    grid-template-rows: [header] 50px [macroplan] min-content [accommodation] min-content string.unquote(timeTemplateRow());
     gap: 0;
     justify-items: stretch;
     align-items: stretch;
@@ -98,6 +99,15 @@
     min-height: 30px;
     height: fill-available;
   }
+  .timetableMacroplanHeader {
+    @extend .timetableTimeHeader;
+    grid-column: 1 / span 1;
+    grid-row: macroplan / span 1;
+    z-index: 2;
+    min-height: 30px;
+    height: fill-available;
+  }
+
 
   .timetableColumn {
     grid-row: header / span 1;
@@ -139,8 +149,19 @@
     grid-row-end: span 1;
   }
 
+  .macroplanGrid {
+    display: grid;
+    grid-row-start: macroplan;
+    grid-column-start: d1;
+    grid-column-end: -1;
+    box-sizing: border-box;
+    min-height: 30px;
+    grid-auto-flow: row;
+    grid-auto-columns: 30px;
+  }
   .accommodationGrid {
     display: grid;
+    grid-row-start: accommodation;
     grid-column-start: d1;
     grid-column-end: -1;
     box-sizing: border-box;

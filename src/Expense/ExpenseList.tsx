@@ -1,7 +1,7 @@
 import { PlusIcon, QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { Button, Section, Table, Tooltip } from '@radix-ui/themes';
 import { useState } from 'react';
-import type { DbTripWithActivityAccommodation } from '../Trip/db';
+import type { DbTripFull } from '../Trip/db';
 import { db } from '../data/db';
 import { ExpenseInlineForm } from './ExpenseInlineForm';
 import s from './ExpenseList.module.css';
@@ -12,7 +12,7 @@ import type { DbExpense } from './db';
 export function ExpenseList({
   trip,
 }: {
-  trip: DbTripWithActivityAccommodation;
+  trip: DbTripFull;
 }) {
   const { isLoading, error, data } = db.useQuery({
     expense: {

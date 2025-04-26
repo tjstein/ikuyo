@@ -1,12 +1,12 @@
 import { describe, expect, test } from 'vitest';
 import { AccommodationDisplayTimeMode } from '../Accommodation/AccommodationDisplayTimeMode';
 import type { DbAccommodationWithTrip } from '../Accommodation/db';
-import type { DbTripWithActivityAccommodation } from '../Trip/db';
+import type { DbTripFull } from '../Trip/db';
 import type { DbActivityWithTrip } from './db';
 import { groupActivitiesByDays } from './eventGrouping';
 
 describe('Trip', () => {
-  const baseTrip: DbTripWithActivityAccommodation = {
+  const baseTrip: DbTripFull = {
     id: 'trip-0',
     title: 'Trip 0',
     timestampStart: new Date('2024-09-23T00:00:00Z').getTime(),
@@ -87,7 +87,7 @@ describe('Trip', () => {
         timestampCheckOut: new Date('2024-09-24T11:00:00Z').getTime(),
       }),
     ];
-    const trip: DbTripWithActivityAccommodation = {
+    const trip: DbTripFull = {
       ...baseTrip,
       activity: activities,
       accommodation: accommodations,
@@ -141,7 +141,7 @@ describe('Trip', () => {
         timestampEnd: new Date('2024-09-23T03:00:00Z').getTime(),
       }),
     ];
-    const trip: DbTripWithActivityAccommodation = {
+    const trip: DbTripFull = {
       ...baseTrip,
       activity: activities,
     };
@@ -188,7 +188,7 @@ describe('Trip', () => {
         timestampEnd: new Date('2024-09-23T02:00:00Z').getTime(),
       }),
     ];
-    const trip: DbTripWithActivityAccommodation = {
+    const trip: DbTripFull = {
       ...baseTrip,
       activity: activities,
     };
@@ -220,7 +220,7 @@ describe('Trip', () => {
         timestampCheckOut: new Date('2024-09-25T11:00:00Z').getTime(),
       }),
     ];
-    const trip: DbTripWithActivityAccommodation = {
+    const trip: DbTripFull = {
       ...baseTrip,
       timestampStart: new Date('2024-09-23T00:00:00Z').getTime(),
       timestampEnd: new Date('2024-09-26T00:00:00Z').getTime(),

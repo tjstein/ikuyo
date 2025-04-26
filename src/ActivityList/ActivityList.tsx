@@ -3,15 +3,12 @@ import { useMemo } from 'react';
 import { Accommodation } from '../Accommodation/Accommodation';
 import { Activity } from '../Activity/Activity';
 import { groupActivitiesByDays } from '../Activity/eventGrouping';
+import { Macroplan } from '../Macroplan/Macroplan';
 import { TripViewMode } from '../Trip/TripViewMode';
-import type { DbTripWithActivityAccommodation } from '../Trip/db';
+import type { DbTripFull } from '../Trip/db';
 import s from './ActivityList.module.css';
 
-export function ActivityList({
-  trip,
-}: {
-  trip: DbTripWithActivityAccommodation;
-}) {
+export function ActivityList({ trip }: { trip: DbTripFull }) {
   const dayGroups = useMemo(() => groupActivitiesByDays(trip), [trip]);
 
   return (
@@ -26,6 +23,15 @@ export function ActivityList({
           >
             {dayGroup.startDateTime.toFormat('cccc, dd LLLL yyyy')}
           </Heading>,
+          ...Object.values(dayGroup.macroplans).map((macroplan, i) => {
+            return (
+              <Macroplan
+                key={`${macroplan.id}-${String(i)}`}
+                macroplan={macroplan}
+                className={s.listItem}
+              />
+            );
+          }),
           ...Object.values(dayGroup.accommodations).map((accommodation, i) => {
             const props = dayGroup.accommodationProps.get(accommodation.id);
             return (

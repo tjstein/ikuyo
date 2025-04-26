@@ -45,6 +45,7 @@ export function AccommodationForm({
   const idName = useId();
   const idTimeCheckIn = useId();
   const idTimeCheckOut = useId();
+  const idAddress = useId();
   const idPhoneNumber = useId();
   const idNotes = useId();
   const publishToast = useBoundStore((state) => state.publishToast);
@@ -177,14 +178,14 @@ export function AccommodationForm({
           id={idName}
           required
         />
-        <Text as="label" htmlFor={idPhoneNumber}>
+        <Text as="label" htmlFor={idAddress}>
           Address
         </Text>
         <TextArea
           defaultValue={accommodationAddress}
           placeholder="Enter accommodation address"
           name="address"
-          id={idPhoneNumber}
+          id={idAddress}
           style={{ minHeight: 80 }}
         />
         <Text as="label" htmlFor={idTimeCheckIn}>

@@ -1,46 +1,41 @@
-import { AlertDialog, Button, Flex, Text } from '@radix-ui/themes';
+import { AlertDialog, Button, Flex } from '@radix-ui/themes';
 import { useCallback } from 'react';
-import { useLocation } from 'wouter';
 import { useBoundStore } from '../data/store';
 import { CommonDialogMaxWidth } from '../dialog';
-import { ROUTES } from '../routes';
 import { dangerToken } from '../ui';
-import { type DbTripFull, dbDeleteTrip } from './db';
+import { type DbMacroplanWithTrip, dbDeleteMacroplan } from './db';
 
-export function TripDeleteDialog({
-  trip,
+export function MacroplanDeleteDialog({
+  macroplan,
   dialogOpen,
   setDialogOpen,
 }: {
-  trip: DbTripFull;
+  macroplan: DbMacroplanWithTrip;
   dialogOpen: boolean;
   setDialogOpen: (newValue: boolean) => void;
 }) {
-  const [, setLocation] = useLocation();
   const publishToast = useBoundStore((state) => state.publishToast);
-  const deleteTrip = useCallback(() => {
-    void dbDeleteTrip(trip)
+  const deleteMacroplan = useCallback(() => {
+    void dbDeleteMacroplan(macroplan)
       .then(() => {
         publishToast({
           root: {},
-          title: { children: `Trip "${trip.title}" deleted` },
+          title: { children: `Macroplan "${macroplan.name}" deleted` },
           close: {},
         });
 
         setDialogOpen(false);
-
-        setLocation(ROUTES.Trips);
       })
       .catch((err: unknown) => {
-        console.error(`Error deleting "${trip.title}"`, err);
+        console.error(`Error deleting "${macroplan.name}"`, err);
         publishToast({
           root: {},
-          title: { children: `Error deleting "${trip.title}"` },
+          title: { children: `Error deleting "${macroplan.name}"` },
           close: {},
         });
         setDialogOpen(false);
       });
-  }, [setLocation, publishToast, trip, setDialogOpen]);
+  }, [publishToast, macroplan, setDialogOpen]);
 
   return (
     <AlertDialog.Root
@@ -49,15 +44,9 @@ export function TripDeleteDialog({
       defaultOpen={dialogOpen}
     >
       <AlertDialog.Content maxWidth={CommonDialogMaxWidth}>
-        <AlertDialog.Title>Delete Trip</AlertDialog.Title>
+        <AlertDialog.Title>Delete Day Plan</AlertDialog.Title>
         <AlertDialog.Description size="2">
-          <Text as="p">Are you sure to delete trip "{trip.title}"?</Text>
-          <Text as="p">
-            This will also delete all the associated activites in this trip.
-          </Text>
-          <Text as="p" color={dangerToken}>
-            This action is irreversible!
-          </Text>
+          Are you sure to delete day plan "{macroplan.name}"?
         </AlertDialog.Description>
 
         <Flex gap="3" mt="4" justify="end">
@@ -66,7 +55,7 @@ export function TripDeleteDialog({
               Cancel
             </Button>
           </AlertDialog.Cancel>
-          <AlertDialog.Action onClick={deleteTrip}>
+          <AlertDialog.Action onClick={deleteMacroplan}>
             <Button variant="solid" color={dangerToken}>
               Delete
             </Button>

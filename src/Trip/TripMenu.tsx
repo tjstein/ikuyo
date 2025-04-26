@@ -13,6 +13,7 @@ export function TripMenu({
   setShareTripDialogOpen,
   setNewActivityDialogOpen,
   setNewAcommodationDialogOpen,
+  setNewMacroplanDialogOpen,
   setDeleteTripDialogOpen,
   showTripSharing,
 }: {
@@ -21,6 +22,7 @@ export function TripMenu({
   setShareTripDialogOpen: (v: boolean) => void;
   setNewActivityDialogOpen: (v: boolean) => void;
   setNewAcommodationDialogOpen: (v: boolean) => void;
+  setNewMacroplanDialogOpen: (v: boolean) => void;
   setDeleteTripDialogOpen: (v: boolean) => void;
   showTripSharing: boolean;
 }) {
@@ -62,6 +64,14 @@ export function TripMenu({
             }}
           >
             Add accommodation
+          </DropdownMenu.Item>
+
+          <DropdownMenu.Item
+            onClick={() => {
+              setNewMacroplanDialogOpen(true);
+            }}
+          >
+            Add day plan
           </DropdownMenu.Item>
 
           {showTripSharing ? (

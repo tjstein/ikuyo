@@ -5,17 +5,18 @@ import type {
   DbAccommodationWithTrip,
 } from '../Accommodation/db';
 import type { DbActivity, DbActivityWithTrip } from '../Activity/db';
-import type { DbMacroplan } from '../Macroplan/db';
+import type { DbMacroplan, DbMacroplanWithTrip } from '../Macroplan/db';
 import { TripUserRole } from '../data/TripUserRole';
 import { db } from '../data/db';
 import type { DbUser } from '../data/types';
 
-export type DbTripWithActivityAccommodation = Omit<
+export type DbTripFull = Omit<
   DbTrip,
-  'activity' | 'accommodation'
+  'activity' | 'accommodation' | 'macroplan'
 > & {
   accommodation: DbAccommodationWithTrip[];
   activity: DbActivityWithTrip[];
+  macroplan: DbMacroplanWithTrip[];
 };
 
 export type DbTripWithAccommodation = Omit<DbTrip, 'accommodation'> & {
@@ -23,7 +24,7 @@ export type DbTripWithAccommodation = Omit<DbTrip, 'accommodation'> & {
 };
 
 export type DbTripWithMacroplan = Omit<DbTrip, 'macroplan'> & {
-  macroplan: DbMacroplan[] | undefined;
+  macroplan: DbMacroplanWithTrip[];
 };
 
 export type DbTripWithActivity = Omit<DbTrip, 'activity'> & {
@@ -156,7 +157,7 @@ export async function dbUpdateTrip(
 
   return db.transact(transactions);
 }
-export async function dbDeleteTrip(trip: DbTripWithActivityAccommodation) {
+export async function dbDeleteTrip(trip: DbTripFull) {
   return db.transact([
     ...trip.activity.map((activity) => db.tx.activity[activity.id].delete()),
     ...trip.accommodation.map((accommodation) =>

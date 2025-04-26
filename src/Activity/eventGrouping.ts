@@ -1,7 +1,8 @@
 import { DateTime } from 'luxon';
 import { AccommodationDisplayTimeMode } from '../Accommodation/AccommodationDisplayTimeMode';
 import type { DbAccommodationWithTrip } from '../Accommodation/db';
-import type { DbTripWithActivityAccommodation } from '../Trip/db';
+import type { DbMacroplanWithTrip } from '../Macroplan/db';
+import type { DbTripFull } from '../Trip/db';
 import type { DbActivityWithTrip } from './db';
 
 export type DayGroups = Array<{
@@ -17,12 +18,12 @@ export type DayGroups = Array<{
     string,
     { displayTimeMode: AccommodationDisplayTimeMode }
   >;
+
+  macroplans: DbMacroplanWithTrip[];
 }>;
 
 /** Return `DateTime` objects for each of day in the trip */
-export function groupActivitiesByDays(
-  trip: DbTripWithActivityAccommodation,
-): DayGroups {
+export function groupActivitiesByDays(trip: DbTripFull): DayGroups {
   const res: DayGroups = [];
   const tripStartDateTime = DateTime.fromMillis(trip.timestampStart).setZone(
     trip.timeZone,
@@ -36,6 +37,8 @@ export function groupActivitiesByDays(
     const dayEndDateTime = tripStartDateTime.plus({ day: d + 1 });
     const dayActivities: DbActivityWithTrip[] = [];
     const dayAccommodations: DbAccommodationWithTrip[] = [];
+    const dayMacroplans: DbMacroplanWithTrip[] = [];
+
     const accommodationProps: Map<
       string,
       { displayTimeMode: AccommodationDisplayTimeMode }
@@ -63,6 +66,22 @@ export function groupActivitiesByDays(
       }
       return a.timestampStart - b.timestampStart;
     });
+
+    for (const macroplan of trip.macroplan) {
+      const macroplanStartDateTime = DateTime.fromMillis(
+        macroplan.timestampStart,
+      ).setZone(trip.timeZone);
+      const macroplanEndDateTime = DateTime.fromMillis(
+        macroplan.timestampEnd,
+      ).setZone(trip.timeZone);
+      // if the macroplan involves this day, add it to the list
+      if (
+        macroplanStartDateTime <= dayStartDateTime &&
+        dayEndDateTime <= macroplanEndDateTime
+      ) {
+        dayMacroplans.push(macroplan);
+      }
+    }
 
     for (const accommodation of trip.accommodation) {
       const accommodationCheckInDateTime = DateTime.fromMillis(
@@ -228,6 +247,7 @@ export function groupActivitiesByDays(
       activityColumnIndexMap,
       accommodations: dayAccommodations,
       accommodationProps,
+      macroplans: dayMacroplans,
     });
   }
 

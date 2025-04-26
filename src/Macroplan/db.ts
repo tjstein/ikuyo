@@ -23,9 +23,9 @@ export type DbMacroplan = {
   notes: string;
 
   /** ms */
-  timestampStart?: number;
-  /** ms */
-  timestampEnd?: number;
+  timestampStart: number;
+  /** ms of day _after_ of macroplan end. This means the final full day of macroplan is one day before `timestampEnd` */
+  timestampEnd: number;
 
   /** ms */
   createdAt: number;
@@ -36,7 +36,7 @@ export type DbMacroplan = {
   trip: DbTrip | undefined;
 };
 
-export async function dbAddMacroPlan(
+export async function dbAddMacroplan(
   newMacroplan: Omit<
     DbMacroplan,
     'id' | 'createdAt' | 'lastUpdatedAt' | 'trip'

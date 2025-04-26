@@ -32,6 +32,8 @@ const ActivityList = withLoading()(
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import { AccommodationNewDialog } from '../Accommodation/AccommodationNewDialog';
 import { ActivityNewDialog } from '../Activity/ActivityNewDialog';
+import { MacroplanNewDialog } from '../Macroplan/MacroplanNewDialog';
+
 import { ExpenseList } from '../Expense/ExpenseList';
 import { TripUserRole } from '../data/TripUserRole';
 import { ROUTES_TRIP } from '../routes';
@@ -39,7 +41,7 @@ import { TripDeleteDialog } from './TripDeleteDialog';
 import { TripEditDialog } from './TripEditDialog';
 import { TripMenuFloating } from './TripMenuFloating';
 import { TripSharingDialog } from './TripSharingDialog';
-import type { DbTrip, DbTripWithActivityAccommodation } from './db';
+import type { DbTrip, DbTripFull } from './db';
 
 export default PageTrip;
 export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
@@ -55,6 +57,7 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
       },
       activity: {},
       accommodation: {},
+      macroplan: {},
       tripUser: {
         user: {},
       },
@@ -78,9 +81,10 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
     return false;
   }, [rawTrip, user]);
 
-  const trip: undefined | DbTripWithActivityAccommodation = useMemo(() => {
+  const trip: undefined | DbTripFull = useMemo(() => {
     if (rawTrip) {
-      const tripWithActivity = {
+      // Reference to the trip in the activities, accommodations and macroplans
+      const tripWithBackReference = {
         ...rawTrip,
         activity:
           rawTrip.activity?.map((activity) => {
@@ -92,8 +96,13 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
             accommodation.trip = rawTrip;
             return accommodation;
           }) ?? [],
-      } as DbTripWithActivityAccommodation;
-      return tripWithActivity;
+        macroplan:
+          rawTrip.macroplan?.map((macroplan) => {
+            macroplan.trip = rawTrip;
+            return macroplan;
+          }) ?? [],
+      } as DbTripFull;
+      return tripWithBackReference;
     }
     return undefined;
   }, [rawTrip]);
@@ -101,6 +110,7 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
   const [newActivityDialogOpen, setNewActivityDialogOpen] = useState(false);
   const [newAcommodationDialogOpen, setNewAcommodationDialogOpen] =
     useState(false);
+  const [newMacroplanDialogOpen, setNewMacroplanDialogOpen] = useState(false);
   const [editTripDialogOpen, setEditTripDialogOpen] = useState(false);
   const [deleteTripDialogOpen, setDeleteTripDialogOpen] = useState(false);
   const [shareTripDialogOpen, setShareTripDialogOpen] = useState(false);
@@ -143,6 +153,7 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
             setEditTripDialogOpen={setEditTripDialogOpen}
             setNewActivityDialogOpen={setNewActivityDialogOpen}
             setNewAcommodationDialogOpen={setNewAcommodationDialogOpen}
+            setNewMacroplanDialogOpen={setNewMacroplanDialogOpen}
             setDeleteTripDialogOpen={setDeleteTripDialogOpen}
             setShareTripDialogOpen={setShareTripDialogOpen}
             showTripSharing={currentUserIsOwner}
@@ -159,6 +170,7 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
                   trip={trip}
                   setNewAcommodationDialogOpen={setNewAcommodationDialogOpen}
                   setNewActivityDialogOpen={setNewActivityDialogOpen}
+                  setNewMacroplanDialogOpen={setNewMacroplanDialogOpen}
                 />
               )}
             />
@@ -198,6 +210,14 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
           trip={trip}
           dialogOpen={newAcommodationDialogOpen}
           setDialogOpen={setNewAcommodationDialogOpen}
+        />
+      ) : null}
+
+      {newMacroplanDialogOpen && trip ? (
+        <MacroplanNewDialog
+          trip={trip}
+          dialogOpen={newMacroplanDialogOpen}
+          setDialogOpen={setNewMacroplanDialogOpen}
         />
       ) : null}
 
