@@ -57,6 +57,22 @@ export default {
       update: 'isTripEditor || isTripOwner',
     },
   },
+  macroplan: {
+    bind: [
+      'isTripEditor',
+      "'editor' in data.ref('trip.tripUser.role') && auth.email in data.ref('trip.tripUser.user.email')",
+      'isTripOwner',
+      "'owner' in data.ref('trip.tripUser.role') && auth.email in data.ref('trip.tripUser.user.email')",
+      'isTripViewer',
+      "'viewer' in data.ref('trip.tripUser.role') && auth.email in data.ref('trip.tripUser.user.email')",
+    ],
+    allow: {
+      view: 'isTripViewer || isTripEditor || isTripOwner',
+      create: 'isTripEditor || isTripOwner',
+      delete: 'isTripEditor || isTripOwner',
+      update: 'isTripEditor || isTripOwner',
+    },
+  },
   accommodation: {
     bind: [
       'isTripEditor',
