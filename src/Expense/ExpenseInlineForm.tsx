@@ -148,6 +148,7 @@ export function ExpenseInlineForm({
               close: {},
             });
 
+            setExpenseMode(ExpenseMode.View);
             resetFormState();
           })
           .catch((error: unknown) => {
@@ -198,6 +199,7 @@ export function ExpenseInlineForm({
       expense,
       publishToast,
       resetFormState,
+      setExpenseMode,
     ],
   );
 
