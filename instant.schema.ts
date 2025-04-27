@@ -72,6 +72,21 @@ const _schema = i.schema({
       handle: i.string().unique().indexed(),
       lastUpdatedAt: i.number(),
     }),
+    commentGroup: i.entity({
+      status: i.string(),
+      createdAt: i.number(),
+      lastUpdatedAt: i.number(),
+    }),
+    comment: i.entity({
+      content: i.string(),
+      createdAt: i.number(),
+      lastUpdatedAt: i.number(),
+    }),
+    commentGroupObject: i.entity({
+      type: i.string(),
+      createdAt: i.number(),
+      lastUpdatedAt: i.number(),
+    }),
   },
   links: {
     activityTrip: {
@@ -156,6 +171,124 @@ const _schema = i.schema({
         on: 'tripUser',
         has: 'many',
         label: 'user',
+      },
+    },
+    /** CommentGroup 1:N Comment */
+    commentGroup$Comment: {
+      forward: {
+        on: 'commentGroup',
+        has: 'many',
+        label: 'comment',
+      },
+      reverse: {
+        on: 'comment',
+        has: 'one',
+        label: 'group',
+      },
+    },
+
+    /** Comment 1:N User */
+    comment$User: {
+      forward: {
+        on: 'comment',
+        has: 'one',
+        label: 'user',
+      },
+      reverse: {
+        on: 'user',
+        has: 'many',
+        label: 'comment',
+      },
+    },
+    /** Trip 1:N CommentGroup */
+    commentGroup$Trip: {
+      forward: {
+        on: 'commentGroup',
+        has: 'one',
+        label: 'trip',
+      },
+      reverse: {
+        on: 'trip',
+        has: 'many',
+        label: 'commentGroup',
+      },
+    },
+    /** CommentGroup 1:1 CommentGroupObject */
+    commentGroup$CommentGroupObject: {
+      forward: {
+        on: 'commentGroup',
+        has: 'one',
+        label: 'object',
+      },
+      reverse: {
+        on: 'commentGroupObject',
+        has: 'one',
+        label: 'commentGroup',
+      },
+    },
+    /** CommentGroupObject N:N Trip */
+    commentGroupObject$Trip: {
+      forward: {
+        on: 'commentGroupObject',
+        has: 'many',
+        label: 'trip',
+      },
+      reverse: {
+        on: 'trip',
+        has: 'many',
+        label: 'commentGroupObject',
+      },
+    },
+    /** CommentGroupObject N:N Macroplan */
+    commentGroupObject$Macroplan: {
+      forward: {
+        on: 'commentGroupObject',
+        has: 'many',
+        label: 'macroplan',
+      },
+      reverse: {
+        on: 'macroplan',
+        has: 'many',
+        label: 'commentGroupObject',
+      },
+    },
+    /** CommentGroupObject N:N Activity */
+    commentGroupObject$Activity: {
+      forward: {
+        on: 'commentGroupObject',
+        has: 'many',
+        label: 'activity',
+      },
+      reverse: {
+        on: 'activity',
+        has: 'many',
+        label: 'commentGroupObject',
+      },
+    },
+    /** CommentGroupObject N:N Accommodation */
+    commentGroupObject$Accommodation: {
+      forward: {
+        on: 'commentGroupObject',
+        has: 'many',
+        label: 'accommodation',
+      },
+      reverse: {
+        on: 'accommodation',
+        has: 'many',
+        label: 'commentGroupObject',
+      },
+    },
+    /** CommentGroupObject N:N Expense */
+    commentGroupObject$Expense: {
+      forward: {
+        on: 'commentGroupObject',
+        has: 'many',
+        label: 'expense',
+      },
+      reverse: {
+        on: 'expense',
+        has: 'many',
+        label: 'commentGroupObject',
       },
     },
   },

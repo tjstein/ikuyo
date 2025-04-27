@@ -105,6 +105,38 @@ export default {
       update: 'isTripEditor || isTripOwner',
     },
   },
+  commentGroup: {
+    bind: [
+      'isTripEditor',
+      "'editor' in data.ref('trip.tripUser.role') && auth.email in data.ref('trip.tripUser.user.email')",
+      'isTripOwner',
+      "'owner' in data.ref('trip.tripUser.role') && auth.email in data.ref('trip.tripUser.user.email')",
+      'isTripViewer',
+      "'viewer' in data.ref('trip.tripUser.role') && auth.email in data.ref('trip.tripUser.user.email')",
+    ],
+    allow: {
+      view: 'isTripEditor || isTripOwner',
+      create: 'isTripEditor || isTripOwner',
+      delete: 'isTripEditor || isTripOwner',
+      update: 'isTripEditor || isTripOwner',
+    },
+  },
+  comment: {
+    bind: [
+      'isTripEditor',
+      "'editor' in data.ref('commentGroup.trip.tripUser.role') && auth.email in data.ref('commentGroup.trip.tripUser.user.email')",
+      'isTripOwner',
+      "'owner' in data.ref('commentGroup.trip.tripUser.role') && auth.email in data.ref('commentGroup.trip.tripUser.user.email')",
+      'isTripViewer',
+      "'viewer' in data.ref('commentGroup.trip.tripUser.role') && auth.email in data.ref('commentGroup.trip.tripUser.user.email')",
+    ],
+    allow: {
+      view: 'isTripEditor || isTripOwner',
+      create: 'isTripEditor || isTripOwner',
+      delete: 'isTripEditor || isTripOwner',
+      update: 'isTripEditor || isTripOwner',
+    },
+  },
   tripUser: {
     bind: [
       'isTripEditor',
