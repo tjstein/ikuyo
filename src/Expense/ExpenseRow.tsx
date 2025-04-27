@@ -71,7 +71,9 @@ function ExpenseRowView({
     <>
       <Table.RowHeaderCell>
         {formatTimestampToReadableDate(
-          DateTime.fromMillis(expense.timestampIncurred),
+          DateTime.fromMillis(expense.timestampIncurred, {
+            zone: trip.timeZone,
+          }),
         )}
       </Table.RowHeaderCell>
       <Table.Cell>{expense.title}</Table.Cell>
