@@ -15,11 +15,14 @@ export type CommentGroupStatus =
   (typeof COMMENT_GROUP_STATUS)[keyof typeof COMMENT_GROUP_STATUS];
 
 export type DbCommentGroupObjectType =
-  | 'trip'
-  | 'macroplan'
-  | 'activity'
-  | 'accommodation'
-  | 'expense';
+  (typeof COMMENT_GROUP_OBJECT_TYPE)[keyof typeof COMMENT_GROUP_OBJECT_TYPE];
+export const COMMENT_GROUP_OBJECT_TYPE = {
+  TRIP: 'trip',
+  MACROPLAN: 'macroplan',
+  ACTIVITY: 'activity',
+  ACCOMMODATION: 'accommodation',
+  EXPENSE: 'expense',
+} as const;
 /**
  * Comment group is a group of comments that belong to a trip
  * It can 'target' a trip, macroplan, activity, accommodation, or expense
@@ -29,9 +32,9 @@ export type DbCommentGroup<ObjectType extends DbCommentGroupObjectType> = {
   createdAt: number;
   lastUpdatedAt: number;
   /** 0: unresolved; 1: resolved; */
-  status: CommentGroupStatus;
+  status: CommentGroupStatus | (number & {});
 
-  comments: DbComment<ObjectType>[];
+  comment: DbComment<ObjectType>[];
   /** all comment group must belong to a trip */
   trip: DbTrip | undefined;
   /** this is the actual link to determine the 'object' */
@@ -65,32 +68,47 @@ export type DbCommentGroupObject<ObjectType extends DbCommentGroupObjectType> =
     expense: ObjectType extends 'expense' ? DbExpense : undefined;
   };
 
-export async function addComment<ObjectType extends DbCommentGroupObjectType>(
+export async function dbAddComment<ObjectType extends DbCommentGroupObjectType>(
   newComment: Omit<
     DbComment<ObjectType>,
     'id' | 'createdAt' | 'lastUpdatedAt' | 'group' | 'user'
   >,
   {
+    userId,
     tripId,
     objectId,
     objectType,
     groupId: commentGroupId,
   }: {
+    userId: string;
     tripId: string;
     objectId: string;
     objectType: ObjectType;
     groupId?: string;
   },
 ) {
+  console.log('dbAddComment', {
+    newComment,
+    userId,
+    tripId,
+    objectId,
+    objectType,
+    commentGroupId,
+  });
   const transactions = [];
   const now = Date.now();
   if (!commentGroupId) {
     commentGroupId = id();
     transactions.push(
-      db.tx.commentGroup[commentGroupId].update({
-        createdAt: now,
-        lastUpdatedAt: now,
-      }),
+      db.tx.commentGroup[commentGroupId]
+        .update({
+          createdAt: now,
+          lastUpdatedAt: now,
+        })
+        .link({
+          trip: tripId,
+          object: commentGroupId,
+        }),
       db.tx.commentGroupObject[commentGroupId]
         .update({
           type: objectType,
@@ -113,7 +131,7 @@ export async function addComment<ObjectType extends DbCommentGroupObjectType>(
       })
       .link({
         group: commentGroupId,
-        user: tripId,
+        user: userId,
       }),
   );
 
@@ -125,7 +143,7 @@ export async function addComment<ObjectType extends DbCommentGroupObjectType>(
   };
 }
 
-export async function updateCommentGroupStatus(
+export async function dbUpdateCommentGroupStatus(
   commentGroupId: string,
   status: CommentGroupStatus,
 ) {
@@ -138,7 +156,7 @@ export async function updateCommentGroupStatus(
   );
 }
 
-export async function updateComment<
+export async function dbUpdateComment<
   ObjectType extends DbCommentGroupObjectType,
 >(
   comment: Omit<
@@ -157,7 +175,7 @@ export async function updateComment<
   return db.transact(transactions);
 }
 
-export async function deleteComment<
+export async function dbDeleteComment<
   ObjectType extends DbCommentGroupObjectType,
 >(
   comment: Omit<DbComment<ObjectType>, 'createdAt' | 'lastUpdatedAt' | 'user'>,

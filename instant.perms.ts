@@ -124,11 +124,11 @@ export default {
   comment: {
     bind: [
       'isTripEditor',
-      "'editor' in data.ref('commentGroup.trip.tripUser.role') && auth.email in data.ref('commentGroup.trip.tripUser.user.email')",
+      "'editor' in data.ref('group.trip.tripUser.role') && auth.email in data.ref('group.trip.tripUser.user.email')",
       'isTripOwner',
-      "'owner' in data.ref('commentGroup.trip.tripUser.role') && auth.email in data.ref('commentGroup.trip.tripUser.user.email')",
+      "'owner' in data.ref('group.trip.tripUser.role') && auth.email in data.ref('group.trip.tripUser.user.email')",
       'isTripViewer',
-      "'viewer' in data.ref('commentGroup.trip.tripUser.role') && auth.email in data.ref('commentGroup.trip.tripUser.user.email')",
+      "'viewer' in data.ref('group.trip.tripUser.role') && auth.email in data.ref('group.trip.tripUser.user.email')",
     ],
     allow: {
       view: 'isTripEditor || isTripOwner',

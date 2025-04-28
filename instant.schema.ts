@@ -73,7 +73,7 @@ const _schema = i.schema({
       lastUpdatedAt: i.number(),
     }),
     commentGroup: i.entity({
-      status: i.string(),
+      status: i.number(),
       createdAt: i.number(),
       lastUpdatedAt: i.number(),
     }),
