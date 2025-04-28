@@ -13,7 +13,7 @@ import {
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import { db } from '../data/db';
 import { useBoundStore } from '../data/store';
-import { CommonCommentDialogMaxWidth, CommonDialogMaxWidth } from '../dialog';
+import { CommonCommentDialogMaxWidth } from '../dialog';
 import s from './Activity.module.css';
 import type { DbActivityWithTrip } from './db';
 
