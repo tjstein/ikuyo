@@ -1,9 +1,7 @@
 import { Button, Dialog, Flex, Heading, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 
-import createUrlRegExp from 'url-regex-safe';
-
-import { useMemo } from 'react';
+import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import { CommonDialogMaxWidth } from '../dialog';
 import s from './Activity.module.css';
 import type { DbActivityWithTrip } from './db';
@@ -28,38 +26,8 @@ export function ActivityViewDialog({
     // since 1 activity must be in same day, so might as well just show the time for end
     .toFormat('HH:mm');
 
-  const descriptions = useMemo(() => {
-    const urlRegex = createUrlRegExp({
-      localhost: false,
-      ipv4: false,
-      ipv6: false,
-    });
+  const descriptions = useParseTextIntoNodes(activity.description || '');
 
-    const activityDescription = activity.description || '';
-    const matchArray = activityDescription.matchAll(urlRegex);
-
-    const parts: Array<React.ReactNode> = [];
-    let i = 0;
-    for (const match of matchArray) {
-      const url = match[0];
-      if (url) {
-        const partBeforeUrl = activityDescription.slice(i, match.index);
-        parts.push(partBeforeUrl);
-        if (!url.startsWith('http')) {
-          parts.push(url);
-        } else {
-          parts.push(
-            <a href={url} target="_blank" rel="noopener noreferrer">
-              {url}
-            </a>,
-          );
-        }
-        i = match.index + url.length;
-      }
-    }
-    parts.push(activityDescription.slice(i, activityDescription.length));
-    return parts;
-  }, [activity.description]);
   return (
     <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>

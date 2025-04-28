@@ -1,9 +1,6 @@
 import { Button, Dialog, Flex, Heading, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
-
-import createUrlRegExp from 'url-regex-safe';
-
-import { useMemo } from 'react';
+import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import { CommonDialogMaxWidth } from '../dialog';
 import s from './Macroplan.module.css';
 import type { DbMacroplanWithTrip } from './db';
@@ -28,38 +25,8 @@ export function MacroplanViewDialog({
     .setZone(macroplan.trip.timeZone)
     .toFormat('dd LLLL yyyy');
 
-  const notes = useMemo(() => {
-    const urlRegex = createUrlRegExp({
-      localhost: false,
-      ipv4: false,
-      ipv6: false,
-    });
+  const notes = useParseTextIntoNodes(macroplan.notes || '');
 
-    const notes = macroplan.notes || '';
-    const matchArray = notes.matchAll(urlRegex);
-
-    const parts: Array<React.ReactNode> = [];
-    let i = 0;
-    for (const match of matchArray) {
-      const url = match[0];
-      if (url) {
-        const partBeforeUrl = notes.slice(i, match.index);
-        parts.push(partBeforeUrl);
-        if (!url.startsWith('http')) {
-          parts.push(url);
-        } else {
-          parts.push(
-            <a href={url} target="_blank" rel="noopener noreferrer">
-              {url}
-            </a>,
-          );
-        }
-        i = match.index + url.length;
-      }
-    }
-    parts.push(notes.slice(i, notes.length));
-    return parts;
-  }, [macroplan.notes]);
   return (
     <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
