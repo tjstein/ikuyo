@@ -2,9 +2,9 @@ import { Button, Dialog, Flex, Heading, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 
 import { useMemo } from 'react';
-import { CommentForm } from '../Comment/CommentForm';
-import { CommentGroup } from '../Comment/CommentGroup';
-import { CommentMode } from '../Comment/CommentMode';
+
+import { Cross1Icon } from '@radix-ui/react-icons';
+import { CommentGroupWithForm } from '../Comment/CommentGroupWithForm';
 import {
   COMMENT_GROUP_OBJECT_TYPE,
   type DbComment,
@@ -71,6 +71,8 @@ export function ActivityViewDialog({
             user: comment.user,
           }) as DbComment<'activity'>,
       );
+      // sort by createdAt desc
+      cg.comment.sort((a, b) => b.createdAt - a.createdAt);
       return cg;
     }
     return undefined;
@@ -80,10 +82,62 @@ export function ActivityViewDialog({
     // TODO: submitting comment form causes onOpenChange to close dialog? why???
     <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
       <Dialog.Content maxWidth={CommonCommentDialogMaxWidth}>
-        <Dialog.Title>View Activity</Dialog.Title>
-        <Dialog.Description>Activity details</Dialog.Description>
-        <Flex gap="2" justify="between">
-          <Flex direction="column" gap="3" mt="3">
+        <Dialog.Close>
+          <Button
+            type="button"
+            size="2"
+            variant="soft"
+            color="gray"
+            style={{
+              position: 'absolute',
+              top: 'var(--space-5)',
+              right: 'var(--space-5)',
+            }}
+          >
+            <Cross1Icon />
+          </Button>
+        </Dialog.Close>
+
+        <Flex
+          gap="5"
+          justify="between"
+          direction={{ initial: 'column', md: 'row' }}
+        >
+          <Flex
+            direction="column"
+            gap="3"
+            mt="3"
+            maxWidth={{ initial: '100%', md: '50%' }}
+          >
+            <Dialog.Title mb="0">View Activity</Dialog.Title>
+            <Flex gap="3" justify="end">
+              <Button
+                mr="auto"
+                type="button"
+                size="2"
+                variant="soft"
+                color="gray"
+                onClick={() => {
+                  setDialogOpen(false);
+                  setDeleteDialogOpen(true);
+                }}
+              >
+                Delete
+              </Button>
+              <Button
+                type="button"
+                size="2"
+                variant="soft"
+                color="gray"
+                onClick={() => {
+                  setDialogOpen(false);
+                  setEditDialogOpen(true);
+                }}
+              >
+                Edit
+              </Button>
+            </Flex>
+            <Dialog.Description>Activity details</Dialog.Description>
             <Heading as="h2" size="4">
               Title
             </Heading>
@@ -116,49 +170,23 @@ export function ActivityViewDialog({
               <></>
             )}
           </Flex>
-          <Flex direction="column" gap="3" mt="3">
-            <CommentGroup commentGroup={commentGroup} />
-            <CommentForm
-              mode={CommentMode.Add}
+          <Flex
+            direction="column"
+            mt="6"
+            gap="3"
+            maxWidth={{ initial: '100%', md: '50%' }}
+          >
+            <Heading as="h2" size="4" mt="2">
+              Comments
+            </Heading>
+            <CommentGroupWithForm
               tripId={activity.trip.id}
               objectId={activity.id}
               objectType={COMMENT_GROUP_OBJECT_TYPE.ACTIVITY}
               user={currentUser}
-              commentGroupId={commentGroup?.id}
+              commentGroup={commentGroup}
             />
           </Flex>
-        </Flex>
-        <Flex gap="3" mt="5" justify="end">
-          <Button
-            mr="auto"
-            type="button"
-            size="2"
-            variant="soft"
-            color="gray"
-            onClick={() => {
-              setDialogOpen(false);
-              setDeleteDialogOpen(true);
-            }}
-          >
-            Delete
-          </Button>
-          <Button
-            type="button"
-            size="2"
-            variant="soft"
-            color="gray"
-            onClick={() => {
-              setDialogOpen(false);
-              setEditDialogOpen(true);
-            }}
-          >
-            Edit
-          </Button>
-          <Dialog.Close>
-            <Button type="button" size="2">
-              Close
-            </Button>
-          </Dialog.Close>
         </Flex>
       </Dialog.Content>
     </Dialog.Root>
