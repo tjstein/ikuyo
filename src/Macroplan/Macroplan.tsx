@@ -8,6 +8,7 @@ import { MacroplanEditDialog } from './MacroplanEditDialog';
 import { MacroplanViewDialog } from './MacroplanViewDialog';
 import type { DbMacroplanWithTrip } from './db';
 
+import type * as React from 'react';
 export function Macroplan({
   className,
   macroplan,

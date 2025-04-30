@@ -1,5 +1,6 @@
 import { Button, Select, Table, Text, TextField } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
+import type * as React from 'react';
 import { useCallback, useId, useMemo, useState } from 'react';
 import type { DbTripFull } from '../Trip/db';
 import { useBoundStore } from '../data/store';

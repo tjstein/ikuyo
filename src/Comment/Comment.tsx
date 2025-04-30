@@ -1,4 +1,4 @@
-import { Button, Card, Flex, Link, Popover, Text } from '@radix-ui/themes';
+import { Button, Card, Flex, Popover, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useMemo, useState } from 'react';
 import { UserAvatar } from '../Auth/UserAvatar';

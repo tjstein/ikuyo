@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import type * as React from 'react';
 import { Activity } from '../Activity/Activity';
 import s from './Timetable.module.scss';
 

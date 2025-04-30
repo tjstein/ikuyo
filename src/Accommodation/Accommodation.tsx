@@ -12,6 +12,7 @@ import { AccommodationViewDialog } from './AccommodationViewDialog';
 import type { DbAccommodationWithTrip } from './db';
 import { formatTime } from './time';
 
+import type * as React from 'react';
 export function Accommodation({
   className,
   accommodation,
