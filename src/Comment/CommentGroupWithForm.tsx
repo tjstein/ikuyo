@@ -27,6 +27,7 @@ export function CommentGroupWithForm({
         objectType={objectType}
         user={user}
         commentGroupId={commentGroup?.id}
+        setCommentMode={() => {}}
       />
       <CommentGroup commentGroup={commentGroup} />
     </>

@@ -16,6 +16,8 @@ export function CommentForm({
   user,
   commentGroupId,
   commentId,
+  commentContent,
+  setCommentMode,
   tripId,
   objectId,
   objectType,
@@ -24,6 +26,8 @@ export function CommentForm({
   user?: DbUser;
   commentGroupId?: string;
   commentId?: string;
+  commentContent?: string;
+  setCommentMode: (mode: CommentMode) => void;
 
   tripId: string;
   objectId: string;
@@ -31,6 +35,9 @@ export function CommentForm({
 }) {
   const idForm = useId();
   const idContent = useId();
+  const handleCancel = useCallback(() => {
+    setCommentMode(CommentMode.View);
+  }, [setCommentMode]);
   const [errorMessage, setErrorMessage] = useState('');
   const publishToast = useBoundStore((state) => state.publishToast);
   const handleSubmit = useCallback(() => {
@@ -57,6 +64,7 @@ export function CommentForm({
           content,
           id: commentId,
         });
+        setCommentMode(CommentMode.View);
         publishToast({
           root: {},
           title: { children: 'Comment updated' },
@@ -94,6 +102,7 @@ export function CommentForm({
     commentGroupId,
     commentId,
     user,
+    setCommentMode,
   ]);
   return (
     <form
@@ -109,12 +118,13 @@ export function CommentForm({
       }}
     >
       <Flex gap="3">
-        <UserAvatar user={user} />
+        {mode === CommentMode.Add ? <UserAvatar user={user} /> : null}
         <Box flexGrow="1">
           <TextArea
             id={idContent}
             name="content"
             placeholder="Write a comment…"
+            defaultValue={commentContent}
             style={{ height: 80 }}
           />
           <Flex gap="3" mt="3" justify="between">
@@ -124,9 +134,31 @@ export function CommentForm({
               </Text>
             </Flex>
 
-            <Button size="1" type="submit" formTarget={idForm}>
-              Comment
-            </Button>
+            <Flex gap="2" align="end">
+              {mode === CommentMode.Edit ? (
+                <>
+                  <Button
+                    size="1"
+                    type="reset"
+                    variant="soft"
+                    color="gray"
+                    form={idForm}
+                    onClick={handleCancel}
+                  >
+                    Cancel
+                  </Button>
+                  <Button size="1" type="submit" formTarget={idForm}>
+                    Save
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button size="1" type="submit" formTarget={idForm}>
+                    Comment
+                  </Button>
+                </>
+              )}
+            </Flex>
           </Flex>
         </Box>
       </Flex>
