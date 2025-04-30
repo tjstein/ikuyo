@@ -4,7 +4,7 @@ import type { StateCreator } from 'zustand';
 import { db } from '../data/db';
 import { useBoundStore } from '../data/store';
 import type { DbUser } from '../data/types';
-import { ROUTES } from '../routes';
+import { ROUTES, asRootRoute } from '../routes';
 
 export function useAuthUser() {
   const setCurrentUser = useBoundStore((state) => state.setCurrentUser);
@@ -13,7 +13,7 @@ export function useAuthUser() {
 
   useEffect(() => {
     if (!isLoading && !user) {
-      setLocation(ROUTES.Login);
+      setLocation(asRootRoute(ROUTES.Login));
     }
     if (!isLoading && user) {
       (async () => {
