@@ -5,7 +5,7 @@ import s from './Timetable.module.scss';
 import { ContextMenu, Section, Text } from '@radix-ui/themes';
 
 import { ClockIcon, HomeIcon, StackIcon } from '@radix-ui/react-icons';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { Accommodation } from '../Accommodation/Accommodation';
 import {
   type DayGroups,
@@ -66,12 +66,17 @@ export function Timetable({
       gridTemplateColumns: generateMacroplanGridTemplateColumns(dayGroups),
     };
   }, [dayGroups]);
+  const timetableRef = useRef<HTMLDivElement>(null);
 
   return (
     <Section py="0">
       <ContextMenu.Root>
         <ContextMenu.Trigger>
-          <div className={s.timetable} style={timetableStyle}>
+          <div
+            className={s.timetable}
+            style={timetableStyle}
+            ref={timetableRef}
+          >
             <TimetableTimeHeader />
 
             {dayGroups.map((dayGroup, i) => {
@@ -162,6 +167,32 @@ export function Timetable({
           <ContextMenu.Label>{trip.title}</ContextMenu.Label>
           <ContextMenu.Item
             onClick={() => {
+              // TODO: what if when we create a new activity here, we prefill with the time/date of the current selection?
+              // console.log(
+              //   'timetable rect',
+              //   timetableRef.current?.getBoundingClientRect().toJSON(),
+              // );
+              // {
+              //   const {
+              //     offsetTop,
+              //     clientTop,
+              //     scrollTop,
+              //     offsetLeft,
+              //     clientLeft,
+              //     scrollLeft,
+              //   } = e.currentTarget;
+              //   console.log('e currentTarget', {
+              //     offsetTop,
+              //     clientTop,
+              //     scrollTop,
+              //     offsetLeft,
+              //     clientLeft,
+              //     scrollLeft,
+              //   });
+              //   console.log('e clientX clientY', e.clientX, e.clientY);
+              //   console.log('e pageX pageY', e.pageX, e.pageY);
+              //   console.log('e screenX screenY', e.screenX, e.screenY);
+              // }
               setNewActivityDialogOpen(true);
             }}
           >
