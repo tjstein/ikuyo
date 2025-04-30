@@ -79,7 +79,6 @@ export function ActivityViewDialog({
   }, [rawCommentGroup]);
 
   return (
-    // TODO: submitting comment form causes onOpenChange to close dialog? why???
     <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
       <Dialog.Content maxWidth={CommonCommentDialogMaxWidth}>
         <Dialog.Close>
@@ -107,6 +106,7 @@ export function ActivityViewDialog({
             direction="column"
             gap="3"
             mt="3"
+            flexGrow="1"
             maxWidth={{ initial: '100%', md: '50%' }}
           >
             <Dialog.Title mb="0">View Activity</Dialog.Title>
@@ -174,6 +174,7 @@ export function ActivityViewDialog({
             direction="column"
             mt="6"
             gap="3"
+            flexGrow="1"
             maxWidth={{ initial: '100%', md: '50%' }}
           >
             <Heading as="h2" size="4" mt="2">
