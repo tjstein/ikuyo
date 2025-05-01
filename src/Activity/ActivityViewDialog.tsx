@@ -181,7 +181,7 @@ export function ActivityViewDialog({
                 mapOptions={{
                   lng: activity.locationLng,
                   lat: activity.locationLat,
-                  zoom: 8,
+                  zoom: 9,
                 }}
                 marker={{
                   lng: activity.locationLng,

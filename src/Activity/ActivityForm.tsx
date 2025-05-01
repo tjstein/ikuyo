@@ -333,7 +333,7 @@ export function ActivityForm({
             mapOptions={{
               lng: coordinateState.lng ?? 0,
               lat: coordinateState.lat ?? 0,
-              zoom: 8,
+              zoom: 9,
             }}
             marker={
               coordinateState.lng && coordinateState.lat
