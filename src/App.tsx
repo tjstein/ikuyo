@@ -1,5 +1,7 @@
 import '@radix-ui/themes/styles.css';
 import './accent.css';
+import './maptiler/init';
+
 import { Portal, Theme } from '@radix-ui/themes';
 import React from 'react';
 import { Redirect, Route, Switch } from 'wouter';

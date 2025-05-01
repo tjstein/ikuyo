@@ -47,9 +47,12 @@ export function ActivityEditDialog({
           tripStartStr={tripStartStr}
           tripEndStr={tripEndStr}
           tripTimeZone={activity.trip.timeZone}
+          tripRegion={activity.trip.region}
           activityTitle={activity.title}
           activityStartStr={activityStartStr}
           activityEndStr={activityEndStr}
+          activityLocationLat={activity.locationLat}
+          activityLocationLng={activity.locationLng}
           dialogOpen={dialogOpen}
           setDialogOpen={setDialogOpen}
           activityLocation={activity.location}

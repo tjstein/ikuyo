@@ -15,6 +15,7 @@ import { db } from '../data/db';
 import { useBoundStore } from '../data/store';
 import { CommonCommentDialogMaxWidth } from '../dialog';
 import s from './Activity.module.css';
+import { ActivityMap } from './ActivityMap';
 import type { DbActivityWithTrip } from './db';
 
 export function ActivityViewDialog({
@@ -169,6 +170,20 @@ export function ActivityViewDialog({
             ) : (
               <></>
             )}
+
+            {activity.locationLat && activity.locationLng ? (
+              <ActivityMap
+                mapOptions={{
+                  lng: activity.locationLng,
+                  lat: activity.locationLat,
+                  zoom: 8,
+                }}
+                marker={{
+                  lng: activity.locationLng,
+                  lat: activity.locationLat,
+                }}
+              />
+            ) : null}
           </Flex>
           <Flex
             direction="column"

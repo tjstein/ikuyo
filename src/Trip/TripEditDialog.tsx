@@ -42,6 +42,7 @@ export function TripEditDialog({
           tripTimeZone={trip.timeZone}
           tripCurrency={trip.currency}
           tripOriginCurrency={trip.originCurrency}
+          tripRegion={trip.region}
           activities={trip.activity}
         />
       </Dialog.Content>

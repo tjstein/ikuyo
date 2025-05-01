@@ -10,13 +10,21 @@ export type DbActivity = {
   id: string;
   title: string;
   location: string;
+  /** undefined means not set, 0 means somewhere! */
+  locationLat: undefined | number;
+  /** undefined means not set, 0 means somewhere! */
+  locationLng: undefined | number;
+
   description: string;
   /** ms */
   timestampStart: number;
   /** ms */
   timestampEnd: number;
+  /** ms */
   createdAt: number;
+  /** ms */
   lastUpdatedAt: number;
+
   trip: DbTrip | undefined;
 };
 

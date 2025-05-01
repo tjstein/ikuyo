@@ -32,6 +32,7 @@ export function TripNewDialog({
           tripTimeZone={currentTimeZone}
           tripCurrency=""
           tripOriginCurrency=""
+          tripRegion=""
           userId={user.id}
         />
       </Dialog.Content>

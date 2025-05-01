@@ -34,6 +34,9 @@ const _schema = i.schema({
       description: i.string(),
       lastUpdatedAt: i.number(),
       location: i.string(),
+      locationLat: i.number(),
+      locationLng: i.number(),
+
       timestampEnd: i.number(),
       timestampStart: i.number(),
       title: i.string(),
@@ -53,6 +56,7 @@ const _schema = i.schema({
     trip: i.entity({
       createdAt: i.number(),
       currency: i.string(),
+      region: i.string(),
       lastUpdatedAt: i.number(),
       originCurrency: i.string(),
       timestampEnd: i.number().indexed(),
@@ -89,7 +93,8 @@ const _schema = i.schema({
     }),
   },
   links: {
-    activityTrip: {
+    /** trip 1:N activity */
+    activity$trip: {
       forward: {
         on: 'activity',
         has: 'one',
@@ -101,7 +106,8 @@ const _schema = i.schema({
         label: 'activity',
       },
     },
-    tripAccommodation: {
+    /** trip 1:N accommodation */
+    trip$accommodation: {
       forward: {
         on: 'trip',
         has: 'many',
@@ -113,7 +119,8 @@ const _schema = i.schema({
         label: 'trip',
       },
     },
-    tripMacroplan: {
+    /** trip 1:N macroplan */
+    trip$macroplan: {
       forward: {
         on: 'trip',
         has: 'many',
@@ -125,7 +132,8 @@ const _schema = i.schema({
         label: 'trip',
       },
     },
-    tripExpense: {
+    /** trip 1:N expense */
+    trip$expense: {
       forward: {
         on: 'trip',
         has: 'many',
@@ -137,7 +145,8 @@ const _schema = i.schema({
         label: 'trip',
       },
     },
-    tripTripUser: {
+    /** trip N:N tripUser */
+    trip$tripUser: {
       forward: {
         on: 'trip',
         has: 'many',
@@ -149,7 +158,8 @@ const _schema = i.schema({
         label: 'trip',
       },
     },
-    user$users: {
+    /** user 1:1 $users */
+    user$$users: {
       forward: {
         on: 'user',
         has: 'one',
@@ -161,7 +171,8 @@ const _schema = i.schema({
         label: 'user',
       },
     },
-    userTripUser: {
+    /** user N:N tripUser */
+    user$tripUser: {
       forward: {
         on: 'user',
         has: 'many',
@@ -173,8 +184,8 @@ const _schema = i.schema({
         label: 'user',
       },
     },
-    /** CommentGroup 1:N Comment */
-    commentGroup$Comment: {
+    /** commentGroup 1:N comment */
+    commentGroup$comment: {
       forward: {
         on: 'commentGroup',
         has: 'many',
@@ -187,8 +198,8 @@ const _schema = i.schema({
       },
     },
 
-    /** Comment 1:N User */
-    comment$User: {
+    /** comment 1:N user */
+    comment$user: {
       forward: {
         on: 'comment',
         has: 'one',
@@ -200,8 +211,8 @@ const _schema = i.schema({
         label: 'comment',
       },
     },
-    /** Trip 1:N CommentGroup */
-    commentGroup$Trip: {
+    /** trip 1:N commentGroup */
+    commentGroup$trip: {
       forward: {
         on: 'commentGroup',
         has: 'one',
@@ -213,8 +224,8 @@ const _schema = i.schema({
         label: 'commentGroup',
       },
     },
-    /** CommentGroup 1:1 CommentGroupObject */
-    commentGroup$CommentGroupObject: {
+    /** commentGroup 1:1 commentGroupObject */
+    commentGroup$commentGroupObject: {
       forward: {
         on: 'commentGroup',
         has: 'one',
@@ -226,8 +237,8 @@ const _schema = i.schema({
         label: 'commentGroup',
       },
     },
-    /** CommentGroupObject N:N Trip */
-    commentGroupObject$Trip: {
+    /** commentGroupObject N:N trip */
+    commentGroupObject$trip: {
       forward: {
         on: 'commentGroupObject',
         has: 'many',
@@ -239,8 +250,8 @@ const _schema = i.schema({
         label: 'commentGroupObject',
       },
     },
-    /** CommentGroupObject N:N Macroplan */
-    commentGroupObject$Macroplan: {
+    /** commentGroupObject N:N macroplan */
+    commentGroupObject$macroplan: {
       forward: {
         on: 'commentGroupObject',
         has: 'many',
@@ -252,8 +263,8 @@ const _schema = i.schema({
         label: 'commentGroupObject',
       },
     },
-    /** CommentGroupObject N:N Activity */
-    commentGroupObject$Activity: {
+    /** commentGroupObject N:N activity */
+    commentGroupObject$activity: {
       forward: {
         on: 'commentGroupObject',
         has: 'many',
@@ -265,8 +276,8 @@ const _schema = i.schema({
         label: 'commentGroupObject',
       },
     },
-    /** CommentGroupObject N:N Accommodation */
-    commentGroupObject$Accommodation: {
+    /** commentGroupObject N:N accommodation */
+    commentGroupObject$accommodation: {
       forward: {
         on: 'commentGroupObject',
         has: 'many',
@@ -278,8 +289,8 @@ const _schema = i.schema({
         label: 'commentGroupObject',
       },
     },
-    /** CommentGroupObject N:N Expense */
-    commentGroupObject$Expense: {
+    /** commentGroupObject N:N expense */
+    commentGroupObject$expense: {
       forward: {
         on: 'commentGroupObject',
         has: 'many',

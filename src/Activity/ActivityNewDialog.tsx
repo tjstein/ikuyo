@@ -58,11 +58,14 @@ export function ActivityNewDialog({
           tripStartStr={tripStartStr}
           tripEndStr={tripEndStr}
           tripTimeZone={trip.timeZone}
+          tripRegion={trip.region}
           activityTitle={''}
           activityStartStr={activityStartStr}
           activityEndStr={activityEndStr}
           activityLocation={''}
           activityDescription={''}
+          activityLocationLat={undefined}
+          activityLocationLng={undefined}
         />
       </Dialog.Content>
     </Dialog.Root>

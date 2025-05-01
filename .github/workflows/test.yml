@@ -16,6 +16,7 @@ jobs:
       build-artifact-id: ${{ steps.artifact-upload-step.outputs.artifact-id }}
     env:
       INSTANT_APP_ID: ${{ vars.INSTANT_APP_ID }}
+      MAPTILER_API_KEY: ${{ vars.MAPTILER_API_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4.0.0

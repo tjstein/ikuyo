@@ -38,6 +38,8 @@ export type DbTrip = {
   /** ms of day _after_ of trip end. This means the final full day of trip is one day before `timestampEnd` */
   timestampEnd: number;
   timeZone: string;
+  /** destination 2-letter Intl region. Uppercase! */
+  region: string;
   /** destination's default currency */
   currency: string;
   /** origin's default currency */

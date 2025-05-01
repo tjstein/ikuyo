@@ -2,6 +2,7 @@ import { Button, Flex, Select, Text, TextField } from '@radix-ui/themes';
 import { useCallback, useId, useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
 import type { DbActivity } from '../Activity/db';
+import { REGIONS_LIST } from '../data/intl/regions';
 import { useBoundStore } from '../data/store';
 import { ROUTES } from '../routes';
 import { dangerToken } from '../ui';
@@ -17,6 +18,7 @@ export function TripForm({
   tripEndStr,
   tripTitle,
   tripTimeZone,
+  tripRegion,
   tripCurrency,
   tripOriginCurrency,
   userId,
@@ -30,6 +32,7 @@ export function TripForm({
   tripEndStr: string;
   tripTitle: string;
   tripTimeZone: string;
+  tripRegion: string;
   tripCurrency: string;
   tripOriginCurrency: string;
   userId?: string;
@@ -42,6 +45,7 @@ export function TripForm({
   const idTimeZone = useId();
   const idCurrency = useId();
   const idOriginCurrency = useId();
+  const idRegion = useId();
   const publishToast = useBoundStore((state) => state.publishToast);
   const closeDialog = useCallback(() => {
     setDialogOpen(false);
@@ -60,6 +64,7 @@ export function TripForm({
       const dateStartStr = (formData.get('startDate') as string | null) ?? '';
       const dateEndStr = (formData.get('endDate') as string | null) ?? '';
       const timeZone = (formData.get('timeZone') as string | null) ?? '';
+      const region = (formData.get('region') as string | null) ?? 'ZZ';
       const currency = (formData.get('currency') as string | null) ?? '';
       const originCurrency =
         (formData.get('originCurrency') as string | null) ?? '';
@@ -78,6 +83,7 @@ export function TripForm({
         tripId,
         title,
         timeZone,
+        region,
         currency,
         originCurrency,
         dateStartStr,
@@ -91,7 +97,8 @@ export function TripForm({
         !dateEndStr ||
         !timeZone ||
         !currency ||
-        !originCurrency
+        !originCurrency ||
+        !region
       ) {
         return;
       }
@@ -107,6 +114,7 @@ export function TripForm({
             timeZone,
             timestampStart: dateStartDateTime.toMillis(),
             timestampEnd: dateEndDateTime.toMillis(),
+            region,
             currency,
             originCurrency,
           },
@@ -129,6 +137,7 @@ export function TripForm({
             timeZone,
             timestampStart: dateStartDateTime.toMillis(),
             timestampEnd: dateEndDateTime.toMillis(),
+            region,
             currency,
             originCurrency,
           },
@@ -197,6 +206,23 @@ export function TripForm({
       </Select.Root>
     );
   }, [timeZones, tripTimeZone, idTimeZone]);
+
+  const fieldSelectRegion = useMemo(() => {
+    return (
+      <Select.Root name="region" defaultValue={tripRegion} required>
+        <Select.Trigger id={idRegion} />
+        <Select.Content>
+          {REGIONS_LIST.map(([regionCode, regionName]) => {
+            return (
+              <Select.Item key={regionCode} value={regionCode}>
+                {regionName}
+              </Select.Item>
+            );
+          })}
+        </Select.Content>
+      </Select.Root>
+    );
+  }, [tripRegion, idRegion]);
 
   return (
     <form
@@ -269,6 +295,19 @@ export function TripForm({
           defaultValue={tripEndStr}
           required
         />
+
+        <Text as="label" htmlFor={idRegion}>
+          Destination's region{' '}
+          <Text weight="light" size="1">
+            (required)
+          </Text>
+          <br />
+          <Text weight="light" size="1">
+            This will be used as the general location when selecting coordinates
+            in activities.
+          </Text>
+        </Text>
+        {fieldSelectRegion}
 
         <Text as="label" htmlFor={idCurrency}>
           Destination's currency{' '}

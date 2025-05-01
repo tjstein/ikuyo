@@ -1,11 +1,67 @@
-import { Button, Flex, Text, TextArea, TextField } from '@radix-ui/themes';
-import { useCallback, useId, useState } from 'react';
+import { type GeocodingOptions, geocoding } from '@maptiler/sdk';
+import {
+  Button,
+  Flex,
+  Switch,
+  Text,
+  TextArea,
+  TextField,
+} from '@radix-ui/themes';
+import { useCallback, useId, useReducer, useState } from 'react';
 import { useBoundStore } from '../data/store';
 import { dangerToken } from '../ui';
 import { ActivityFormMode } from './ActivityFormMode';
+import { ActivityMap } from './ActivityMap';
 import { setNewActivityTimestamp } from './activitiyStorage';
 import { dbAddActivity, dbUpdateActivity } from './db';
 import { getDateTimeFromDatetimeLocalInput } from './time';
+
+interface LocationCoordinate {
+  lat: number;
+  lng: number;
+}
+interface LocationCoordinateState {
+  enabled: boolean;
+  lat: number | undefined;
+  lng: number | undefined;
+}
+
+function coordinateStateReducer(
+  state: LocationCoordinateState,
+  action:
+    | { type: 'setCoordinate'; lat: number; lng: number }
+    | {
+        type: 'setEnabled';
+        lat: number | undefined;
+        lng: number | undefined;
+      }
+    | {
+        type: 'setDisabled';
+      },
+): LocationCoordinateState {
+  switch (action.type) {
+    case 'setEnabled':
+      return {
+        ...state,
+        lat: action.lat,
+        lng: action.lng,
+        enabled: true,
+      };
+    case 'setDisabled':
+      return {
+        ...state,
+        enabled: false,
+      };
+    case 'setCoordinate':
+      return {
+        ...state,
+        lat: action.lat,
+        lng: action.lng,
+      };
+    default:
+      return state;
+  }
+}
 
 export function ActivityForm({
   mode,
@@ -15,10 +71,13 @@ export function ActivityForm({
   tripStartStr,
   tripEndStr,
   tripTimeZone,
+  tripRegion,
   activityTitle,
   activityStartStr,
   activityEndStr,
   activityLocation,
+  activityLocationLng,
+  activityLocationLat,
   activityDescription,
 }: {
   mode: ActivityFormMode;
@@ -29,22 +88,90 @@ export function ActivityForm({
   tripStartStr: string;
   tripEndStr: string;
   tripTimeZone: string;
+  tripRegion: string;
   activityTitle: string;
   activityStartStr: string;
   activityEndStr: string;
   activityLocation: string;
+  activityLocationLat: number | undefined;
+  activityLocationLng: number | undefined;
   activityDescription: string;
 }) {
+  const idForm = useId();
   const idTitle = useId();
   const idTimeStart = useId();
   const idTimeEnd = useId();
   const idLocation = useId();
   const idDescription = useId();
+  const idCoordinates = useId();
   const publishToast = useBoundStore((state) => state.publishToast);
   const closeDialog = useCallback(() => {
     setDialogOpen(false);
   }, [setDialogOpen]);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const [coordinateState, dispatchCoordinateState] = useReducer(
+    coordinateStateReducer,
+    {
+      enabled:
+        activityLocationLat !== undefined && activityLocationLng !== undefined,
+      lat: activityLocationLat,
+      lng: activityLocationLng,
+    },
+  );
+  const setCoordinateEnabled = useCallback(
+    async (enabled: boolean) => {
+      if (enabled) {
+        if (coordinateState.lat && coordinateState.lng) {
+          dispatchCoordinateState({
+            type: 'setEnabled',
+            lat: coordinateState.lat,
+            lng: coordinateState.lng,
+          });
+        } else {
+          const elLocation = document.getElementById(
+            idLocation,
+          ) as HTMLInputElement;
+          const location = elLocation.value;
+          let lat: number | undefined;
+          let lng: number | undefined;
+          const geocodingOptions: GeocodingOptions = {
+            language: 'en',
+            limit: 5,
+            country: [tripRegion.toLowerCase()],
+            types: ['poi'],
+          };
+          console.log('geocoding: request', location, geocodingOptions);
+          if (location) {
+            const res = await geocoding.forward(location, geocodingOptions);
+            console.log('geocoding: response', res);
+            [lng, lat] = res?.features[0]?.center ?? [];
+          }
+          dispatchCoordinateState({
+            type: 'setEnabled',
+            lat: lat,
+            lng: lng,
+          });
+        }
+      } else {
+        dispatchCoordinateState({
+          type: 'setDisabled',
+        });
+      }
+    },
+    [idLocation, tripRegion, coordinateState.lat, coordinateState.lng],
+  );
+  const setCoordinateState = useCallback(
+    async (coordinate: LocationCoordinate) => {
+      dispatchCoordinateState({
+        type: 'setCoordinate',
+        lat: coordinate.lat,
+        lng: coordinate.lng,
+      });
+    },
+    [],
+  );
+  console.log('coordinateState', coordinateState);
 
   const handleSubmit = useCallback(() => {
     return async (elForm: HTMLFormElement) => {
@@ -100,6 +227,12 @@ export function ActivityForm({
           title,
           description,
           location,
+          locationLat: coordinateState.enabled
+            ? coordinateState.lat
+            : undefined,
+          locationLng: coordinateState.enabled
+            ? coordinateState.lng
+            : undefined,
           timestampStart: timeStartDate.toMillis(),
           timestampEnd: timeEndDate.toMillis(),
         });
@@ -118,6 +251,12 @@ export function ActivityForm({
             title,
             description,
             location,
+            locationLat: coordinateState.enabled
+              ? coordinateState.lat
+              : undefined,
+            locationLng: coordinateState.enabled
+              ? coordinateState.lng
+              : undefined,
             timestampStart: timeStartDate.toMillis(),
             timestampEnd: timeEndDate.toMillis(),
           },
@@ -135,10 +274,19 @@ export function ActivityForm({
       elForm.reset();
       setDialogOpen(false);
     };
-  }, [activityId, mode, publishToast, setDialogOpen, tripId, tripTimeZone]);
+  }, [
+    activityId,
+    mode,
+    publishToast,
+    setDialogOpen,
+    tripId,
+    tripTimeZone,
+    coordinateState,
+  ]);
 
   return (
     <form
+      id={idForm}
       onInput={() => {
         setErrorMessage('');
       }}
@@ -176,6 +324,34 @@ export function ActivityForm({
           id={idLocation}
           style={{ minHeight: 80 }}
         />
+        <Text as="label" htmlFor={idCoordinates}>
+          Set location coordinates
+        </Text>
+        <Switch
+          name="coordinatesEnabled"
+          id={idCoordinates}
+          checked={coordinateState.enabled}
+          onCheckedChange={setCoordinateEnabled}
+        />
+        {coordinateState.enabled ? (
+          <ActivityMap
+            mapOptions={{
+              lng: coordinateState.lng ?? 0,
+              lat: coordinateState.lat ?? 0,
+              zoom: 8,
+            }}
+            marker={
+              coordinateState.lng && coordinateState.lat
+                ? {
+                    lng: coordinateState.lng,
+                    lat: coordinateState.lat,
+                  }
+                : undefined
+            }
+            setCoordinate={setCoordinateState}
+          />
+        ) : null}
+
         <Text as="label" htmlFor={idTimeStart}>
           Start time{' '}
           <Text weight="light" size="1">
@@ -206,7 +382,7 @@ export function ActivityForm({
           defaultValue={activityEndStr}
           required
         />
-        <Text as="label" htmlFor={idLocation}>
+        <Text as="label" htmlFor={idDescription}>
           Description
         </Text>
         <TextArea
