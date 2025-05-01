@@ -33,7 +33,6 @@ enum AuthScreen {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function PageLogin(_props: RouteComponentProps) {
   const { isLoading: authUserLoading, user: authUser, error } = db.useAuth();
-  console.log('authUser', authUser);
   const [screen, setScreen] = useState(AuthScreen.LoginSelection);
   const [sentEmail, setSentEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);

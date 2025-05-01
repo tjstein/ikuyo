@@ -110,7 +110,7 @@ export function ExpenseInlineForm({
         amountInOriginCurrency,
       );
 
-      console.log({
+      console.log('ExpenseInlineForm: submit', {
         timestampIncurred,
         title,
         description,

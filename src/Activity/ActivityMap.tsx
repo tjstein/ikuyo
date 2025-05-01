@@ -35,7 +35,6 @@ export function ActivityMap({
         .addTo(map.current)
         .on('dragend', (event: { type: 'dragend'; target: Marker }) => {
           if (!map.current) return;
-          console.log('dragend', marker);
           const { lng, lat } = event.target.getLngLat();
           if (setCoordinate) {
             setCoordinate({ lng, lat });

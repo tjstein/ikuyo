@@ -43,7 +43,6 @@ export function Activity({
     const now = Date.now();
     return activity.timestampStart <= now && now <= activity.timestampEnd;
   }, [activity.timestampEnd, activity.timestampStart]);
-  console.log('viewDialogOpen', activity.id, viewDialogOpen);
 
   return (
     <>
