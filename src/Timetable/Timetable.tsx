@@ -198,7 +198,7 @@ export function Timetable({
               }
             }}
           >
-            New Activity
+            New activity
           </ContextMenu.Item>
 
           <ContextMenu.Item
@@ -208,7 +208,7 @@ export function Timetable({
               }
             }}
           >
-            New Acommodation
+            New acommodation
           </ContextMenu.Item>
 
           <ContextMenu.Item
@@ -218,7 +218,7 @@ export function Timetable({
               }
             }}
           >
-            New Day Plan
+            New day plan
           </ContextMenu.Item>
         </ContextMenu.Content>
       </ContextMenu.Root>
