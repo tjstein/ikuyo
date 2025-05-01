@@ -67,7 +67,6 @@ export function ActivityForm({
   mode,
   activityId,
   tripId,
-  setDialogOpen,
   tripStartStr,
   tripEndStr,
   tripTimeZone,
@@ -83,8 +82,6 @@ export function ActivityForm({
   mode: ActivityFormMode;
   activityId?: string;
   tripId?: string;
-  dialogOpen: boolean;
-  setDialogOpen: (newValue: boolean) => void;
   tripStartStr: string;
   tripEndStr: string;
   tripTimeZone: string;
@@ -105,9 +102,7 @@ export function ActivityForm({
   const idDescription = useId();
   const idCoordinates = useId();
   const publishToast = useBoundStore((state) => state.publishToast);
-  const closeDialog = useCallback(() => {
-    setDialogOpen(false);
-  }, [setDialogOpen]);
+  const popDialog = useBoundStore((state) => state.popDialog);
   const [errorMessage, setErrorMessage] = useState('');
 
   const [coordinateState, dispatchCoordinateState] = useReducer(
@@ -272,13 +267,13 @@ export function ActivityForm({
       }
 
       elForm.reset();
-      setDialogOpen(false);
+      popDialog();
     };
   }, [
     activityId,
     mode,
     publishToast,
-    setDialogOpen,
+    popDialog,
     tripId,
     tripTimeZone,
     coordinateState,
@@ -399,7 +394,7 @@ export function ActivityForm({
           size="2"
           variant="soft"
           color="gray"
-          onClick={closeDialog}
+          onClick={popDialog}
         >
           Cancel
         </Button>

@@ -1,22 +1,17 @@
 import { Button, Dialog, Flex, Heading, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
+import { useBoundStore } from '../data/store';
 import { CommonDialogMaxWidth } from '../dialog';
 import s from './Macroplan.module.css';
+import { MacroplanDeleteDialog } from './MacroplanDeleteDialog';
+import { MacroplanEditDialog } from './MacroplanEditDialog';
 import type { DbMacroplanWithTrip } from './db';
 
 export function MacroplanViewDialog({
   macroplan,
-  dialogOpen,
-  setDialogOpen,
-  setEditDialogOpen,
-  setDeleteDialogOpen,
 }: {
   macroplan: DbMacroplanWithTrip;
-  dialogOpen: boolean;
-  setDialogOpen: (newValue: boolean) => void;
-  setEditDialogOpen: (newValue: boolean) => void;
-  setDeleteDialogOpen: (newValue: boolean) => void;
 }) {
   const macroplanDateStartStr = DateTime.fromMillis(macroplan.timestampStart)
     .setZone(macroplan.trip.timeZone)
@@ -24,11 +19,20 @@ export function MacroplanViewDialog({
   const macroplanDateEndStr = DateTime.fromMillis(macroplan.timestampEnd)
     .setZone(macroplan.trip.timeZone)
     .toFormat('dd LLLL yyyy');
+  const popDialog = useBoundStore((state) => state.popDialog);
+  const pushDialog = useBoundStore((state) => state.pushDialog);
 
   const notes = useParseTextIntoNodes(macroplan.notes || '');
 
   return (
-    <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+    <Dialog.Root
+      defaultOpen
+      onOpenChange={(open) => {
+        if (!open) {
+          popDialog();
+        }
+      }}
+    >
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>View Day Plan</Dialog.Title>
         <Dialog.Description>Details of day plan</Dialog.Description>
@@ -64,8 +68,9 @@ export function MacroplanViewDialog({
             variant="soft"
             color="gray"
             onClick={() => {
-              setDialogOpen(false);
-              setDeleteDialogOpen(true);
+              pushDialog(MacroplanDeleteDialog, {
+                macroplan,
+              });
             }}
           >
             Delete
@@ -76,8 +81,9 @@ export function MacroplanViewDialog({
             variant="soft"
             color="gray"
             onClick={() => {
-              setDialogOpen(false);
-              setEditDialogOpen(true);
+              pushDialog(MacroplanEditDialog, {
+                macroplan,
+              });
             }}
           >
             Edit

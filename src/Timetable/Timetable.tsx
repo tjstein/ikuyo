@@ -8,13 +8,17 @@ import { ContextMenu, Section, Text } from '@radix-ui/themes';
 import { ClockIcon, HomeIcon, StackIcon } from '@radix-ui/react-icons';
 import { useMemo, useRef } from 'react';
 import { Accommodation } from '../Accommodation/Accommodation';
+import { AccommodationNewDialog } from '../Accommodation/AccommodationNewDialog';
+import { ActivityNewDialog } from '../Activity/ActivityNewDialog';
 import {
   type DayGroups,
   groupActivitiesByDays,
 } from '../Activity/eventGrouping';
 import { Macroplan } from '../Macroplan/Macroplan';
+import { MacroplanNewDialog } from '../Macroplan/MacroplanNewDialog';
 import { TripViewMode } from '../Trip/TripViewMode';
 import type { DbTripFull } from '../Trip/db';
+import { useBoundStore } from '../data/store';
 import {
   generateAccommodationGridTemplateColumns,
   getAccommodationIndexes,
@@ -39,14 +43,8 @@ const times = new Array(24).fill(0).map((_, i) => {
 
 export function Timetable({
   trip,
-  setNewActivityDialogOpen,
-  setNewAcommodationDialogOpen,
-  setNewMacroplanDialogOpen,
 }: {
   trip: DbTripFull;
-  setNewActivityDialogOpen: (newValue: boolean) => void;
-  setNewAcommodationDialogOpen: (newValue: boolean) => void;
-  setNewMacroplanDialogOpen: (newValue: boolean) => void;
 }) {
   const dayGroups = useMemo(() => groupActivitiesByDays(trip), [trip]);
   const macroplans = useMemo(() => getMacroplanIndexes(trip), [trip]);
@@ -68,6 +66,7 @@ export function Timetable({
     };
   }, [dayGroups]);
   const timetableRef = useRef<HTMLDivElement>(null);
+  const pushDialog = useBoundStore((state) => state.pushDialog);
 
   return (
     <Section py="0">
@@ -194,7 +193,9 @@ export function Timetable({
               //   console.log('e pageX pageY', e.pageX, e.pageY);
               //   console.log('e screenX screenY', e.screenX, e.screenY);
               // }
-              setNewActivityDialogOpen(true);
+              if (trip) {
+                pushDialog(ActivityNewDialog, { trip });
+              }
             }}
           >
             New Activity
@@ -202,7 +203,9 @@ export function Timetable({
 
           <ContextMenu.Item
             onClick={() => {
-              setNewAcommodationDialogOpen(true);
+              if (trip) {
+                pushDialog(AccommodationNewDialog, { trip });
+              }
             }}
           >
             New Acommodation
@@ -210,7 +213,9 @@ export function Timetable({
 
           <ContextMenu.Item
             onClick={() => {
-              setNewMacroplanDialogOpen(true);
+              if (trip) {
+                pushDialog(MacroplanNewDialog, { trip });
+              }
             }}
           >
             New Day Plan

@@ -6,6 +6,7 @@ import { Portal, Theme } from '@radix-ui/themes';
 import React from 'react';
 import { Redirect, Route, Switch } from 'wouter';
 import s from './App.module.css';
+import { DialogRoot } from './Dialog/DialogRoot';
 import { withLoading } from './Loading/withLoading';
 import { ImperativeToastRoot } from './Toast/ImperativeToast';
 import { ROUTES } from './routes';
@@ -39,6 +40,7 @@ function App() {
             <Redirect to={ROUTES.Login} />
           </Route>
         </Switch>
+        <DialogRoot />
       </Theme>
       <Portal className={s.notificationArea} asChild>
         <Theme

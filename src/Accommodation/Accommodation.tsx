@@ -1,7 +1,7 @@
 import { ClockIcon, HomeIcon } from '@radix-ui/react-icons';
 import { Box, ContextMenu, Text } from '@radix-ui/themes';
 import clsx from 'clsx';
-import { useState } from 'react';
+import { useCallback } from 'react';
 import { TripViewMode } from '../Trip/TripViewMode';
 import { dangerToken } from '../ui';
 import s from './Accommodation.module.css';
@@ -13,6 +13,7 @@ import type { DbAccommodationWithTrip } from './db';
 import { formatTime } from './time';
 
 import type * as React from 'react';
+import { useBoundStore } from '../data/store';
 export function Accommodation({
   className,
   accommodation,
@@ -27,10 +28,16 @@ export function Accommodation({
   style?: React.CSSProperties;
 }) {
   const responsiveTextSize = { initial: '1' as const };
-
-  const [viewDialogOpen, setViewDialogOpen] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const pushDialog = useBoundStore((state) => state.pushDialog);
+  const openAccommodationViewDialog = useCallback(() => {
+    pushDialog(AccommodationViewDialog, { accommodation });
+  }, [accommodation, pushDialog]);
+  const openAccommodationEditDialog = useCallback(() => {
+    pushDialog(AccommodationEditDialog, { accommodation });
+  }, [accommodation, pushDialog]);
+  const openAccommodationDeleteDialog = useCallback(() => {
+    pushDialog(AccommodationDeleteDialog, { accommodation });
+  }, [accommodation, pushDialog]);
 
   return (
     <>
@@ -44,9 +51,7 @@ export function Accommodation({
             tabIndex={0}
             className={clsx(s.accommodation, className)}
             style={style}
-            onClick={() => {
-              setViewDialogOpen(true);
-            }}
+            onClick={openAccommodationViewDialog}
           >
             <Text as="div" size={responsiveTextSize} weight="bold">
               <HomeIcon style={{ verticalAlign: '-3px' }} />{' '}
@@ -72,54 +77,21 @@ export function Accommodation({
         </ContextMenu.Trigger>
         <ContextMenu.Content>
           <ContextMenu.Label>{accommodation.name}</ContextMenu.Label>
-          <ContextMenu.Item
-            onClick={() => {
-              setViewDialogOpen(true);
-            }}
-          >
+          <ContextMenu.Item onClick={openAccommodationViewDialog}>
             View
           </ContextMenu.Item>
-          <ContextMenu.Item
-            onClick={() => {
-              setEditDialogOpen(true);
-            }}
-          >
+          <ContextMenu.Item onClick={openAccommodationEditDialog}>
             Edit
           </ContextMenu.Item>
           <ContextMenu.Separator />
           <ContextMenu.Item
             color={dangerToken}
-            onClick={() => {
-              setDeleteDialogOpen(true);
-            }}
+            onClick={openAccommodationDeleteDialog}
           >
             Delete
           </ContextMenu.Item>
         </ContextMenu.Content>
       </ContextMenu.Root>
-      {viewDialogOpen ? (
-        <AccommodationViewDialog
-          accommodation={accommodation}
-          dialogOpen={viewDialogOpen}
-          setDialogOpen={setViewDialogOpen}
-          setEditDialogOpen={setEditDialogOpen}
-          setDeleteDialogOpen={setDeleteDialogOpen}
-        />
-      ) : null}
-      {editDialogOpen ? (
-        <AccommodationEditDialog
-          accommodation={accommodation}
-          dialogOpen={editDialogOpen}
-          setDialogOpen={setEditDialogOpen}
-        />
-      ) : null}
-      {deleteDialogOpen ? (
-        <AccommodationDeleteDialog
-          accommodation={accommodation}
-          dialogOpen={deleteDialogOpen}
-          setDialogOpen={setDeleteDialogOpen}
-        />
-      ) : null}
     </>
   );
 }

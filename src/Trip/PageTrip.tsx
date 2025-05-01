@@ -1,6 +1,6 @@
 import { Container, Heading } from '@radix-ui/themes';
 import React from 'react';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Redirect, Route, type RouteComponentProps, Switch } from 'wouter';
 import { Navbar } from '../Nav/Navbar';
 import { db } from '../data/db';
@@ -30,17 +30,10 @@ const ActivityList = withLoading()(
   ),
 );
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
-import { AccommodationNewDialog } from '../Accommodation/AccommodationNewDialog';
-import { ActivityNewDialog } from '../Activity/ActivityNewDialog';
-import { MacroplanNewDialog } from '../Macroplan/MacroplanNewDialog';
-
 import { ExpenseList } from '../Expense/ExpenseList';
 import { TripUserRole } from '../data/TripUserRole';
 import { ROUTES_TRIP } from '../routes';
-import { TripDeleteDialog } from './TripDeleteDialog';
-import { TripEditDialog } from './TripEditDialog';
 import { TripMenuFloating } from './TripMenuFloating';
-import { TripSharingDialog } from './TripSharingDialog';
 import type { DbTrip, DbTripFull } from './db';
 
 export default PageTrip;
@@ -107,14 +100,6 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
     return undefined;
   }, [rawTrip]);
 
-  const [newActivityDialogOpen, setNewActivityDialogOpen] = useState(false);
-  const [newAcommodationDialogOpen, setNewAcommodationDialogOpen] =
-    useState(false);
-  const [newMacroplanDialogOpen, setNewMacroplanDialogOpen] = useState(false);
-  const [editTripDialogOpen, setEditTripDialogOpen] = useState(false);
-  const [deleteTripDialogOpen, setDeleteTripDialogOpen] = useState(false);
-  const [shareTripDialogOpen, setShareTripDialogOpen] = useState(false);
-
   return (
     <>
       <DocTitle title={trip?.title ?? 'Trip'} />
@@ -150,12 +135,7 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
           <TripMenu
             key="menu"
             user={user}
-            setEditTripDialogOpen={setEditTripDialogOpen}
-            setNewActivityDialogOpen={setNewActivityDialogOpen}
-            setNewAcommodationDialogOpen={setNewAcommodationDialogOpen}
-            setNewMacroplanDialogOpen={setNewMacroplanDialogOpen}
-            setDeleteTripDialogOpen={setDeleteTripDialogOpen}
-            setShareTripDialogOpen={setShareTripDialogOpen}
+            trip={trip}
             showTripSharing={currentUserIsOwner}
           />,
         ]}
@@ -165,14 +145,7 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
           <Switch>
             <Route
               path={ROUTES_TRIP.TimetableView}
-              component={() => (
-                <Timetable
-                  trip={trip}
-                  setNewAcommodationDialogOpen={setNewAcommodationDialogOpen}
-                  setNewActivityDialogOpen={setNewActivityDialogOpen}
-                  setNewMacroplanDialogOpen={setNewMacroplanDialogOpen}
-                />
-              )}
+              component={() => <Timetable trip={trip} />}
             />
             <Route
               path={ROUTES_TRIP.ListView}
@@ -196,55 +169,6 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
         )}
       </Container>
       <TripMenuFloating />
-
-      {newActivityDialogOpen && trip ? (
-        <ActivityNewDialog
-          trip={trip}
-          dialogOpen={newActivityDialogOpen}
-          setDialogOpen={setNewActivityDialogOpen}
-        />
-      ) : null}
-
-      {newAcommodationDialogOpen && trip ? (
-        <AccommodationNewDialog
-          trip={trip}
-          dialogOpen={newAcommodationDialogOpen}
-          setDialogOpen={setNewAcommodationDialogOpen}
-        />
-      ) : null}
-
-      {newMacroplanDialogOpen && trip ? (
-        <MacroplanNewDialog
-          trip={trip}
-          dialogOpen={newMacroplanDialogOpen}
-          setDialogOpen={setNewMacroplanDialogOpen}
-        />
-      ) : null}
-
-      {editTripDialogOpen && trip ? (
-        <TripEditDialog
-          trip={trip}
-          dialogOpen={editTripDialogOpen}
-          setDialogOpen={setEditTripDialogOpen}
-        />
-      ) : null}
-
-      {shareTripDialogOpen && trip && user ? (
-        <TripSharingDialog
-          trip={trip}
-          dialogOpen={shareTripDialogOpen}
-          setDialogOpen={setShareTripDialogOpen}
-          user={user}
-        />
-      ) : null}
-
-      {deleteTripDialogOpen && trip ? (
-        <TripDeleteDialog
-          trip={trip}
-          dialogOpen={deleteTripDialogOpen}
-          setDialogOpen={setDeleteTripDialogOpen}
-        />
-      ) : null}
     </>
   );
 }

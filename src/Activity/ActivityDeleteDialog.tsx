@@ -7,14 +7,11 @@ import { type DbActivity, dbDeleteActivity } from './db';
 
 export function ActivityDeleteDialog({
   activity,
-  dialogOpen,
-  setDialogOpen,
 }: {
   activity: DbActivity;
-  dialogOpen: boolean;
-  setDialogOpen: (newValue: boolean) => void;
 }) {
   const publishToast = useBoundStore((state) => state.publishToast);
+  const popDialog = useBoundStore((state) => state.popDialog);
   const deleteActivity = useCallback(() => {
     void dbDeleteActivity(activity)
       .then(() => {
@@ -24,7 +21,7 @@ export function ActivityDeleteDialog({
           close: {},
         });
 
-        setDialogOpen(false);
+        popDialog();
       })
       .catch((err: unknown) => {
         console.error(`Error deleting "${activity.title}"`, err);
@@ -33,15 +30,18 @@ export function ActivityDeleteDialog({
           title: { children: `Error deleting "${activity.title}"` },
           close: {},
         });
-        setDialogOpen(false);
+        popDialog();
       });
-  }, [publishToast, activity, setDialogOpen]);
+  }, [publishToast, activity, popDialog]);
 
   return (
     <AlertDialog.Root
-      open={dialogOpen}
-      onOpenChange={setDialogOpen}
-      defaultOpen={dialogOpen}
+      defaultOpen
+      onOpenChange={(open) => {
+        if (!open) {
+          popDialog();
+        }
+      }}
     >
       <AlertDialog.Content maxWidth={CommonDialogMaxWidth}>
         <AlertDialog.Title>Delete Activity</AlertDialog.Title>

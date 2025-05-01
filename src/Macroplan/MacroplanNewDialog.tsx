@@ -2,6 +2,7 @@ import { Dialog, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useMemo } from 'react';
 import type { DbTrip } from '../Trip/db';
+import { useBoundStore } from '../data/store';
 import { CommonDialogMaxWidth } from '../dialog';
 import { MacroplanForm } from './MacroplanForm';
 import { MacroplanFormMode } from './MacroplanFormMode';
@@ -9,13 +10,10 @@ import { formatToDateInput } from './time';
 
 export function MacroplanNewDialog({
   trip,
-  dialogOpen,
-  setDialogOpen,
 }: {
   trip: DbTrip;
-  dialogOpen: boolean;
-  setDialogOpen: (newValue: boolean) => void;
 }) {
+  const popDialog = useBoundStore((state) => state.popDialog);
   const tripStartStr = formatToDateInput(
     DateTime.fromMillis(trip.timestampStart).setZone(trip.timeZone),
   );
@@ -46,7 +44,14 @@ export function MacroplanNewDialog({
   }, [trip]);
 
   return (
-    <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+    <Dialog.Root
+      defaultOpen
+      onOpenChange={(open) => {
+        if (!open) {
+          popDialog();
+        }
+      }}
+    >
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>New Day Plan</Dialog.Title>
         <Dialog.Description>
@@ -66,8 +71,6 @@ export function MacroplanNewDialog({
         <MacroplanForm
           mode={MacroplanFormMode.New}
           tripId={trip.id}
-          dialogOpen={dialogOpen}
-          setDialogOpen={setDialogOpen}
           tripTimeZone={trip.timeZone}
           tripStartStr={tripStartStr}
           tripEndStr={tripEndStr}

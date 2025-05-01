@@ -19,16 +19,13 @@ import s from './TripSharingDialog.module.css';
 import { type DbTrip, dbAddUserToTrip, dbRemoveUserFromTrip } from './db';
 
 export function TripSharingDialog({
-  dialogOpen,
-  setDialogOpen,
   trip,
   user: currentUser,
 }: {
-  dialogOpen: boolean;
-  setDialogOpen: (newValue: boolean) => void;
   trip: DbTrip;
   user: DbUser;
 }) {
+  const popDialog = useBoundStore((state) => state.popDialog);
   const publishToast = useBoundStore((state) => state.publishToast);
   const [errorMessage, setErrorMessage] = useState('');
   const { userAndRoles, currentUserIsOwner } = useMemo(() => {
@@ -127,7 +124,14 @@ export function TripSharingDialog({
   );
 
   return (
-    <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+    <Dialog.Root
+      defaultOpen
+      onOpenChange={(open) => {
+        if (!open) {
+          popDialog();
+        }
+      }}
+    >
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>Share Trip</Dialog.Title>
         <Dialog.Description>

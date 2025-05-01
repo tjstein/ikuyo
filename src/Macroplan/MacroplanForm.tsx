@@ -10,7 +10,6 @@ export function MacroplanForm({
   mode,
   macroplanId,
   tripId,
-  setDialogOpen,
 
   tripTimeZone,
   tripStartStr,
@@ -25,9 +24,6 @@ export function MacroplanForm({
 
   tripId?: string;
   macroplanId?: string;
-
-  dialogOpen: boolean;
-  setDialogOpen: (newValue: boolean) => void;
 
   tripTimeZone: string;
   tripStartStr: string;
@@ -44,9 +40,8 @@ export function MacroplanForm({
   const idNotes = useId();
 
   const publishToast = useBoundStore((state) => state.publishToast);
-  const closeDialog = useCallback(() => {
-    setDialogOpen(false);
-  }, [setDialogOpen]);
+  const popDialog = useBoundStore((state) => state.popDialog);
+
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = useCallback(() => {
@@ -123,9 +118,9 @@ export function MacroplanForm({
       }
 
       elForm.reset();
-      setDialogOpen(false);
+      popDialog();
     };
-  }, [macroplanId, mode, publishToast, setDialogOpen, tripId, tripTimeZone]);
+  }, [macroplanId, mode, publishToast, popDialog, tripId, tripTimeZone]);
 
   return (
     <form
@@ -203,7 +198,7 @@ export function MacroplanForm({
           size="2"
           variant="soft"
           color="gray"
-          onClick={closeDialog}
+          onClick={popDialog}
         >
           Cancel
         </Button>

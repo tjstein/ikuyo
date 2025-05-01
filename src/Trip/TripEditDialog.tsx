@@ -1,5 +1,6 @@
 import { Box, Dialog } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
+import { useBoundStore } from '../data/store';
 import { CommonDialogMaxWidth } from '../dialog';
 import { TripForm } from './TripForm';
 import { TripFormMode } from './TripFormMode';
@@ -8,12 +9,8 @@ import { formatToDateInput } from './time';
 
 export function TripEditDialog({
   trip,
-  dialogOpen,
-  setDialogOpen,
 }: {
   trip: DbTripWithActivity;
-  dialogOpen: boolean;
-  setDialogOpen: (newValue: boolean) => void;
 }) {
   const tripStartStr = formatToDateInput(
     DateTime.fromMillis(trip.timestampStart).setZone(trip.timeZone),
@@ -23,8 +20,15 @@ export function TripEditDialog({
       .setZone(trip.timeZone)
       .minus({ days: 1 }),
   );
+  const popDialog = useBoundStore((state) => state.popDialog);
   return (
-    <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+    <Dialog.Root
+      onOpenChange={(open) => {
+        if (!open) {
+          popDialog();
+        }
+      }}
+    >
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>Edit Trip</Dialog.Title>
         <Dialog.Description>
@@ -37,8 +41,6 @@ export function TripEditDialog({
           tripStartStr={tripStartStr}
           tripEndStr={tripEndStr}
           tripTitle={trip.title}
-          dialogOpen={dialogOpen}
-          setDialogOpen={setDialogOpen}
           tripTimeZone={trip.timeZone}
           tripCurrency={trip.currency}
           tripOriginCurrency={trip.originCurrency}

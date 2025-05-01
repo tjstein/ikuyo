@@ -9,15 +9,12 @@ import { type DbTripFull, dbDeleteTrip } from './db';
 
 export function TripDeleteDialog({
   trip,
-  dialogOpen,
-  setDialogOpen,
 }: {
   trip: DbTripFull;
-  dialogOpen: boolean;
-  setDialogOpen: (newValue: boolean) => void;
 }) {
   const [, setLocation] = useLocation();
   const publishToast = useBoundStore((state) => state.publishToast);
+  const popDialog = useBoundStore((state) => state.popDialog);
   const deleteTrip = useCallback(() => {
     void dbDeleteTrip(trip)
       .then(() => {
@@ -27,7 +24,7 @@ export function TripDeleteDialog({
           close: {},
         });
 
-        setDialogOpen(false);
+        popDialog();
 
         setLocation(ROUTES.Trips);
       })
@@ -38,15 +35,18 @@ export function TripDeleteDialog({
           title: { children: `Error deleting "${trip.title}"` },
           close: {},
         });
-        setDialogOpen(false);
+        popDialog();
       });
-  }, [setLocation, publishToast, trip, setDialogOpen]);
+  }, [setLocation, publishToast, trip, popDialog]);
 
   return (
     <AlertDialog.Root
-      open={dialogOpen}
-      onOpenChange={setDialogOpen}
-      defaultOpen={dialogOpen}
+      defaultOpen
+      onOpenChange={(open) => {
+        if (!open) {
+          popDialog();
+        }
+      }}
     >
       <AlertDialog.Content maxWidth={CommonDialogMaxWidth}>
         <AlertDialog.Title>Delete Trip</AlertDialog.Title>

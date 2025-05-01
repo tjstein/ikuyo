@@ -15,22 +15,18 @@ import { db } from '../data/db';
 import { useBoundStore } from '../data/store';
 import { CommonCommentDialogMaxWidth } from '../dialog';
 import s from './Activity.module.css';
+import { ActivityDeleteDialog } from './ActivityDeleteDialog';
+import { ActivityEditDialog } from './ActivityEditDialog';
 import { ActivityMap } from './ActivityMap';
 import type { DbActivityWithTrip } from './db';
 
 export function ActivityViewDialog({
   activity,
-  dialogOpen,
-  setDialogOpen,
-  setEditDialogOpen,
-  setDeleteDialogOpen,
 }: {
   activity: DbActivityWithTrip;
-  dialogOpen: boolean;
-  setDialogOpen: (newValue: boolean) => void;
-  setEditDialogOpen: (newValue: boolean) => void;
-  setDeleteDialogOpen: (newValue: boolean) => void;
 }) {
+  const popDialog = useBoundStore((state) => state.popDialog);
+  const pushDialog = useBoundStore((state) => state.pushDialog);
   const activityStartStr = DateTime.fromMillis(activity.timestampStart)
     .setZone(activity.trip.timeZone)
     .toFormat('dd LLLL yyyy HH:mm');
@@ -80,7 +76,14 @@ export function ActivityViewDialog({
   }, [rawCommentGroup]);
 
   return (
-    <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+    <Dialog.Root
+      defaultOpen
+      onOpenChange={(open) => {
+        if (!open) {
+          popDialog();
+        }
+      }}
+    >
       <Dialog.Content maxWidth={CommonCommentDialogMaxWidth}>
         <Dialog.Close>
           <Button
@@ -119,8 +122,9 @@ export function ActivityViewDialog({
                 variant="soft"
                 color="gray"
                 onClick={() => {
-                  setDialogOpen(false);
-                  setDeleteDialogOpen(true);
+                  pushDialog(ActivityDeleteDialog, {
+                    activity,
+                  });
                 }}
               >
                 Delete
@@ -131,8 +135,9 @@ export function ActivityViewDialog({
                 variant="soft"
                 color="gray"
                 onClick={() => {
-                  setDialogOpen(false);
-                  setEditDialogOpen(true);
+                  pushDialog(ActivityEditDialog, {
+                    activity,
+                  });
                 }}
               >
                 Edit

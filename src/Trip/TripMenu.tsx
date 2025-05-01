@@ -1,32 +1,31 @@
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import { Button, DropdownMenu } from '@radix-ui/themes';
 import { Link, useLocation } from 'wouter';
+import { AccommodationNewDialog } from '../Accommodation/AccommodationNewDialog';
+import { ActivityNewDialog } from '../Activity/ActivityNewDialog';
 import { UserAvatarMenu } from '../Auth/UserAvatarMenu';
+import { MacroplanNewDialog } from '../Macroplan/MacroplanNewDialog';
 import { db } from '../data/db';
+import { useBoundStore } from '../data/store';
 import type { DbUser } from '../data/types';
 import { ROUTES, asRootRoute } from '../routes';
+import { TripDeleteDialog } from './TripDeleteDialog';
+import { TripEditDialog } from './TripEditDialog';
 import s from './TripMenu.module.css';
+import { TripSharingDialog } from './TripSharingDialog';
+import type { DbTripFull } from './db';
 
 export function TripMenu({
+  trip,
   user,
-  setEditTripDialogOpen,
-  setShareTripDialogOpen,
-  setNewActivityDialogOpen,
-  setNewAcommodationDialogOpen,
-  setNewMacroplanDialogOpen,
-  setDeleteTripDialogOpen,
   showTripSharing,
 }: {
+  trip: DbTripFull | undefined;
   user: DbUser | null | undefined;
-  setEditTripDialogOpen: (v: boolean) => void;
-  setShareTripDialogOpen: (v: boolean) => void;
-  setNewActivityDialogOpen: (v: boolean) => void;
-  setNewAcommodationDialogOpen: (v: boolean) => void;
-  setNewMacroplanDialogOpen: (v: boolean) => void;
-  setDeleteTripDialogOpen: (v: boolean) => void;
   showTripSharing: boolean;
 }) {
   const [, setLocation] = useLocation();
+  const pushDialog = useBoundStore((state) => state.pushDialog);
   return (
     <>
       <DropdownMenu.Root>
@@ -41,7 +40,9 @@ export function TripMenu({
           <DropdownMenu.Label>Activity</DropdownMenu.Label>
           <DropdownMenu.Item
             onClick={() => {
-              setNewActivityDialogOpen(true);
+              if (trip) {
+                pushDialog(ActivityNewDialog, { trip });
+              }
             }}
           >
             New activity
@@ -52,7 +53,9 @@ export function TripMenu({
 
           <DropdownMenu.Item
             onClick={() => {
-              setEditTripDialogOpen(true);
+              if (trip) {
+                pushDialog(TripEditDialog, { trip });
+              }
             }}
           >
             Edit trip
@@ -60,7 +63,9 @@ export function TripMenu({
 
           <DropdownMenu.Item
             onClick={() => {
-              setNewAcommodationDialogOpen(true);
+              if (trip) {
+                pushDialog(AccommodationNewDialog, { trip });
+              }
             }}
           >
             Add accommodation
@@ -68,7 +73,9 @@ export function TripMenu({
 
           <DropdownMenu.Item
             onClick={() => {
-              setNewMacroplanDialogOpen(true);
+              if (trip) {
+                pushDialog(MacroplanNewDialog, { trip });
+              }
             }}
           >
             Add day plan
@@ -77,7 +84,9 @@ export function TripMenu({
           {showTripSharing ? (
             <DropdownMenu.Item
               onClick={() => {
-                setShareTripDialogOpen(true);
+                if (trip && user) {
+                  pushDialog(TripSharingDialog, { trip, user });
+                }
               }}
             >
               Share trip
@@ -86,7 +95,9 @@ export function TripMenu({
 
           <DropdownMenu.Item
             onClick={() => {
-              setDeleteTripDialogOpen(true);
+              if (trip) {
+                pushDialog(TripDeleteDialog, { trip });
+              }
             }}
           >
             Delete trip

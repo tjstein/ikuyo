@@ -2,6 +2,7 @@ import { Box, Dialog } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useMemo } from 'react';
 import type { DbTrip } from '../Trip/db';
+import { useBoundStore } from '../data/store';
 import { CommonDialogMaxWidth } from '../dialog';
 import { AccommodationForm } from './AccommodationForm';
 import { AccommodationFormMode } from './AccommodationFormMode';
@@ -9,13 +10,10 @@ import { formatToDatetimeLocalInput } from './time';
 
 export function AccommodationNewDialog({
   trip,
-  dialogOpen,
-  setDialogOpen,
 }: {
   trip: DbTrip;
-  dialogOpen: boolean;
-  setDialogOpen: (newValue: boolean) => void;
 }) {
+  const popDialog = useBoundStore((state) => state.popDialog);
   const tripStartStr = formatToDatetimeLocalInput(
     DateTime.fromMillis(trip.timestampStart).setZone(trip.timeZone),
   );
@@ -46,7 +44,14 @@ export function AccommodationNewDialog({
   }, [trip]);
 
   return (
-    <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+    <Dialog.Root
+      defaultOpen
+      onOpenChange={(open) => {
+        if (!open) {
+          popDialog();
+        }
+      }}
+    >
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>New Accommodation</Dialog.Title>
         <Dialog.Description>
@@ -56,8 +61,6 @@ export function AccommodationNewDialog({
         <AccommodationForm
           mode={AccommodationFormMode.New}
           tripId={trip.id}
-          dialogOpen={dialogOpen}
-          setDialogOpen={setDialogOpen}
           tripTimeZone={trip.timeZone}
           tripStartStr={tripStartStr}
           tripEndStr={tripEndStr}

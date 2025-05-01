@@ -1,5 +1,6 @@
 import { Box, Dialog } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
+import { useBoundStore } from '../data/store';
 import { CommonDialogMaxWidth } from '../dialog';
 import { ActivityForm } from './ActivityForm';
 import { ActivityFormMode } from './ActivityFormMode';
@@ -8,12 +9,8 @@ import { formatToDatetimeLocalInput } from './time';
 
 export function ActivityEditDialog({
   activity,
-  dialogOpen,
-  setDialogOpen,
 }: {
   activity: DbActivityWithTrip;
-  dialogOpen: boolean;
-  setDialogOpen: (newValue: boolean) => void;
 }) {
   const tripStartStr = formatToDatetimeLocalInput(
     DateTime.fromMillis(activity.trip.timestampStart).setZone(
@@ -33,8 +30,16 @@ export function ActivityEditDialog({
   const activityEndStr = formatToDatetimeLocalInput(
     DateTime.fromMillis(activity.timestampEnd).setZone(activity.trip.timeZone),
   );
+  const popDialog = useBoundStore((state) => state.popDialog);
   return (
-    <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+    <Dialog.Root
+      defaultOpen
+      onOpenChange={(open) => {
+        if (!open) {
+          popDialog();
+        }
+      }}
+    >
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>Edit Activity</Dialog.Title>
         <Dialog.Description>
@@ -53,8 +58,6 @@ export function ActivityEditDialog({
           activityEndStr={activityEndStr}
           activityLocationLat={activity.locationLat}
           activityLocationLng={activity.locationLng}
-          dialogOpen={dialogOpen}
-          setDialogOpen={setDialogOpen}
           activityLocation={activity.location}
           activityDescription={activity.description}
         />

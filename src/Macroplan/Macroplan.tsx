@@ -1,6 +1,5 @@
 import { Box, ContextMenu, Text } from '@radix-ui/themes';
 import clsx from 'clsx';
-import { useState } from 'react';
 import { dangerToken } from '../ui';
 import s from './Macroplan.module.css';
 import { MacroplanDeleteDialog } from './MacroplanDeleteDialog';
@@ -9,6 +8,8 @@ import { MacroplanViewDialog } from './MacroplanViewDialog';
 import type { DbMacroplanWithTrip } from './db';
 
 import type * as React from 'react';
+import { useCallback } from 'react';
+import { useBoundStore } from '../data/store';
 export function Macroplan({
   className,
   macroplan,
@@ -20,9 +21,16 @@ export function Macroplan({
 }) {
   const responsiveTextSize = { initial: '1' as const };
 
-  const [viewDialogOpen, setViewDialogOpen] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const pushDialog = useBoundStore((state) => state.pushDialog);
+  const openMacroplanViewDialog = useCallback(() => {
+    pushDialog(MacroplanViewDialog, { macroplan });
+  }, [macroplan, pushDialog]);
+  const openMacroplanEditDialog = useCallback(() => {
+    pushDialog(MacroplanEditDialog, { macroplan });
+  }, [macroplan, pushDialog]);
+  const openMacroplanDeleteDialog = useCallback(() => {
+    pushDialog(MacroplanDeleteDialog, { macroplan });
+  }, [macroplan, pushDialog]);
 
   return (
     <>
@@ -36,9 +44,7 @@ export function Macroplan({
             tabIndex={0}
             className={clsx(s.macroplan, className)}
             style={style}
-            onClick={() => {
-              setViewDialogOpen(true);
-            }}
+            onClick={openMacroplanViewDialog}
           >
             <Text as="div" size={responsiveTextSize} weight="bold">
               {macroplan.name}
@@ -47,54 +53,21 @@ export function Macroplan({
         </ContextMenu.Trigger>
         <ContextMenu.Content>
           <ContextMenu.Label>{macroplan.name}</ContextMenu.Label>
-          <ContextMenu.Item
-            onClick={() => {
-              setViewDialogOpen(true);
-            }}
-          >
+          <ContextMenu.Item onClick={openMacroplanViewDialog}>
             View
           </ContextMenu.Item>
-          <ContextMenu.Item
-            onClick={() => {
-              setEditDialogOpen(true);
-            }}
-          >
+          <ContextMenu.Item onClick={openMacroplanEditDialog}>
             Edit
           </ContextMenu.Item>
           <ContextMenu.Separator />
           <ContextMenu.Item
             color={dangerToken}
-            onClick={() => {
-              setDeleteDialogOpen(true);
-            }}
+            onClick={openMacroplanDeleteDialog}
           >
             Delete
           </ContextMenu.Item>
         </ContextMenu.Content>
       </ContextMenu.Root>
-      {viewDialogOpen ? (
-        <MacroplanViewDialog
-          macroplan={macroplan}
-          dialogOpen={viewDialogOpen}
-          setDialogOpen={setViewDialogOpen}
-          setEditDialogOpen={setEditDialogOpen}
-          setDeleteDialogOpen={setDeleteDialogOpen}
-        />
-      ) : null}
-      {editDialogOpen ? (
-        <MacroplanEditDialog
-          macroplan={macroplan}
-          dialogOpen={editDialogOpen}
-          setDialogOpen={setEditDialogOpen}
-        />
-      ) : null}
-      {deleteDialogOpen ? (
-        <MacroplanDeleteDialog
-          macroplan={macroplan}
-          dialogOpen={deleteDialogOpen}
-          setDialogOpen={setDeleteDialogOpen}
-        />
-      ) : null}
     </>
   );
 }

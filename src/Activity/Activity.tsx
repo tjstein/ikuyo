@@ -4,7 +4,7 @@ import {
   SewingPinIcon,
 } from '@radix-ui/react-icons';
 import clsx from 'clsx';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import style from './Activity.module.css';
 
 import { Box, ContextMenu, Text } from '@radix-ui/themes';
@@ -13,6 +13,7 @@ import { formatTime } from './time';
 
 import { TripViewMode } from '../Trip/TripViewMode';
 
+import { useBoundStore } from '../data/store';
 import { dangerToken } from '../ui';
 import { ActivityDeleteDialog } from './ActivityDeleteDialog';
 import { ActivityEditDialog } from './ActivityEditDialog';
@@ -35,14 +36,15 @@ export function Activity({
   const timeStart = formatTime(activity.timestampStart, activity.trip.timeZone);
   const timeEnd = formatTime(activity.timestampEnd, activity.trip.timeZone);
   const [dayStart, dayEnd] = getDayStartEnd(activity);
-  const [viewDialogOpen, setViewDialogOpen] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const responsiveTextSize = { initial: '1' as const };
   const isActivityOngoing = useMemo(() => {
     const now = Date.now();
     return activity.timestampStart <= now && now <= activity.timestampEnd;
   }, [activity.timestampEnd, activity.timestampStart]);
+  const pushDialog = useBoundStore((state) => state.pushDialog);
+  const openActivityViewDialog = useCallback(() => {
+    pushDialog(ActivityViewDialog, { activity });
+  }, [activity, pushDialog]);
 
   return (
     <>
@@ -59,9 +61,7 @@ export function Activity({
               isActivityOngoing ? style.activityOngoing : '',
               className,
             )}
-            onClick={() => {
-              setViewDialogOpen(true);
-            }}
+            onClick={openActivityViewDialog}
             style={{
               gridRowStart: `t${timeStart}`,
               gridRowEnd: `te${timeEnd}`,
@@ -107,16 +107,14 @@ export function Activity({
         </ContextMenu.Trigger>
         <ContextMenu.Content>
           <ContextMenu.Label>{activity.title}</ContextMenu.Label>
-          <ContextMenu.Item
-            onClick={() => {
-              setViewDialogOpen(true);
-            }}
-          >
+          <ContextMenu.Item onClick={openActivityViewDialog}>
             View
           </ContextMenu.Item>
           <ContextMenu.Item
             onClick={() => {
-              setEditDialogOpen(true);
+              pushDialog(ActivityEditDialog, {
+                activity,
+              });
             }}
           >
             Edit
@@ -125,36 +123,15 @@ export function Activity({
           <ContextMenu.Item
             color={dangerToken}
             onClick={() => {
-              setDeleteDialogOpen(true);
+              pushDialog(ActivityDeleteDialog, {
+                activity,
+              });
             }}
           >
             Delete
           </ContextMenu.Item>
         </ContextMenu.Content>
       </ContextMenu.Root>
-      {viewDialogOpen ? (
-        <ActivityViewDialog
-          activity={activity}
-          dialogOpen={viewDialogOpen}
-          setDialogOpen={setViewDialogOpen}
-          setEditDialogOpen={setEditDialogOpen}
-          setDeleteDialogOpen={setDeleteDialogOpen}
-        />
-      ) : null}
-      {editDialogOpen ? (
-        <ActivityEditDialog
-          activity={activity}
-          dialogOpen={editDialogOpen}
-          setDialogOpen={setEditDialogOpen}
-        />
-      ) : null}
-      {deleteDialogOpen ? (
-        <ActivityDeleteDialog
-          activity={activity}
-          dialogOpen={deleteDialogOpen}
-          setDialogOpen={setDeleteDialogOpen}
-        />
-      ) : null}
     </>
   );
 }

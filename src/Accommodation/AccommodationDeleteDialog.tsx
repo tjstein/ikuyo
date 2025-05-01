@@ -7,14 +7,11 @@ import { type DbAccommodationWithTrip, dbDeleteAccommodation } from './db';
 
 export function AccommodationDeleteDialog({
   accommodation,
-  dialogOpen,
-  setDialogOpen,
 }: {
   accommodation: DbAccommodationWithTrip;
-  dialogOpen: boolean;
-  setDialogOpen: (newValue: boolean) => void;
 }) {
   const publishToast = useBoundStore((state) => state.publishToast);
+  const popDialog = useBoundStore((state) => state.popDialog);
   const deleteAccommodation = useCallback(() => {
     void dbDeleteAccommodation(accommodation)
       .then(() => {
@@ -24,7 +21,7 @@ export function AccommodationDeleteDialog({
           close: {},
         });
 
-        setDialogOpen(false);
+        popDialog();
       })
       .catch((err: unknown) => {
         console.error(`Error deleting "${accommodation.name}"`, err);
@@ -33,15 +30,18 @@ export function AccommodationDeleteDialog({
           title: { children: `Error deleting "${accommodation.name}"` },
           close: {},
         });
-        setDialogOpen(false);
+        popDialog();
       });
-  }, [publishToast, accommodation, setDialogOpen]);
+  }, [publishToast, accommodation, popDialog]);
 
   return (
     <AlertDialog.Root
-      open={dialogOpen}
-      onOpenChange={setDialogOpen}
-      defaultOpen={dialogOpen}
+      defaultOpen
+      onOpenChange={(open) => {
+        if (!open) {
+          popDialog();
+        }
+      }}
     >
       <AlertDialog.Content maxWidth={CommonDialogMaxWidth}>
         <AlertDialog.Title>Delete Accommodation</AlertDialog.Title>

@@ -1,21 +1,27 @@
 import { Box, Dialog } from '@radix-ui/themes';
+import { useBoundStore } from '../data/store';
 import type { DbUser } from '../data/types';
 import { CommonDialogMaxWidth } from '../dialog';
 import { TripForm } from './TripForm';
 import { TripFormMode } from './TripFormMode';
 
 export function TripNewDialog({
-  dialogOpen,
-  setDialogOpen,
   user,
 }: {
-  dialogOpen: boolean;
-  setDialogOpen: (newValue: boolean) => void;
   user: DbUser;
 }) {
   const currentTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const popDialog = useBoundStore((state) => state.popDialog);
+
   return (
-    <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+    <Dialog.Root
+      defaultOpen
+      onOpenChange={(open) => {
+        if (!open) {
+          popDialog();
+        }
+      }}
+    >
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>New Trip</Dialog.Title>
         <Dialog.Description>
@@ -27,8 +33,6 @@ export function TripNewDialog({
           tripStartStr={''}
           tripEndStr={''}
           tripTitle={''}
-          dialogOpen={dialogOpen}
-          setDialogOpen={setDialogOpen}
           tripTimeZone={currentTimeZone}
           tripCurrency=""
           tripOriginCurrency=""

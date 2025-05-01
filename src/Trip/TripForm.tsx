@@ -13,7 +13,6 @@ import { getDateTimeFromDateInput } from './time';
 export function TripForm({
   mode,
   tripId,
-  setDialogOpen,
   tripStartStr,
   tripEndStr,
   tripTitle,
@@ -26,8 +25,6 @@ export function TripForm({
 }: {
   mode: TripFormMode;
   tripId?: string;
-  dialogOpen: boolean;
-  setDialogOpen: (newValue: boolean) => void;
   tripStartStr: string;
   tripEndStr: string;
   tripTitle: string;
@@ -47,9 +44,8 @@ export function TripForm({
   const idOriginCurrency = useId();
   const idRegion = useId();
   const publishToast = useBoundStore((state) => state.publishToast);
-  const closeDialog = useCallback(() => {
-    setDialogOpen(false);
-  }, [setDialogOpen]);
+  const popDialog = useBoundStore((state) => state.popDialog);
+
   const [errorMessage, setErrorMessage] = useState('');
   const timeZones = useMemo(() => Intl.supportedValuesOf('timeZone'), []);
   const currencies = useMemo(() => Intl.supportedValuesOf('currency'), []);
@@ -129,7 +125,7 @@ export function TripForm({
           close: {},
         });
         elForm.reset();
-        setDialogOpen(false);
+        popDialog();
       } else if (mode === TripFormMode.New && userId) {
         const { id: newId, result } = await dbAddTrip(
           {
@@ -153,19 +149,19 @@ export function TripForm({
           close: {},
         });
         elForm.reset();
-        setDialogOpen(false);
+        popDialog();
 
         setLocation(ROUTES.Trip.replace(':id', newId));
       } else {
         // Shouldn't reach this block, but included for completeness
         elForm.reset();
-        setDialogOpen(false);
+        popDialog();
       }
     };
   }, [
     mode,
     publishToast,
-    setDialogOpen,
+    popDialog,
     tripId,
     userId,
     setLocation,
@@ -360,7 +356,7 @@ export function TripForm({
           size="2"
           variant="soft"
           color="gray"
-          onClick={closeDialog}
+          onClick={popDialog}
         >
           Cancel
         </Button>

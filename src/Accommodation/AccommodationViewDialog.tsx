@@ -2,23 +2,20 @@ import { Button, Dialog, Flex, Heading, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
+import { useBoundStore } from '../data/store';
 import { CommonDialogMaxWidth } from '../dialog';
 import s from './Accommodation.module.css';
+import { AccommodationDeleteDialog } from './AccommodationDeleteDialog';
+import { AccommodationEditDialog } from './AccommodationEditDialog';
 import type { DbAccommodationWithTrip } from './db';
 
 export function AccommodationViewDialog({
   accommodation,
-  dialogOpen,
-  setDialogOpen,
-  setEditDialogOpen,
-  setDeleteDialogOpen,
 }: {
   accommodation: DbAccommodationWithTrip;
-  dialogOpen: boolean;
-  setDialogOpen: (newValue: boolean) => void;
-  setEditDialogOpen: (newValue: boolean) => void;
-  setDeleteDialogOpen: (newValue: boolean) => void;
 }) {
+  const popDialog = useBoundStore((state) => state.popDialog);
+  const pushDialog = useBoundStore((state) => state.pushDialog);
   const accommodationCheckInStr = DateTime.fromMillis(
     accommodation.timestampCheckIn,
   )
@@ -33,7 +30,14 @@ export function AccommodationViewDialog({
   const notes = useParseTextIntoNodes(accommodation.notes);
 
   return (
-    <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+    <Dialog.Root
+      defaultOpen
+      onOpenChange={(open) => {
+        if (!open) {
+          popDialog();
+        }
+      }}
+    >
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>View Accommodation</Dialog.Title>
         <Dialog.Description>Accommodation details</Dialog.Description>
@@ -90,8 +94,9 @@ export function AccommodationViewDialog({
             variant="soft"
             color="gray"
             onClick={() => {
-              setDialogOpen(false);
-              setDeleteDialogOpen(true);
+              pushDialog(AccommodationDeleteDialog, {
+                accommodation,
+              });
             }}
           >
             Delete
@@ -102,8 +107,9 @@ export function AccommodationViewDialog({
             variant="soft"
             color="gray"
             onClick={() => {
-              setDialogOpen(false);
-              setEditDialogOpen(true);
+              pushDialog(AccommodationEditDialog, {
+                accommodation,
+              });
             }}
           >
             Edit

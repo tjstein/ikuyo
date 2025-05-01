@@ -23,6 +23,7 @@ import { formatTimestampToReadableDate } from './time';
 import { DateTime } from 'luxon';
 import { DocTitle } from '../Nav/DocTitle';
 
+import { useBoundStore } from '../data/store';
 import { TripNewDialog } from './TripNewDialog';
 import type { DbTrip } from './db';
 
@@ -53,7 +54,7 @@ export function PageTrips(_props: RouteComponentProps) {
     },
   });
   const user = data?.user?.[0] as DbUser | undefined;
-  const [newTripDialogOpen, setNewTripDialogOpen] = useState(false);
+
   const tripGroups: Record<TripGroup, DbTrip[]> = useMemo(() => {
     const trips: DbTrip[] = data?.trip
       ? (data.trip as unknown as DbTrip[])
@@ -104,26 +105,18 @@ export function PageTrips(_props: RouteComponentProps) {
               type={TripGroup.Ongoing}
               groupTitle="Ongoing Trips"
               trips={tripGroups[TripGroup.Ongoing]}
-              setNewTripDialogOpen={setNewTripDialogOpen}
+              user={user}
             />
             <Trips
               type={TripGroup.Upcoming}
               groupTitle="Upcoming Trips"
               trips={tripGroups[TripGroup.Upcoming]}
-              setNewTripDialogOpen={setNewTripDialogOpen}
+              user={user}
             />
             <PastTrips now={now} user={user} />
           </Flex>
         )}
       </Container>
-
-      {newTripDialogOpen && user ? (
-        <TripNewDialog
-          user={user}
-          dialogOpen={newTripDialogOpen}
-          setDialogOpen={setNewTripDialogOpen}
-        />
-      ) : null}
     </>
   );
 }
@@ -222,13 +215,15 @@ function Trips({
   type,
   groupTitle,
   trips,
-  setNewTripDialogOpen,
+  user,
 }: {
   type: TripGroup;
   groupTitle: string;
   trips: DbTrip[];
-  setNewTripDialogOpen: (v: boolean) => void;
+  user: DbUser | undefined;
 }) {
+  const pushDialog = useBoundStore((state) => state.pushDialog);
+
   return (
     <Box>
       <Heading as="h2" mb="1">
@@ -238,7 +233,9 @@ function Trips({
           <Button
             variant="outline"
             onClick={() => {
-              setNewTripDialogOpen(true);
+              if (user) {
+                pushDialog(TripNewDialog, { user });
+              }
             }}
             mx="3"
           >

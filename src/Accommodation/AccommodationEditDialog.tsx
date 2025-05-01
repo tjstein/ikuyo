@@ -1,5 +1,6 @@
 import { Box, Dialog } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
+import { useBoundStore } from '../data/store';
 import { CommonDialogMaxWidth } from '../dialog';
 import { AccommodationForm } from './AccommodationForm';
 import { AccommodationFormMode } from './AccommodationFormMode';
@@ -8,13 +9,10 @@ import { formatToDatetimeLocalInput } from './time';
 
 export function AccommodationEditDialog({
   accommodation,
-  dialogOpen,
-  setDialogOpen,
 }: {
   accommodation: DbAccommodationWithTrip;
-  dialogOpen: boolean;
-  setDialogOpen: (newValue: boolean) => void;
 }) {
+  const popDialog = useBoundStore((state) => state.popDialog);
   const tripStartStr = formatToDatetimeLocalInput(
     DateTime.fromMillis(accommodation.trip.timestampStart).setZone(
       accommodation.trip.timeZone,
@@ -38,7 +36,14 @@ export function AccommodationEditDialog({
   );
 
   return (
-    <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+    <Dialog.Root
+      defaultOpen
+      onOpenChange={(open) => {
+        if (!open) {
+          popDialog();
+        }
+      }}
+    >
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>Edit Accommodation</Dialog.Title>
         <Dialog.Description>
@@ -49,8 +54,6 @@ export function AccommodationEditDialog({
           mode={AccommodationFormMode.Edit}
           tripId={accommodation.trip.id}
           accommodationId={accommodation.id}
-          dialogOpen={dialogOpen}
-          setDialogOpen={setDialogOpen}
           tripTimeZone={accommodation.trip.timeZone}
           tripStartStr={tripStartStr}
           tripEndStr={tripEndStr}

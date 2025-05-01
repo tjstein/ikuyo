@@ -7,13 +7,10 @@ import { type DbMacroplanWithTrip, dbDeleteMacroplan } from './db';
 
 export function MacroplanDeleteDialog({
   macroplan,
-  dialogOpen,
-  setDialogOpen,
 }: {
   macroplan: DbMacroplanWithTrip;
-  dialogOpen: boolean;
-  setDialogOpen: (newValue: boolean) => void;
 }) {
+  const popDialog = useBoundStore((state) => state.popDialog);
   const publishToast = useBoundStore((state) => state.publishToast);
   const deleteMacroplan = useCallback(() => {
     void dbDeleteMacroplan(macroplan)
@@ -24,7 +21,7 @@ export function MacroplanDeleteDialog({
           close: {},
         });
 
-        setDialogOpen(false);
+        popDialog();
       })
       .catch((err: unknown) => {
         console.error(`Error deleting "${macroplan.name}"`, err);
@@ -33,15 +30,18 @@ export function MacroplanDeleteDialog({
           title: { children: `Error deleting "${macroplan.name}"` },
           close: {},
         });
-        setDialogOpen(false);
+        popDialog();
       });
-  }, [publishToast, macroplan, setDialogOpen]);
+  }, [publishToast, macroplan, popDialog]);
 
   return (
     <AlertDialog.Root
-      open={dialogOpen}
-      onOpenChange={setDialogOpen}
-      defaultOpen={dialogOpen}
+      defaultOpen
+      onOpenChange={(open) => {
+        if (!open) {
+          popDialog();
+        }
+      }}
     >
       <AlertDialog.Content maxWidth={CommonDialogMaxWidth}>
         <AlertDialog.Title>Delete Day Plan</AlertDialog.Title>
