@@ -12,6 +12,7 @@ export function AccommodationDeleteDialog({
 }) {
   const publishToast = useBoundStore((state) => state.publishToast);
   const popDialog = useBoundStore((state) => state.popDialog);
+  const clearDialogs = useBoundStore((state) => state.clearDialogs);
   const deleteAccommodation = useCallback(() => {
     void dbDeleteAccommodation(accommodation)
       .then(() => {
@@ -21,7 +22,7 @@ export function AccommodationDeleteDialog({
           close: {},
         });
 
-        popDialog();
+        clearDialogs();
       })
       .catch((err: unknown) => {
         console.error(`Error deleting "${accommodation.name}"`, err);
@@ -32,17 +33,10 @@ export function AccommodationDeleteDialog({
         });
         popDialog();
       });
-  }, [publishToast, accommodation, popDialog]);
+  }, [publishToast, accommodation, popDialog, clearDialogs]);
 
   return (
-    <AlertDialog.Root
-      defaultOpen
-      onOpenChange={(open) => {
-        if (!open) {
-          popDialog();
-        }
-      }}
-    >
+    <AlertDialog.Root defaultOpen>
       <AlertDialog.Content maxWidth={CommonDialogMaxWidth}>
         <AlertDialog.Title>Delete Accommodation</AlertDialog.Title>
         <AlertDialog.Description size="2">
@@ -50,7 +44,7 @@ export function AccommodationDeleteDialog({
         </AlertDialog.Description>
 
         <Flex gap="3" mt="4" justify="end">
-          <AlertDialog.Cancel>
+          <AlertDialog.Cancel onClick={popDialog}>
             <Button variant="soft" color="gray">
               Cancel
             </Button>

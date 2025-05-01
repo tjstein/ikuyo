@@ -15,6 +15,7 @@ export function TripDeleteDialog({
   const [, setLocation] = useLocation();
   const publishToast = useBoundStore((state) => state.publishToast);
   const popDialog = useBoundStore((state) => state.popDialog);
+  const clearDialogs = useBoundStore((state) => state.clearDialogs);
   const deleteTrip = useCallback(() => {
     void dbDeleteTrip(trip)
       .then(() => {
@@ -23,8 +24,7 @@ export function TripDeleteDialog({
           title: { children: `Trip "${trip.title}" deleted` },
           close: {},
         });
-
-        popDialog();
+        clearDialogs();
 
         setLocation(ROUTES.Trips);
       })
@@ -37,17 +37,10 @@ export function TripDeleteDialog({
         });
         popDialog();
       });
-  }, [setLocation, publishToast, trip, popDialog]);
+  }, [setLocation, publishToast, trip, popDialog, clearDialogs]);
 
   return (
-    <AlertDialog.Root
-      defaultOpen
-      onOpenChange={(open) => {
-        if (!open) {
-          popDialog();
-        }
-      }}
-    >
+    <AlertDialog.Root defaultOpen>
       <AlertDialog.Content maxWidth={CommonDialogMaxWidth}>
         <AlertDialog.Title>Delete Trip</AlertDialog.Title>
         <AlertDialog.Description size="2">
@@ -61,7 +54,7 @@ export function TripDeleteDialog({
         </AlertDialog.Description>
 
         <Flex gap="3" mt="4" justify="end">
-          <AlertDialog.Cancel>
+          <AlertDialog.Cancel onClick={popDialog}>
             <Button variant="soft" color="gray">
               Cancel
             </Button>
