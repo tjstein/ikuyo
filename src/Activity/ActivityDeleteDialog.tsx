@@ -1,7 +1,7 @@
 import { AlertDialog, Button, Flex } from '@radix-ui/themes';
 import { useCallback } from 'react';
+import { CommonDialogMaxWidth } from '../Dialog/ui';
 import { useBoundStore } from '../data/store';
-import { CommonDialogMaxWidth } from '../dialog';
 import { dangerToken } from '../ui';
 import { type DbActivity, dbDeleteActivity } from './db';
 

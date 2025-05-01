@@ -16,8 +16,8 @@ import { ROUTES, asRootRoute } from '../routes';
 import s from './Auth.module.css';
 
 import { ArrowLeftIcon } from '@radix-ui/react-icons';
+import { CommonDialogMaxWidth } from '../Dialog/ui';
 import { DocTitle } from '../Nav/DocTitle';
-import { CommonDialogMaxWidth } from '../dialog';
 import imgUrl from '../logo/ikuyo.svg';
 
 export default PageLogin;

@@ -1,9 +1,9 @@
 import { Dialog, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useMemo } from 'react';
+import { CommonDialogMaxWidth } from '../Dialog/ui';
 import type { DbTrip } from '../Trip/db';
 import { useBoundStore } from '../data/store';
-import { CommonDialogMaxWidth } from '../dialog';
 import { MacroplanForm } from './MacroplanForm';
 import { MacroplanFormMode } from './MacroplanFormMode';
 import { formatToDateInput } from './time';

@@ -1,7 +1,7 @@
 import { Box, Dialog } from '@radix-ui/themes';
+import { CommonDialogMaxWidth } from '../Dialog/ui';
 import { useBoundStore } from '../data/store';
 import type { DbUser } from '../data/types';
-import { CommonDialogMaxWidth } from '../dialog';
 import { TripForm } from './TripForm';
 import { TripFormMode } from './TripFormMode';
 

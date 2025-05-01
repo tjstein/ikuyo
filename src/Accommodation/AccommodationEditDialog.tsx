@@ -1,7 +1,7 @@
 import { Box, Dialog } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
+import { CommonDialogMaxWidth } from '../Dialog/ui';
 import { useBoundStore } from '../data/store';
-import { CommonDialogMaxWidth } from '../dialog';
 import { AccommodationForm } from './AccommodationForm';
 import { AccommodationFormMode } from './AccommodationFormMode';
 import type { DbAccommodationWithTrip } from './db';

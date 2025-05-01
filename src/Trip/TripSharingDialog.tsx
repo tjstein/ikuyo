@@ -10,10 +10,10 @@ import {
   TextField,
 } from '@radix-ui/themes';
 import { type SyntheticEvent, useCallback, useMemo, useState } from 'react';
+import { CommonDialogMaxWidth } from '../Dialog/ui';
 import { TripUserRole } from '../data/TripUserRole';
 import { useBoundStore } from '../data/store';
 import type { DbUser } from '../data/types';
-import { CommonDialogMaxWidth } from '../dialog';
 import { dangerToken } from '../ui';
 import s from './TripSharingDialog.module.css';
 import { type DbTrip, dbAddUserToTrip, dbRemoveUserFromTrip } from './db';

@@ -10,10 +10,10 @@ import {
   type DbComment,
   type DbCommentGroup,
 } from '../Comment/db';
+import { CommonCommentDialogMaxWidth } from '../Dialog/ui';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import { db } from '../data/db';
 import { useBoundStore } from '../data/store';
-import { CommonCommentDialogMaxWidth } from '../dialog';
 import s from './Activity.module.css';
 import { ActivityDeleteDialog } from './ActivityDeleteDialog';
 import { ActivityEditDialog } from './ActivityEditDialog';

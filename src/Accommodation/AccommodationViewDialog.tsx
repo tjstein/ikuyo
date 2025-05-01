@@ -1,9 +1,9 @@
 import { Button, Dialog, Flex, Heading, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 
+import { CommonDialogMaxWidth } from '../Dialog/ui';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import { useBoundStore } from '../data/store';
-import { CommonDialogMaxWidth } from '../dialog';
 import s from './Accommodation.module.css';
 import { AccommodationDeleteDialog } from './AccommodationDeleteDialog';
 import { AccommodationEditDialog } from './AccommodationEditDialog';

@@ -1,9 +1,9 @@
 import { Box, Dialog } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useMemo } from 'react';
+import { CommonDialogMaxWidth } from '../Dialog/ui';
 import type { DbTrip } from '../Trip/db';
 import { useBoundStore } from '../data/store';
-import { CommonDialogMaxWidth } from '../dialog';
 import { ActivityForm } from './ActivityForm';
 import { ActivityFormMode } from './ActivityFormMode';
 import { getNewActivityTimestamp } from './activitiyStorage';

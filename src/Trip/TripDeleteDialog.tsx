@@ -1,8 +1,8 @@
 import { AlertDialog, Button, Flex, Text } from '@radix-ui/themes';
 import { useCallback } from 'react';
 import { useLocation } from 'wouter';
+import { CommonDialogMaxWidth } from '../Dialog/ui';
 import { useBoundStore } from '../data/store';
-import { CommonDialogMaxWidth } from '../dialog';
 import { ROUTES } from '../routes';
 import { dangerToken } from '../ui';
 import { type DbTripFull, dbDeleteTrip } from './db';

@@ -1,8 +1,8 @@
 import { Button, Dialog, Flex, Heading, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
+import { CommonDialogMaxWidth } from '../Dialog/ui';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import { useBoundStore } from '../data/store';
-import { CommonDialogMaxWidth } from '../dialog';
 import s from './Macroplan.module.css';
 import { MacroplanDeleteDialog } from './MacroplanDeleteDialog';
 import { MacroplanEditDialog } from './MacroplanEditDialog';
