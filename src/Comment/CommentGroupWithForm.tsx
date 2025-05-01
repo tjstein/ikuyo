@@ -1,3 +1,4 @@
+import { Text } from '@radix-ui/themes';
 import type { DbUser } from '../data/types';
 import { CommentForm } from './CommentForm';
 import { CommentGroup } from './CommentGroup';
@@ -10,6 +11,8 @@ export function CommentGroupWithForm({
   tripId,
   objectId,
   objectType,
+  isLoading,
+  error,
 }: {
   user?: DbUser;
   commentGroup?: undefined | DbCommentGroup<DbCommentGroupObjectType>;
@@ -17,6 +20,8 @@ export function CommentGroupWithForm({
   tripId: string;
   objectId: string;
   objectType: DbCommentGroupObjectType;
+  isLoading?: boolean;
+  error?: { message: string };
 }) {
   return (
     <>
@@ -29,7 +34,14 @@ export function CommentGroupWithForm({
         commentGroupId={commentGroup?.id}
         setCommentMode={() => {}}
       />
-      <CommentGroup commentGroup={commentGroup} />
+
+      {isLoading ? (
+        <Text>Loading comments...</Text>
+      ) : error ? (
+        <Text>Error loading comments: {error.message}</Text>
+      ) : (
+        <CommentGroup commentGroup={commentGroup} />
+      )}
     </>
   );
 }

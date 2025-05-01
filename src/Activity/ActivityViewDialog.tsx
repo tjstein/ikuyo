@@ -186,6 +186,8 @@ export function ActivityViewDialog({
               objectType={COMMENT_GROUP_OBJECT_TYPE.ACTIVITY}
               user={currentUser}
               commentGroup={commentGroup}
+              isLoading={commentGroupQuery.isLoading}
+              error={commentGroupQuery.error}
             />
           </Flex>
         </Flex>
