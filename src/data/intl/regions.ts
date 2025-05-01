@@ -3,7 +3,7 @@
  *
  * Then manually remove duplicates and some meta-regions
  */
-export const REGIONS_MAP = {
+export const REGIONS_MAP: Record<string, string> = {
   AC: 'Ascension Island',
   AD: 'Andorra',
   AE: 'United Arab Emirates',

@@ -8,6 +8,7 @@ import {
   TextField,
 } from '@radix-ui/themes';
 import { useCallback, useId, useReducer, useState } from 'react';
+import { REGIONS_MAP } from '../data/intl/regions';
 import { useBoundStore } from '../data/store';
 import { dangerToken } from '../ui';
 import { ActivityFormMode } from './ActivityFormMode';
@@ -124,18 +125,32 @@ export function ActivityForm({
             lng: coordinateState.lng,
           });
         } else {
+          // if coordinates are not set, use geocoding from location to get the coordinates
           const elLocation = document.getElementById(
             idLocation,
           ) as HTMLInputElement;
-          const location = elLocation.value;
-          let lat: number | undefined;
-          let lng: number | undefined;
+          let location = elLocation.value;
           const geocodingOptions: GeocodingOptions = {
             language: 'en',
             limit: 5,
             country: [tripRegion.toLowerCase()],
             types: ['poi'],
           };
+
+          if (!location) {
+            // if location is not yet set, set location as the trip region
+            const region = REGIONS_MAP[tripRegion];
+            if (region) {
+              location = region;
+              geocodingOptions.types = ['country'];
+            } else {
+              // shouldn't happen, but just in case
+              location = 'Tokyo Disneyland';
+            }
+          }
+
+          let lat: number | undefined;
+          let lng: number | undefined;
           console.log('geocoding: request', location, geocodingOptions);
           if (location) {
             const res = await geocoding.forward(location, geocodingOptions);
