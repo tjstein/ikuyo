@@ -69,6 +69,7 @@ export function ActivityNewDialog({
           activityDescription={''}
           activityLocationLat={undefined}
           activityLocationLng={undefined}
+          activityLocationZoom={undefined}
         />
       </Dialog.Content>
     </Dialog.Root>

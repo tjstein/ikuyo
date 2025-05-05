@@ -17,24 +17,23 @@ import { setNewActivityTimestamp } from './activitiyStorage';
 import { dbAddActivity, dbUpdateActivity } from './db';
 import { getDateTimeFromDatetimeLocalInput } from './time';
 
-interface LocationCoordinate {
-  lat: number;
-  lng: number;
-}
 interface LocationCoordinateState {
   enabled: boolean;
   lat: number | undefined;
   lng: number | undefined;
+  zoom: number | undefined;
 }
 
 function coordinateStateReducer(
   state: LocationCoordinateState,
   action:
-    | { type: 'setCoordinate'; lat: number; lng: number }
+    | { type: 'setMapZoom'; zoom: number }
+    | { type: 'setMarkerCoordinate'; lat: number; lng: number }
     | {
         type: 'setEnabled';
         lat: number | undefined;
         lng: number | undefined;
+        zoom: number | undefined;
       }
     | {
         type: 'setDisabled';
@@ -53,7 +52,12 @@ function coordinateStateReducer(
         ...state,
         enabled: false,
       };
-    case 'setCoordinate':
+    case 'setMapZoom':
+      return {
+        ...state,
+        zoom: action.zoom,
+      };
+    case 'setMarkerCoordinate':
       return {
         ...state,
         lat: action.lat,
@@ -78,6 +82,7 @@ export function ActivityForm({
   activityLocation,
   activityLocationLng,
   activityLocationLat,
+  activityLocationZoom,
   activityDescription,
 }: {
   mode: ActivityFormMode;
@@ -93,6 +98,7 @@ export function ActivityForm({
   activityLocation: string;
   activityLocationLat: number | undefined;
   activityLocationLng: number | undefined;
+  activityLocationZoom: number | undefined;
   activityDescription: string;
 }) {
   const idForm = useId();
@@ -113,6 +119,7 @@ export function ActivityForm({
         activityLocationLat !== undefined && activityLocationLng !== undefined,
       lat: activityLocationLat,
       lng: activityLocationLng,
+      zoom: activityLocationZoom ?? 9,
     },
   );
   const setCoordinateEnabled = useCallback(
@@ -123,6 +130,7 @@ export function ActivityForm({
             type: 'setEnabled',
             lat: coordinateState.lat,
             lng: coordinateState.lng,
+            zoom: coordinateState.zoom,
           });
         } else {
           // if coordinates are not set, use geocoding from location to get the coordinates
@@ -161,6 +169,7 @@ export function ActivityForm({
             type: 'setEnabled',
             lat: lat,
             lng: lng,
+            zoom: coordinateState.zoom,
           });
         }
       } else {
@@ -169,18 +178,33 @@ export function ActivityForm({
         });
       }
     },
-    [idLocation, tripRegion, coordinateState.lat, coordinateState.lng],
+    [
+      idLocation,
+      tripRegion,
+      coordinateState.lat,
+      coordinateState.lng,
+      coordinateState.zoom,
+    ],
   );
-  const setCoordinateState = useCallback(
-    async (coordinate: LocationCoordinate) => {
+  const setMarkerCoordinate = useCallback(
+    async (coordinate: {
+      lng: number;
+      lat: number;
+    }) => {
       dispatchCoordinateState({
-        type: 'setCoordinate',
+        type: 'setMarkerCoordinate',
         lat: coordinate.lat,
         lng: coordinate.lng,
       });
     },
     [],
   );
+  const setMapZoom = useCallback(async (zoom: number) => {
+    dispatchCoordinateState({
+      type: 'setMapZoom',
+      zoom: zoom,
+    });
+  }, []);
   console.log('coordinateState', coordinateState);
 
   const handleSubmit = useCallback(() => {
@@ -219,6 +243,7 @@ export function ActivityForm({
         timeEndString,
         startTime: timeStartDate,
         endTime: timeEndDate,
+        coordinateState,
       });
       if (!title || !timeStartString || !timeEndString) {
         return;
@@ -243,6 +268,9 @@ export function ActivityForm({
           locationLng: coordinateState.enabled
             ? coordinateState.lng
             : undefined,
+          locationZoom: coordinateState.enabled
+            ? coordinateState.zoom
+            : undefined,
           timestampStart: timeStartDate.toMillis(),
           timestampEnd: timeEndDate.toMillis(),
         });
@@ -266,6 +294,9 @@ export function ActivityForm({
               : undefined,
             locationLng: coordinateState.enabled
               ? coordinateState.lng
+              : undefined,
+            locationZoom: coordinateState.enabled
+              ? coordinateState.zoom
               : undefined,
             timestampStart: timeStartDate.toMillis(),
             timestampEnd: timeEndDate.toMillis(),
@@ -348,7 +379,7 @@ export function ActivityForm({
             mapOptions={{
               lng: coordinateState.lng ?? 0,
               lat: coordinateState.lat ?? 0,
-              zoom: 9,
+              zoom: coordinateState.zoom ?? 9,
             }}
             marker={
               coordinateState.lng && coordinateState.lat
@@ -358,7 +389,8 @@ export function ActivityForm({
                   }
                 : undefined
             }
-            setCoordinate={setCoordinateState}
+            setMarkerCoordinate={setMarkerCoordinate}
+            setMapZoom={setMapZoom}
           />
         ) : null}
 

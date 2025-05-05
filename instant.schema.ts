@@ -36,6 +36,7 @@ const _schema = i.schema({
       location: i.string(),
       locationLat: i.number(),
       locationLng: i.number(),
+      locationZoom: i.number(),
 
       timestampEnd: i.number(),
       timestampStart: i.number(),

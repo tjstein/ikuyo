@@ -6,11 +6,16 @@ import '@maptiler/sdk/style.css';
 export function ActivityMap({
   mapOptions,
   marker,
-  setCoordinate,
+  setMarkerCoordinate,
+  setMapZoom,
 }: {
   mapOptions: { lng: number; lat: number; zoom?: number };
   marker?: { lng: number; lat: number };
-  setCoordinate?: (coordinate: { lng: number; lat: number }) => void;
+  setMarkerCoordinate?: (coordinate: {
+    lng: number;
+    lat: number;
+  }) => void;
+  setMapZoom?: (zoom: number) => void;
 }) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<MapTilerMap>(null);
@@ -26,22 +31,36 @@ export function ActivityMap({
       zoom: mapOptions.zoom,
     });
 
+    map.current.on('zoomend', () => {
+      if (!map.current) return;
+      const zoom = map.current.getZoom();
+      if (setMapZoom) {
+        setMapZoom(zoom);
+      }
+    });
+
     if (marker) {
       new Marker({
         color: 'var(--accent-indicator)',
-        draggable: !!setCoordinate,
+        draggable: !!setMarkerCoordinate,
       })
         .setLngLat([marker.lng, marker.lat])
         .addTo(map.current)
         .on('dragend', (event: { type: 'dragend'; target: Marker }) => {
           if (!map.current) return;
           const { lng, lat } = event.target.getLngLat();
-          if (setCoordinate) {
-            setCoordinate({ lng, lat });
+          if (setMarkerCoordinate) {
+            setMarkerCoordinate({ lng, lat });
           }
         });
     }
-  }, [mapOptions, marker, setCoordinate]);
+  }, [mapOptions, marker, setMarkerCoordinate, setMapZoom]);
+
+  useEffect(() => {
+    if (!map.current) return;
+    if (mapOptions.zoom == null) return;
+    map.current.setZoom(mapOptions.zoom);
+  }, [mapOptions.zoom]);
 
   return (
     <div className={s.mapWrapper}>

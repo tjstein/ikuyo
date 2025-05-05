@@ -58,6 +58,7 @@ export function ActivityEditDialog({
           activityEndStr={activityEndStr}
           activityLocationLat={activity.locationLat}
           activityLocationLng={activity.locationLng}
+          activityLocationZoom={activity.locationZoom}
           activityLocation={activity.location}
           activityDescription={activity.description}
         />

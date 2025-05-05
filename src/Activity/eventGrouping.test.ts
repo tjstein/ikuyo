@@ -33,6 +33,7 @@ describe('Trip', () => {
       location: '',
       locationLat: undefined,
       locationLng: undefined,
+      locationZoom: undefined,
       description: '',
       trip: baseTrip,
       ...activity,
