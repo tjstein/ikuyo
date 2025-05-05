@@ -12,12 +12,12 @@ import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { Link, type RouteComponentProps, useLocation } from 'wouter';
 import { db, dbUpsertUser } from '../data/db';
 import { useBoundStore } from '../data/store';
-import { ROUTES, asRootRoute } from '../routes';
 import s from './Auth.module.css';
 
 import { ArrowLeftIcon } from '@radix-ui/react-icons';
 import { CommonDialogMaxWidth } from '../Dialog/ui';
 import { DocTitle } from '../Nav/DocTitle';
+import { RouteAccount, RouteTrips } from '../Routes/routes';
 import imgUrl from '../logo/ikuyo.svg';
 
 export default PageLogin;
@@ -80,7 +80,7 @@ export function PageLogin(_props: RouteComponentProps) {
               altText: 'Go to account details edit page to edit handle',
               children: (
                 <Button asChild>
-                  <Link to={asRootRoute(ROUTES.Account)}>
+                  <Link to={RouteAccount.asRootRoute()}>
                     Edit account details
                   </Link>
                 </Button>
@@ -89,7 +89,7 @@ export function PageLogin(_props: RouteComponentProps) {
             close: {},
           });
           setIsLoading(false);
-          setLocation(ROUTES.Trips);
+          setLocation(RouteTrips.asRootRoute());
         });
       } else if (userData.user.length > 0) {
         const userHandle = userData.user[0].handle;
@@ -99,7 +99,7 @@ export function PageLogin(_props: RouteComponentProps) {
           close: {},
         });
         setIsLoading(false);
-        setLocation(ROUTES.Trips);
+        setLocation(RouteTrips.asRootRoute());
       }
     }
     if (authUser?.email) {

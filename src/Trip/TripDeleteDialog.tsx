@@ -2,8 +2,8 @@ import { AlertDialog, Button, Flex, Text } from '@radix-ui/themes';
 import { useCallback } from 'react';
 import { useLocation } from 'wouter';
 import { CommonDialogMaxWidth } from '../Dialog/ui';
+import { RouteTrips } from '../Routes/routes';
 import { useBoundStore } from '../data/store';
-import { ROUTES } from '../routes';
 import { dangerToken } from '../ui';
 import { type DbTripFull, dbDeleteTrip } from './db';
 
@@ -26,7 +26,7 @@ export function TripDeleteDialog({
         });
         clearDialogs();
 
-        setLocation(ROUTES.Trips);
+        setLocation(RouteTrips.asRootRoute());
       })
       .catch((err: unknown) => {
         console.error(`Error deleting "${trip.title}"`, err);

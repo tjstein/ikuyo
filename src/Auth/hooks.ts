@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import type { StateCreator } from 'zustand';
+import { RouteLogin } from '../Routes/routes';
 import { db } from '../data/db';
 import { useBoundStore } from '../data/store';
 import type { DbUser } from '../data/types';
-import { ROUTES, asRootRoute } from '../routes';
 
 export function useAuthUser() {
   const setCurrentUser = useBoundStore((state) => state.setCurrentUser);
@@ -13,7 +13,7 @@ export function useAuthUser() {
 
   useEffect(() => {
     if (!isLoading && !user) {
-      setLocation(asRootRoute(ROUTES.Login));
+      setLocation(RouteLogin.asRootRoute());
     }
     if (!isLoading && user) {
       (async () => {

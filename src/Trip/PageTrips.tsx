@@ -15,7 +15,6 @@ import { useAuthUser } from '../Auth/hooks';
 import { Navbar } from '../Nav/Navbar';
 import { db } from '../data/db';
 import type { DbUser } from '../data/types';
-import { ROUTES } from '../routes';
 import s from './PageTrips.module.css';
 import { TripGroup } from './TripGroup';
 import { formatTimestampToReadableDate } from './time';
@@ -23,6 +22,7 @@ import { formatTimestampToReadableDate } from './time';
 import { DateTime } from 'luxon';
 import { DocTitle } from '../Nav/DocTitle';
 
+import { RouteTrip } from '../Routes/routes';
 import { useBoundStore } from '../data/store';
 import { TripNewDialog } from './TripNewDialog';
 import type { DbTrip } from './db';
@@ -172,7 +172,7 @@ function PastTrips({ user, now }: { user: DbUser | undefined; now: number }) {
                     return (
                       <li className={s.tripLi} key={trip.id}>
                         <Card asChild>
-                          <Link to={ROUTES.Trip.replace(':id', trip.id)}>
+                          <Link to={RouteTrip.asRouteTarget(trip.id)}>
                             <Text as="div" weight="bold">
                               {trip.title}
                             </Text>
@@ -251,7 +251,7 @@ function Trips({
                 return (
                   <li className={s.tripLi} key={trip.id}>
                     <Card asChild>
-                      <Link to={ROUTES.Trip.replace(':id', trip.id)}>
+                      <Link to={RouteTrip.asRouteTarget(trip.id)}>
                         <Text as="div" weight="bold">
                           {trip.title}
                         </Text>

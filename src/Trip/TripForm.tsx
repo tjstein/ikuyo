@@ -2,9 +2,9 @@ import { Button, Flex, Select, Text, TextField } from '@radix-ui/themes';
 import { useCallback, useId, useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
 import type { DbActivity } from '../Activity/db';
+import { RouteTrip } from '../Routes/routes';
 import { REGIONS_LIST } from '../data/intl/regions';
 import { useBoundStore } from '../data/store';
-import { ROUTES } from '../routes';
 import { dangerToken } from '../ui';
 import { TripFormMode } from './TripFormMode';
 import { dbAddTrip, dbUpdateTrip } from './db';
@@ -151,7 +151,7 @@ export function TripForm({
         elForm.reset();
         popDialog();
 
-        setLocation(ROUTES.Trip.replace(':id', newId));
+        setLocation(RouteTrip.asRouteTarget(newId));
       } else {
         // Shouldn't reach this block, but included for completeness
         elForm.reset();

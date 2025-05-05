@@ -1,7 +1,11 @@
 import { CalendarIcon, ListBulletIcon, TableIcon } from '@radix-ui/react-icons';
 import { SegmentedControl, Tooltip } from '@radix-ui/themes';
 import { useLocation } from 'wouter';
-import { ROUTES_TRIP } from '../routes';
+import {
+  RouteTripExpenses,
+  RouteTripListView,
+  RouteTripTimetableView,
+} from '../Routes/routes';
 import s from './TripMenuFloating.module.css';
 
 export function TripMenuFloating() {
@@ -21,9 +25,9 @@ export function TripMenuFloating() {
         >
           <Tooltip content="Timetable view">
             <SegmentedControl.Item
-              value={ROUTES_TRIP.TimetableView}
+              value={RouteTripTimetableView.routePath}
               data-state={
-                location === (ROUTES_TRIP.TimetableView as string)
+                location === (RouteTripTimetableView.routePath as string)
                   ? 'on'
                   : 'off'
               }
@@ -33,9 +37,11 @@ export function TripMenuFloating() {
           </Tooltip>
           <Tooltip content="List view">
             <SegmentedControl.Item
-              value={ROUTES_TRIP.ListView}
+              value={RouteTripListView.routePath}
               data-state={
-                location === (ROUTES_TRIP.ListView as string) ? 'on' : 'off'
+                location === (RouteTripListView.routePath as string)
+                  ? 'on'
+                  : 'off'
               }
             >
               <ListBulletIcon className={s.controlIcon} />
@@ -43,9 +49,11 @@ export function TripMenuFloating() {
           </Tooltip>
           <Tooltip content="Expenses">
             <SegmentedControl.Item
-              value={ROUTES_TRIP.Expenses}
+              value={RouteTripExpenses.routePath}
               data-state={
-                location === (ROUTES_TRIP.Expenses as string) ? 'on' : 'off'
+                location === (RouteTripExpenses.routePath as string)
+                  ? 'on'
+                  : 'off'
               }
             >
               <TableIcon className={s.controlIcon} />

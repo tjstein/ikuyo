@@ -8,8 +8,15 @@ import { Redirect, Route, Switch } from 'wouter';
 import s from './App.module.css';
 import { DialogRoot } from './Dialog/DialogRoot';
 import { withLoading } from './Loading/withLoading';
+import {
+  RouteAccount,
+  RouteLogin,
+  RoutePrivacy,
+  RouteTerms,
+  RouteTrip,
+  RouteTrips,
+} from './Routes/routes';
 import { ImperativeToastRoot } from './Toast/ImperativeToast';
-import { ROUTES } from './routes';
 import { ThemeAppearance, useTheme } from './theme';
 
 const PageTerms = withLoading()(React.lazy(() => import('./Docs/Terms')));
@@ -30,14 +37,14 @@ function App() {
         accentColor="red"
       >
         <Switch>
-          <Route path={ROUTES.Login} component={PageLogin} />
-          <Route path={ROUTES.Trips} component={PageTrips} />
-          <Route path={ROUTES.Trip} component={PageTrip} nest />
-          <Route path={ROUTES.Account} component={PageAccount} />
-          <Route path={ROUTES.Privacy} component={PagePrivacy} />
-          <Route path={ROUTES.Terms} component={PageTerms} />
+          <Route path={RouteLogin.routePath} component={PageLogin} />
+          <Route path={RouteTrips.routePath} component={PageTrips} />
+          <Route path={RouteTrip.routePath} component={PageTrip} nest />
+          <Route path={RouteAccount.routePath} component={PageAccount} />
+          <Route path={RoutePrivacy.routePath} component={PagePrivacy} />
+          <Route path={RouteTerms.routePath} component={PageTerms} />
           <Route>
-            <Redirect to={ROUTES.Login} />
+            <Redirect to={RouteLogin.routePath} />
           </Route>
         </Switch>
         <DialogRoot />

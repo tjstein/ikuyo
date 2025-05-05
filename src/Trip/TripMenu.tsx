@@ -5,10 +5,10 @@ import { AccommodationNewDialog } from '../Accommodation/AccommodationNewDialog'
 import { ActivityNewDialog } from '../Activity/ActivityNewDialog';
 import { UserAvatarMenu } from '../Auth/UserAvatarMenu';
 import { MacroplanNewDialog } from '../Macroplan/MacroplanNewDialog';
+import { RouteAccount, RouteLogin, RouteTrips } from '../Routes/routes';
 import { db } from '../data/db';
 import { useBoundStore } from '../data/store';
 import type { DbUser } from '../data/types';
-import { ROUTES, asRootRoute } from '../routes';
 import { TripDeleteDialog } from './TripDeleteDialog';
 import { TripEditDialog } from './TripEditDialog';
 import s from './TripMenu.module.css';
@@ -107,7 +107,7 @@ export function TripMenu({
           <DropdownMenu.Label>Trips</DropdownMenu.Label>
           <DropdownMenu.Item
             onClick={() => {
-              setLocation(asRootRoute(ROUTES.Trips));
+              setLocation(RouteTrips.asRootRoute());
             }}
           >
             View trips
@@ -120,14 +120,14 @@ export function TripMenu({
               Account
             </DropdownMenu.Label>
             <DropdownMenu.Item asChild className={s.onlyForXs}>
-              <Link to={`~${ROUTES.Account}`}>Edit account</Link>
+              <Link to={RouteAccount.asRootRoute()}>Edit account</Link>
             </DropdownMenu.Item>
 
             <DropdownMenu.Item
               className={s.onlyForXs}
               onClick={() => {
                 void db.auth.signOut().then(() => {
-                  setLocation(asRootRoute(ROUTES.Login));
+                  setLocation(RouteLogin.asRootRoute());
                 });
               }}
             >

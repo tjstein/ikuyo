@@ -31,8 +31,12 @@ const ActivityList = withLoading()(
 );
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import { ExpenseList } from '../Expense/ExpenseList';
+import {
+  RouteTripExpenses,
+  RouteTripListView,
+  RouteTripTimetableView,
+} from '../Routes/routes';
 import { TripUserRole } from '../data/TripUserRole';
-import { ROUTES_TRIP } from '../routes';
 import { TripMenuFloating } from './TripMenuFloating';
 import type { DbTrip, DbTripFull } from './db';
 
@@ -114,16 +118,16 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
             {trip?.title ?? 'Loading trip'}
             {
               <Switch>
-                <Route path={ROUTES_TRIP.TimetableView}>
+                <Route path={RouteTripTimetableView.routePath}>
                   {' '}
                   <DoubleArrowRightIcon /> Timetable
                 </Route>
-                <Route path={ROUTES_TRIP.ListView}>
+                <Route path={RouteTripListView.routePath}>
                   {' '}
                   <DoubleArrowRightIcon />
                   List
                 </Route>
-                <Route path={ROUTES_TRIP.Expenses}>
+                <Route path={RouteTripExpenses.routePath}>
                   {' '}
                   <DoubleArrowRightIcon /> Expenses
                 </Route>
@@ -144,21 +148,18 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
         {trip ? (
           <Switch>
             <Route
-              path={ROUTES_TRIP.TimetableView}
+              path={RouteTripTimetableView.routePath}
               component={() => <Timetable trip={trip} />}
             />
             <Route
-              path={ROUTES_TRIP.ListView}
+              path={RouteTripListView.routePath}
               component={() => <ActivityList trip={trip} />}
             />
             <Route
-              path={ROUTES_TRIP.Expenses}
+              path={RouteTripExpenses.routePath}
               component={() => <ExpenseList trip={trip} />}
             />
-            <Redirect
-              replace
-              to={ROUTES_TRIP.TimetableView.replace(':id', trip.id)}
-            />
+            <Redirect replace to={RouteTripTimetableView.routePath} />
           </Switch>
         ) : isLoading ? (
           'Loading'
