@@ -1,5 +1,6 @@
-export enum CommentMode {
-  View = 1,
-  Edit = 2,
-  Add = 3,
-}
+export const CommentMode = {
+  View: 'view',
+  Edit: 'edit',
+  Add: 'add',
+} as const;
+export type CommentModeType = (typeof CommentMode)[keyof typeof CommentMode];

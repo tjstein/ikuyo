@@ -6,7 +6,7 @@ import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import { useBoundStore } from '../data/store';
 import { dangerToken } from '../ui';
 import { CommentForm } from './CommentForm';
-import { CommentMode } from './CommentMode';
+import { CommentMode, type CommentModeType } from './CommentMode';
 import {
   type DbComment,
   type DbCommentGroupObjectType,
@@ -25,7 +25,9 @@ export function Comment<ObjectType extends DbCommentGroupObjectType>({
   }, [comment.lastUpdatedAt]);
   const nodes = useParseTextIntoNodes(comment.content || '');
   const publishToast = useBoundStore((state) => state.publishToast);
-  const [commentMode, setCommentMode] = useState(CommentMode.View);
+  const [commentMode, setCommentMode] = useState<CommentModeType>(
+    CommentMode.View,
+  );
   return (
     <Flex gap="3" align="start">
       <UserAvatar user={user} />

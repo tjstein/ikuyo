@@ -1,10 +1,10 @@
 import { Box, Button, Flex, Text, TextArea } from '@radix-ui/themes';
-import { useCallback, useId, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { UserAvatar } from '../Auth/UserAvatar';
 import { useBoundStore } from '../data/store';
 import type { DbUser } from '../data/types';
 import { dangerToken } from '../ui';
-import { CommentMode } from './CommentMode';
+import { CommentMode, type CommentModeType } from './CommentMode';
 import {
   type DbCommentGroupObjectType,
   dbAddComment,
@@ -22,19 +22,25 @@ export function CommentForm({
   objectId,
   objectType,
 }: {
-  mode: CommentMode;
+  mode: CommentModeType;
   user?: DbUser;
   commentGroupId?: string;
   commentId?: string;
   commentContent?: string;
-  setCommentMode: (mode: CommentMode) => void;
+  setCommentMode: (mode: CommentModeType) => void;
 
   tripId: string;
   objectId: string;
   objectType: DbCommentGroupObjectType;
 }) {
+  const refTextArea = useRef<HTMLTextAreaElement>(null);
   const idForm = useId();
   const idContent = useId();
+  useEffect(() => {
+    if (mode === CommentMode.Edit && refTextArea.current) {
+      refTextArea.current.focus();
+    }
+  });
   const handleCancel = useCallback(() => {
     setCommentMode(CommentMode.View);
   }, [setCommentMode]);
@@ -89,6 +95,7 @@ export function CommentForm({
           title: { children: 'Comment added' },
           close: {},
         });
+        refTextArea.current?.focus();
       }
 
       elForm.reset();
@@ -126,6 +133,7 @@ export function CommentForm({
             placeholder="Write a comment…"
             defaultValue={commentContent}
             style={{ height: 80 }}
+            ref={refTextArea}
           />
           <Flex gap="3" mt="3" justify="between">
             <Flex align="center" gap="2" asChild>
