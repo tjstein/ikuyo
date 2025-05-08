@@ -19,8 +19,6 @@ export function AccommodationDialogContentDelete({
 }) {
   const [, setLocation] = useLocation();
   const publishToast = useBoundStore((state) => state.publishToast);
-  const popDialog = useBoundStore((state) => state.popDialog);
-  const clearDialogs = useBoundStore((state) => state.clearDialogs);
   const deleteAccommodation = useCallback(() => {
     void dbDeleteAccommodation(accommodation)
       .then(() => {
@@ -30,7 +28,6 @@ export function AccommodationDialogContentDelete({
           close: {},
         });
 
-        clearDialogs();
         setLocation('');
       })
       .catch((err: unknown) => {
@@ -40,9 +37,8 @@ export function AccommodationDialogContentDelete({
           title: { children: `Error deleting "${accommodation.name}"` },
           close: {},
         });
-        popDialog();
       });
-  }, [publishToast, accommodation, popDialog, setLocation, clearDialogs]);
+  }, [publishToast, accommodation, setLocation]);
 
   return (
     <Dialog.Content maxWidth={CommonDialogMaxWidth}>

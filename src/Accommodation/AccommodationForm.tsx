@@ -2,7 +2,10 @@ import { Button, Flex, Text, TextArea, TextField } from '@radix-ui/themes';
 import { useCallback, useId, useState } from 'react';
 import { useBoundStore } from '../data/store';
 import { dangerToken } from '../ui';
-import { AccommodationFormMode } from './AccommodationFormMode';
+import {
+  AccommodationFormMode,
+  type AccommodationFormModeType,
+} from './AccommodationFormMode';
 import { dbAddAccommodation, dbUpdateAccommodation } from './db';
 import { getDateTimeFromDatetimeLocalInput } from './time';
 
@@ -24,7 +27,7 @@ export function AccommodationForm({
   onFormSuccess,
   onFormCancel,
 }: {
-  mode: AccommodationFormMode;
+  mode: AccommodationFormModeType;
 
   tripId?: string;
   accommodationId?: string;

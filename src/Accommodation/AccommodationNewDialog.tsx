@@ -44,14 +44,7 @@ export function AccommodationNewDialog({
   }, [trip]);
 
   return (
-    <Dialog.Root
-      defaultOpen
-      onOpenChange={(open) => {
-        if (!open) {
-          popDialog();
-        }
-      }}
-    >
+    <Dialog.Root open>
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>New Accommodation</Dialog.Title>
         <Dialog.Description>

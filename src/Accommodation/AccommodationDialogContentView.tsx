@@ -1,5 +1,6 @@
 import { Button, Dialog, Flex, Heading, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
+import { useCallback } from 'react';
 import { useLocation } from 'wouter';
 import { CommonDialogMaxWidth } from '../Dialog/ui';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
@@ -28,6 +29,15 @@ export function AccommodationDialogContentView({
         .toFormat('dd LLLL yyyy HH:mm')
     : '';
   const notes = useParseTextIntoNodes(accommodation?.notes);
+  const closeDialog = useCallback(() => {
+    setLocation('');
+  }, [setLocation]);
+  const goToEditMode = useCallback(() => {
+    setMode(AccommodationDialogMode.Edit);
+  }, [setMode]);
+  const goToDeleteMode = useCallback(() => {
+    setMode(AccommodationDialogMode.Delete);
+  }, [setMode]);
   return (
     <Dialog.Content maxWidth={CommonDialogMaxWidth}>
       <Dialog.Title>View Accommodation</Dialog.Title>
@@ -84,9 +94,7 @@ export function AccommodationDialogContentView({
           size="2"
           variant="soft"
           color="gray"
-          onClick={() => {
-            setMode(AccommodationDialogMode.Delete);
-          }}
+          onClick={goToDeleteMode}
         >
           Delete
         </Button>
@@ -95,19 +103,11 @@ export function AccommodationDialogContentView({
           size="2"
           variant="soft"
           color="gray"
-          onClick={() => {
-            setMode(AccommodationDialogMode.Edit);
-          }}
+          onClick={goToEditMode}
         >
           Edit
         </Button>
-        <Button
-          type="button"
-          size="2"
-          onClick={() => {
-            setLocation('');
-          }}
-        >
+        <Button type="button" size="2" onClick={closeDialog}>
           Close
         </Button>
       </Flex>
