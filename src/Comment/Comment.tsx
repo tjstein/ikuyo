@@ -5,6 +5,7 @@ import { UserAvatar } from '../Auth/UserAvatar';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import { useBoundStore } from '../data/store';
 import { dangerToken } from '../ui';
+import s from './Comment.module.css';
 import { CommentForm } from './CommentForm';
 import { CommentMode, type CommentModeType } from './CommentMode';
 import {
@@ -69,7 +70,7 @@ export function Comment<ObjectType extends DbCommentGroupObjectType>({
         ) : (
           <>
             <Card>
-              <Text as="div" size="2">
+              <Text as="div" size="2" className={s.content}>
                 {nodes}
               </Text>
             </Card>
