@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react';
 
-export enum ThemeAppearance {
-  Light = 0,
-  Dark = 1,
-}
+export const ThemeAppearance = {
+  Light: 'light',
+  Dark: 'dark',
+} as const;
+export type ThemeAppearanceType =
+  (typeof ThemeAppearance)[keyof typeof ThemeAppearance];
 
 // https://stackoverflow.com/questions/59621784/how-to-detect-prefers-color-scheme-change-in-javascript
 // https://stackoverflow.com/questions/77024306/radix-ui-theme-dark-mode-not-being-applied
 export const useTheme = () => {
-  const [theme, setTheme] = useState(ThemeAppearance.Light);
+  const [theme, setTheme] = useState<ThemeAppearanceType>(
+    ThemeAppearance.Light,
+  );
   useEffect(() => {
     const darkThemeListener = (ev: MediaQueryListEvent) => {
       if (ev.matches) {

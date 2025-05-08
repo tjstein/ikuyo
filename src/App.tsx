@@ -32,10 +32,7 @@ function App() {
   const theme = useTheme();
   return (
     <>
-      <Theme
-        appearance={theme === ThemeAppearance.Dark ? 'dark' : 'light'}
-        accentColor="red"
-      >
+      <Theme appearance={theme} accentColor="red">
         <Switch>
           <Route path={RouteLogin.routePath} component={PageLogin} />
           <Route path={RouteTrips.routePath} component={PageTrips} />
