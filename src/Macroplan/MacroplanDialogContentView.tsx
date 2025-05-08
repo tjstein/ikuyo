@@ -24,6 +24,7 @@ export function MacroplanDialogContentView({
     .toFormat('dd LLLL yyyy');
   const macroplanDateEndStr = DateTime.fromMillis(macroplan.timestampEnd)
     .setZone(macroplan.trip.timeZone)
+    .minus({ minute: 1 })
     .toFormat('dd LLLL yyyy');
 
   const notes = useParseTextIntoNodes(macroplan.notes || '');
