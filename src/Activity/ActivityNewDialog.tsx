@@ -6,7 +6,7 @@ import type { DbTrip } from '../Trip/db';
 import { useBoundStore } from '../data/store';
 import { ActivityForm } from './ActivityForm';
 import { ActivityFormMode } from './ActivityFormMode';
-import { getNewActivityTimestamp } from './activitiyStorage';
+import { getNewActivityTimestamp } from './activityStorage';
 import { formatToDatetimeLocalInput } from './time';
 
 export function ActivityNewDialog({

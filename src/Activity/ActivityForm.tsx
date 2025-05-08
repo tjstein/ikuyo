@@ -13,7 +13,7 @@ import { useBoundStore } from '../data/store';
 import { dangerToken } from '../ui';
 import { ActivityFormMode } from './ActivityFormMode';
 import { ActivityMap } from './ActivityMap';
-import { setNewActivityTimestamp } from './activitiyStorage';
+import { setNewActivityTimestamp } from './activityStorage';
 import { dbAddActivity, dbUpdateActivity } from './db';
 import { getDateTimeFromDatetimeLocalInput } from './time';
 
