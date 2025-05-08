@@ -12,7 +12,10 @@ import { REGIONS_MAP } from '../data/intl/regions';
 import { useBoundStore } from '../data/store';
 import { dangerToken } from '../ui';
 import { ActivityMap } from './ActivityDialogMap';
-import { ActivityFormMode } from './ActivityFormMode';
+import {
+  ActivityFormMode,
+  type ActivityFormModeType,
+} from './ActivityFormMode';
 import { setNewActivityTimestamp } from './activityStorage';
 import { dbAddActivity, dbUpdateActivity } from './db';
 import { getDateTimeFromDatetimeLocalInput } from './time';
@@ -88,7 +91,7 @@ export function ActivityForm({
   onFormSuccess,
   onFormCancel,
 }: {
-  mode: ActivityFormMode;
+  mode: ActivityFormModeType;
   activityId?: string;
   tripId?: string;
   tripStartStr: string;

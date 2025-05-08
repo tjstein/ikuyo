@@ -1,4 +1,6 @@
-export enum ActivityFormMode {
-  New = 0,
-  Edit = 1,
-}
+export const ActivityFormMode = {
+  New: 'new',
+  Edit: 'edit',
+} as const;
+export type ActivityFormModeType =
+  (typeof ActivityFormMode)[keyof typeof ActivityFormMode];
