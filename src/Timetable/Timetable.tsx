@@ -18,10 +18,12 @@ import {
   groupActivitiesByDays,
 } from '../Activity/eventGrouping';
 import { Macroplan } from '../Macroplan/Macroplan';
+import { MacroplanDialog } from '../Macroplan/MacroplanDialog';
 import { MacroplanNewDialog } from '../Macroplan/MacroplanNewDialog';
 import {
   RouteTripTimetableViewAccommodation,
   RouteTripTimetableViewActivity,
+  RouteTripTimetableViewMacroplan,
 } from '../Routes/routes';
 import { TripViewMode } from '../Trip/TripViewMode';
 import { useTrip } from '../Trip/context';
@@ -105,6 +107,7 @@ export function Timetable() {
                     <Macroplan
                       key={macroplan.id}
                       macroplan={macroplan}
+                      tripViewMode={TripViewMode.List}
                       style={{
                         gridColumnStart: `d${String(
                           columnIndex.start,
@@ -234,6 +237,10 @@ export function Timetable() {
         <Route
           path={RouteTripTimetableViewAccommodation.routePath}
           component={AccommodationDialog}
+        />
+        <Route
+          path={RouteTripTimetableViewMacroplan.routePath}
+          component={MacroplanDialog}
         />
       </Switch>
     </Section>

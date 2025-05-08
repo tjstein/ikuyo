@@ -44,14 +44,7 @@ export function MacroplanNewDialog({
   }, [trip]);
 
   return (
-    <Dialog.Root
-      defaultOpen
-      onOpenChange={(open) => {
-        if (!open) {
-          popDialog();
-        }
-      }}
-    >
+    <Dialog.Root open>
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>New Day Plan</Dialog.Title>
         <Dialog.Description>
@@ -78,6 +71,8 @@ export function MacroplanNewDialog({
           macroplanDateStartStr={macroplanCheckInStr}
           macroplanDateEndStr={macroplanCheckOutStr}
           macroplanNotes=""
+          onFormCancel={popDialog}
+          onFormSuccess={popDialog}
         />
       </Dialog.Content>
     </Dialog.Root>

@@ -2,7 +2,10 @@ import { Button, Flex, Text, TextArea, TextField } from '@radix-ui/themes';
 import { useCallback, useId, useState } from 'react';
 import { useBoundStore } from '../data/store';
 import { dangerToken } from '../ui';
-import { MacroplanFormMode } from './MacroplanFormMode';
+import {
+  MacroplanFormMode,
+  type MacroplanFormModeType,
+} from './MacroplanFormMode';
 import { dbAddMacroplan, dbUpdateMacroplan } from './db';
 import { getDateTimeFromDateInput } from './time';
 
@@ -19,8 +22,11 @@ export function MacroplanForm({
   macroplanDateStartStr,
   macroplanDateEndStr,
   macroplanNotes,
+
+  onFormSuccess,
+  onFormCancel,
 }: {
-  mode: MacroplanFormMode;
+  mode: MacroplanFormModeType;
 
   tripId?: string;
   macroplanId?: string;
@@ -33,6 +39,9 @@ export function MacroplanForm({
   macroplanDateStartStr: string;
   macroplanDateEndStr: string;
   macroplanNotes: string;
+
+  onFormSuccess: () => void;
+  onFormCancel: () => void;
 }) {
   const idName = useId();
   const idDateStart = useId();
@@ -40,7 +49,6 @@ export function MacroplanForm({
   const idNotes = useId();
 
   const publishToast = useBoundStore((state) => state.publishToast);
-  const popDialog = useBoundStore((state) => state.popDialog);
 
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -118,9 +126,9 @@ export function MacroplanForm({
       }
 
       elForm.reset();
-      popDialog();
+      onFormSuccess();
     };
-  }, [macroplanId, mode, publishToast, popDialog, tripId, tripTimeZone]);
+  }, [macroplanId, mode, publishToast, onFormSuccess, tripId, tripTimeZone]);
 
   return (
     <form
@@ -198,7 +206,7 @@ export function MacroplanForm({
           size="2"
           variant="soft"
           color="gray"
-          onClick={popDialog}
+          onClick={onFormCancel}
         >
           Cancel
         </Button>

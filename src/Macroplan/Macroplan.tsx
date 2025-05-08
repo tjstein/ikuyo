@@ -2,35 +2,29 @@ import { Box, ContextMenu, Text } from '@radix-ui/themes';
 import clsx from 'clsx';
 import { dangerToken } from '../ui';
 import s from './Macroplan.module.css';
-import { MacroplanDeleteDialog } from './MacroplanDeleteDialog';
-import { MacroplanEditDialog } from './MacroplanEditDialog';
-import { MacroplanViewDialog } from './MacroplanViewDialog';
 import type { DbMacroplanWithTrip } from './db';
 
 import type * as React from 'react';
-import { useCallback } from 'react';
-import { useBoundStore } from '../data/store';
+import type { TripViewModeType } from '../Trip/TripViewMode';
+import { useMacroplanDialogHooks } from './macroplanDialogHooks';
+const responsiveTextSize = { initial: '1' as const };
+
 export function Macroplan({
   className,
   macroplan,
   style,
+  tripViewMode,
 }: {
   className?: string;
   macroplan: DbMacroplanWithTrip;
   style?: React.CSSProperties;
+  tripViewMode: TripViewModeType;
 }) {
-  const responsiveTextSize = { initial: '1' as const };
-
-  const pushDialog = useBoundStore((state) => state.pushDialog);
-  const openMacroplanViewDialog = useCallback(() => {
-    pushDialog(MacroplanViewDialog, { macroplan });
-  }, [macroplan, pushDialog]);
-  const openMacroplanEditDialog = useCallback(() => {
-    pushDialog(MacroplanEditDialog, { macroplan });
-  }, [macroplan, pushDialog]);
-  const openMacroplanDeleteDialog = useCallback(() => {
-    pushDialog(MacroplanDeleteDialog, { macroplan });
-  }, [macroplan, pushDialog]);
+  const {
+    openMacroplanDeleteDialog,
+    openMacroplanEditDialog,
+    openMacroplanViewDialog,
+  } = useMacroplanDialogHooks(tripViewMode, macroplan.id);
 
   return (
     <>

@@ -7,9 +7,11 @@ import { Activity } from '../Activity/Activity';
 import { ActivityDialog } from '../Activity/ActivityDialog';
 import { groupActivitiesByDays } from '../Activity/eventGrouping';
 import { Macroplan } from '../Macroplan/Macroplan';
+import { MacroplanDialog } from '../Macroplan/MacroplanDialog';
 import {
   RouteTripListViewAccommodation,
   RouteTripListViewActivity,
+  RouteTripListViewMacroplan,
 } from '../Routes/routes';
 import { TripViewMode } from '../Trip/TripViewMode';
 import { useTrip } from '../Trip/context';
@@ -38,6 +40,7 @@ export function ActivityList() {
                   key={`${macroplan.id}-${String(i)}`}
                   macroplan={macroplan}
                   className={s.listItem}
+                  tripViewMode={TripViewMode.List}
                 />
               );
             }),
@@ -82,6 +85,10 @@ export function ActivityList() {
         <Route
           path={RouteTripListViewAccommodation.routePath}
           component={AccommodationDialog}
+        />
+        <Route
+          path={RouteTripListViewMacroplan.routePath}
+          component={MacroplanDialog}
         />
       </Switch>
     </>
