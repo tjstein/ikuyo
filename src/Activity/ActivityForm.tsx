@@ -11,8 +11,8 @@ import { useCallback, useId, useReducer, useState } from 'react';
 import { REGIONS_MAP } from '../data/intl/regions';
 import { useBoundStore } from '../data/store';
 import { dangerToken } from '../ui';
+import { ActivityMap } from './ActivityDialogMap';
 import { ActivityFormMode } from './ActivityFormMode';
-import { ActivityMap } from './ActivityMap';
 import { setNewActivityTimestamp } from './activityStorage';
 import { dbAddActivity, dbUpdateActivity } from './db';
 import { getDateTimeFromDatetimeLocalInput } from './time';
@@ -84,6 +84,9 @@ export function ActivityForm({
   activityLocationLat,
   activityLocationZoom,
   activityDescription,
+
+  onFormSuccess,
+  onFormCancel,
 }: {
   mode: ActivityFormMode;
   activityId?: string;
@@ -100,6 +103,9 @@ export function ActivityForm({
   activityLocationLng: number | undefined;
   activityLocationZoom: number | undefined;
   activityDescription: string;
+
+  onFormSuccess: () => void;
+  onFormCancel: () => void;
 }) {
   const idForm = useId();
   const idTitle = useId();
@@ -109,7 +115,6 @@ export function ActivityForm({
   const idDescription = useId();
   const idCoordinates = useId();
   const publishToast = useBoundStore((state) => state.publishToast);
-  const popDialog = useBoundStore((state) => state.popDialog);
   const [errorMessage, setErrorMessage] = useState('');
 
   const [coordinateState, dispatchCoordinateState] = useReducer(
@@ -313,13 +318,13 @@ export function ActivityForm({
       }
 
       elForm.reset();
-      popDialog();
+      onFormSuccess();
     };
   }, [
     activityId,
     mode,
     publishToast,
-    popDialog,
+    onFormSuccess,
     tripId,
     tripTimeZone,
     coordinateState,
@@ -441,7 +446,7 @@ export function ActivityForm({
           size="2"
           variant="soft"
           color="gray"
-          onClick={popDialog}
+          onClick={onFormCancel}
         >
           Cancel
         </Button>

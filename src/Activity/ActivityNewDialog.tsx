@@ -41,14 +41,7 @@ export function ActivityNewDialog({
   }, [trip]);
 
   return (
-    <Dialog.Root
-      defaultOpen
-      onOpenChange={(open) => {
-        if (!open) {
-          popDialog();
-        }
-      }}
-    >
+    <Dialog.Root open>
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>New Activity</Dialog.Title>
         <Dialog.Description>
@@ -70,6 +63,8 @@ export function ActivityNewDialog({
           activityLocationLat={undefined}
           activityLocationLng={undefined}
           activityLocationZoom={undefined}
+          onFormCancel={popDialog}
+          onFormSuccess={popDialog}
         />
       </Dialog.Content>
     </Dialog.Root>

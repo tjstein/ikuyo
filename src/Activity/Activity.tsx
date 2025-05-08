@@ -4,7 +4,7 @@ import {
   SewingPinIcon,
 } from '@radix-ui/react-icons';
 import clsx from 'clsx';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import style from './Activity.module.css';
 
 import { Box, ContextMenu, Text } from '@radix-ui/themes';
@@ -13,11 +13,9 @@ import { formatTime } from './time';
 
 import { TripViewMode, type TripViewModeType } from '../Trip/TripViewMode';
 
-import { useBoundStore } from '../data/store';
 import { dangerToken } from '../ui';
-import { ActivityDeleteDialog } from './ActivityDeleteDialog';
-import { ActivityEditDialog } from './ActivityEditDialog';
-import { ActivityViewDialog } from './ActivityViewDialog';
+
+import { useActivityDialogHooks } from './activityDialogHooks';
 import type { DbActivityWithTrip } from './db';
 
 export function Activity({
@@ -41,10 +39,11 @@ export function Activity({
     const now = Date.now();
     return activity.timestampStart <= now && now <= activity.timestampEnd;
   }, [activity.timestampEnd, activity.timestampStart]);
-  const pushDialog = useBoundStore((state) => state.pushDialog);
-  const openActivityViewDialog = useCallback(() => {
-    pushDialog(ActivityViewDialog, { activity });
-  }, [activity, pushDialog]);
+  const {
+    openActivityViewDialog,
+    openActivityDeleteDialog,
+    openActivityEditDialog,
+  } = useActivityDialogHooks(tripViewMode, activity.id);
 
   return (
     <>
@@ -110,23 +109,13 @@ export function Activity({
           <ContextMenu.Item onClick={openActivityViewDialog}>
             View
           </ContextMenu.Item>
-          <ContextMenu.Item
-            onClick={() => {
-              pushDialog(ActivityEditDialog, {
-                activity,
-              });
-            }}
-          >
+          <ContextMenu.Item onClick={openActivityEditDialog}>
             Edit
           </ContextMenu.Item>
           <ContextMenu.Separator />
           <ContextMenu.Item
             color={dangerToken}
-            onClick={() => {
-              pushDialog(ActivityDeleteDialog, {
-                activity,
-              });
-            }}
+            onClick={openActivityDeleteDialog}
           >
             Delete
           </ContextMenu.Item>

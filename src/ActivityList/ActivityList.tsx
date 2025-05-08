@@ -4,9 +4,13 @@ import { Route, Switch } from 'wouter';
 import { Accommodation } from '../Accommodation/Accommodation';
 import { AccommodationDialog } from '../Accommodation/AccommodationDialog';
 import { Activity } from '../Activity/Activity';
+import { ActivityDialog } from '../Activity/ActivityDialog';
 import { groupActivitiesByDays } from '../Activity/eventGrouping';
 import { Macroplan } from '../Macroplan/Macroplan';
-import { RouteTripListViewAccommodation } from '../Routes/routes';
+import {
+  RouteTripListViewAccommodation,
+  RouteTripListViewActivity,
+} from '../Routes/routes';
 import { TripViewMode } from '../Trip/TripViewMode';
 import { useTrip } from '../Trip/context';
 import s from './ActivityList.module.css';
@@ -71,6 +75,10 @@ export function ActivityList() {
       </Flex>
 
       <Switch>
+        <Route
+          path={RouteTripListViewActivity.routePath}
+          component={ActivityDialog}
+        />
         <Route
           path={RouteTripListViewAccommodation.routePath}
           component={AccommodationDialog}

@@ -11,6 +11,7 @@ import { Route, Switch } from 'wouter';
 import { Accommodation } from '../Accommodation/Accommodation';
 import { AccommodationDialog } from '../Accommodation/AccommodationDialog';
 import { AccommodationNewDialog } from '../Accommodation/AccommodationNewDialog';
+import { ActivityDialog } from '../Activity/ActivityDialog';
 import { ActivityNewDialog } from '../Activity/ActivityNewDialog';
 import {
   type DayGroups,
@@ -18,7 +19,10 @@ import {
 } from '../Activity/eventGrouping';
 import { Macroplan } from '../Macroplan/Macroplan';
 import { MacroplanNewDialog } from '../Macroplan/MacroplanNewDialog';
-import { RouteTripTimetableViewAccommodation } from '../Routes/routes';
+import {
+  RouteTripTimetableViewAccommodation,
+  RouteTripTimetableViewActivity,
+} from '../Routes/routes';
 import { TripViewMode } from '../Trip/TripViewMode';
 import { useTrip } from '../Trip/context';
 import { useBoundStore } from '../data/store';
@@ -223,6 +227,10 @@ export function Timetable() {
         </ContextMenu.Content>
       </ContextMenu.Root>
       <Switch>
+        <Route
+          path={RouteTripTimetableViewActivity.routePath}
+          component={ActivityDialog}
+        />
         <Route
           path={RouteTripTimetableViewAccommodation.routePath}
           component={AccommodationDialog}

@@ -1,6 +1,6 @@
 import { MapStyle, Map as MapTilerMap, Marker } from '@maptiler/sdk';
 import { useEffect, useRef } from 'react';
-import s from './ActivityMap.module.css';
+import s from './ActivityDialogMap.module.css';
 import '@maptiler/sdk/style.css';
 
 export function ActivityMap({
