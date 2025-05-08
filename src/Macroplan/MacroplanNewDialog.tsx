@@ -54,12 +54,12 @@ export function MacroplanNewDialog({
           </Text>
           <Text size="1" as="p">
             For example, you can divide a trip by location:
-            <ul>
-              <li>Day 1-3: Tokyo</li>
-              <li>Day 4-6: Kyoto</li>
-              <li>Day 7-9: Osaka</li>
-            </ul>
           </Text>
+          <ul className="rt-Text rt-r-size-1">
+            <li>Day 1-3: Tokyo</li>
+            <li>Day 4-6: Kyoto</li>
+            <li>Day 7-9: Osaka</li>
+          </ul>
         </Dialog.Description>
         <MacroplanForm
           mode={MacroplanFormMode.New}
