@@ -2,8 +2,9 @@ import { Dialog, Spinner } from '@radix-ui/themes';
 
 import { useState } from 'react';
 import type { RouteComponentProps } from 'wouter';
+import { useShallow } from 'zustand/react/shallow';
 import { CommonDialogMaxWidth } from '../Dialog/ui';
-import { db } from '../data/db';
+import { useBoundStore } from '../data/store';
 import { MacroplanDialogContentDelete } from './MacroplanDialogContentDelete';
 import { MacroplanDialogContentEdit } from './MacroplanDialogContentEdit';
 import { MacroplanDialogContentView } from './MacroplanDialogContentView';
@@ -11,7 +12,6 @@ import {
   MacroplanDialogMode,
   type MacroplanDialogModeType,
 } from './MacroplanDialogMode';
-import type { DbMacroplanWithTrip } from './db';
 
 function MacroplanDialogContent({
   params,
@@ -20,17 +20,10 @@ function MacroplanDialogContent({
     history.state?.mode ?? MacroplanDialogMode.View,
   );
   const { id: macroplanId } = params;
-  const { data } = db.useQuery({
-    macroplan: {
-      trip: {},
-      $: {
-        where: {
-          id: macroplanId,
-        },
-      },
-    },
-  });
-  const macroplan = data?.macroplan[0] as DbMacroplanWithTrip | undefined;
+  const macroplan = useBoundStore(
+    useShallow((state) => state.getMacroplan(macroplanId)),
+  );
+
   return (
     <>
       {!macroplan ? (

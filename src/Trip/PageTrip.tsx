@@ -1,5 +1,5 @@
 import { Container, Heading, Skeleton, Spinner } from '@radix-ui/themes';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useMemo } from 'react';
 import { Redirect, Route, type RouteComponentProps, Switch } from 'wouter';
 import { Navbar } from '../Nav/Navbar';
@@ -30,13 +30,18 @@ const ActivityList = withLoading()(
   ),
 );
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
+import { shallow } from 'zustand/shallow';
+import type { DbAccommodationWithTrip } from '../Accommodation/db';
+import type { DbActivityWithTrip } from '../Activity/db';
 import { ExpenseList } from '../Expense/ExpenseList';
+import type { DbMacroplanWithTrip } from '../Macroplan/db';
 import {
   RouteTripExpenses,
   RouteTripListView,
   RouteTripTimetableView,
 } from '../Routes/routes';
 import { TripUserRole } from '../data/TripUserRole';
+import { useBoundStore } from '../data/store';
 import { TripMenuFloating } from './TripMenuFloating';
 import { TripContext } from './context';
 import type { DbTrip, DbTripFull } from './db';
@@ -64,6 +69,8 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
       $: { where: { email: authUser?.email ?? '' } },
     },
   });
+  const setTrip = useBoundStore((state) => state.setTrip);
+
   const user = data?.user[0] as DbUser | undefined;
   const rawTrip = data?.trip[0] as DbTrip | undefined;
 
@@ -79,31 +86,12 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
     return false;
   }, [rawTrip, user]);
 
-  const trip: undefined | DbTripFull = useMemo(() => {
-    if (rawTrip) {
-      // Reference to the trip in the activities, accommodations and macroplans
-      const tripWithBackReference = {
-        ...rawTrip,
-        activity:
-          rawTrip.activity?.map((activity) => {
-            activity.trip = rawTrip;
-            return activity;
-          }) ?? [],
-        accommodation:
-          rawTrip.accommodation?.map((accommodation) => {
-            accommodation.trip = rawTrip;
-            return accommodation;
-          }) ?? [],
-        macroplan:
-          rawTrip.macroplan?.map((macroplan) => {
-            macroplan.trip = rawTrip;
-            return macroplan;
-          }) ?? [],
-      } as DbTripFull;
-      return tripWithBackReference;
+  const trip: undefined | DbTripFull = useStableRefTrip(rawTrip);
+  useEffect(() => {
+    if (trip) {
+      setTrip(trip);
     }
-    return undefined;
-  }, [rawTrip]);
+  }, [trip, setTrip]);
 
   return (
     <TripContext.Provider value={trip}>
@@ -172,4 +160,139 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
       <TripMenuFloating />
     </TripContext.Provider>
   );
+}
+
+function useStableRefTrip(rawTrip: DbTrip | undefined): DbTripFull | undefined {
+  // Avoid re-render of trip object
+  // Only re-render if trip, trip.activity, trip.accommodation, trip.macroplan is different
+  const tripRef = useRef<DbTripFull | undefined>(undefined);
+  return useMemo(() => {
+    if (rawTrip) {
+      let isShallowEqual = false;
+
+      // Reference to the trip in the activities, accommodations and macroplans
+      const tripWithBackReference = {
+        ...rawTrip,
+        activity:
+          rawTrip.activity?.map((activity) => {
+            activity.trip = rawTrip;
+            return activity;
+          }) ?? [],
+        accommodation:
+          rawTrip.accommodation?.map((accommodation) => {
+            accommodation.trip = rawTrip;
+            return accommodation;
+          }) ?? [],
+        macroplan:
+          rawTrip.macroplan?.map((macroplan) => {
+            macroplan.trip = rawTrip;
+            return macroplan;
+          }) ?? [],
+      } as DbTripFull;
+
+      isShallowEqual = shallow(
+        tripRef.current
+          ? omitKeysFromObject(tripRef.current, [
+              'accommodation',
+              'activity',
+              'macroplan',
+              'tripUser',
+            ])
+          : undefined,
+        omitKeysFromObject(tripWithBackReference, [
+          'accommodation',
+          'activity',
+          'macroplan',
+          'tripUser',
+        ]),
+      );
+
+      if (tripRef.current?.accommodation) {
+        if (
+          tripRef.current.accommodation.length !==
+          tripWithBackReference.accommodation.length
+        ) {
+          isShallowEqual = false;
+        }
+        const accommodationMap: { [id: string]: DbAccommodationWithTrip } = {};
+        for (const accommodation of tripRef.current.accommodation) {
+          accommodationMap[accommodation.id] = accommodation;
+        }
+        for (const accommodation of tripWithBackReference.accommodation) {
+          const isEqual = shallow(
+            omitKeysFromObject(accommodation, ['trip']),
+            omitKeysFromObject(accommodationMap[accommodation.id], ['trip']),
+          );
+          if (!isEqual) {
+            isShallowEqual = false;
+            break;
+          }
+        }
+      }
+
+      if (tripRef.current?.activity) {
+        if (
+          tripRef.current.activity.length !==
+          tripWithBackReference.activity.length
+        ) {
+          isShallowEqual = false;
+        }
+        const activityMap: { [id: string]: DbActivityWithTrip } = {};
+        for (const activity of tripRef.current.activity) {
+          activityMap[activity.id] = activity;
+        }
+        for (const activity of tripWithBackReference.activity) {
+          const isEqual = shallow(
+            omitKeysFromObject(activity, ['trip']),
+            omitKeysFromObject(activityMap[activity.id], ['trip']),
+          );
+          if (!isEqual) {
+            isShallowEqual = false;
+            break;
+          }
+        }
+      }
+
+      if (tripRef.current?.macroplan) {
+        if (
+          tripRef.current.macroplan.length !==
+          tripWithBackReference.macroplan.length
+        ) {
+          isShallowEqual = false;
+        }
+        const macroplanMap: { [id: string]: DbMacroplanWithTrip } = {};
+        for (const macroplan of tripRef.current.macroplan) {
+          macroplanMap[macroplan.id] = macroplan;
+        }
+        for (const macroplan of tripWithBackReference.macroplan) {
+          const isEqual = shallow(
+            omitKeysFromObject(macroplan, ['trip']),
+            omitKeysFromObject(macroplanMap[macroplan.id], ['trip']),
+          );
+          if (!isEqual) {
+            isShallowEqual = false;
+            break;
+          }
+        }
+      }
+
+      if (isShallowEqual) {
+        return tripRef.current;
+      }
+
+      tripRef.current = tripWithBackReference;
+      return tripWithBackReference;
+    }
+    return undefined;
+  }, [rawTrip]);
+}
+function omitKeysFromObject<T extends object, K extends keyof T>(
+  obj: T,
+  keys: K[],
+): Omit<T, K> {
+  const newObj = { ...obj };
+  for (const key of keys) {
+    delete newObj[key];
+  }
+  return newObj;
 }

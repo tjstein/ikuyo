@@ -3,7 +3,7 @@ import { useLocation } from 'wouter';
 import type { StateCreator } from 'zustand';
 import { RouteLogin } from '../Routes/routes';
 import { db } from '../data/db';
-import { useBoundStore } from '../data/store';
+import { type BoundStoreType, useBoundStore } from '../data/store';
 import type { DbUser } from '../data/types';
 
 export function useAuthUser() {
@@ -46,9 +46,12 @@ export interface UserSlice {
   setCurrentUser: (user: DbUser | undefined) => void;
 }
 
-export const createUserSlice: StateCreator<UserSlice, [], [], UserSlice> = (
-  set,
-) => {
+export const createUserSlice: StateCreator<
+  BoundStoreType,
+  [],
+  [],
+  UserSlice
+> = (set) => {
   return {
     currentUser: undefined,
     setCurrentUser: (user) => {

@@ -2,8 +2,9 @@ import { Dialog, Spinner } from '@radix-ui/themes';
 
 import { useState } from 'react';
 import type { RouteComponentProps } from 'wouter';
+import { useShallow } from 'zustand/react/shallow';
 import { CommonDialogMaxWidth } from '../Dialog/ui';
-import { db } from '../data/db';
+import { useBoundStore } from '../data/store';
 import { AccommodationDialogContentDelete } from './AccommodationDialogContentDelete';
 import { AccommodationDialogContentEdit } from './AccommodationDialogContentEdit';
 import { AccommodationDialogContentView } from './AccommodationDialogContentView';
@@ -11,7 +12,6 @@ import {
   AccommodationDialogMode,
   type AccommodationDialogModeType,
 } from './AccommodationDialogMode';
-import type { DbAccommodationWithTrip } from './db';
 
 function AccommodationDialogContent({
   params,
@@ -20,19 +20,9 @@ function AccommodationDialogContent({
     history.state?.mode ?? AccommodationDialogMode.View,
   );
   const { id: accommodationId } = params;
-  const { data } = db.useQuery({
-    accommodation: {
-      trip: {},
-      $: {
-        where: {
-          id: accommodationId,
-        },
-      },
-    },
-  });
-  const accommodation = data?.accommodation[0] as
-    | DbAccommodationWithTrip
-    | undefined;
+  const accommodation = useBoundStore(
+    useShallow((state) => state.getAccommodation(accommodationId)),
+  );
   return (
     <>
       {!accommodation ? (
