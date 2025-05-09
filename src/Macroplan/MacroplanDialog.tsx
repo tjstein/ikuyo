@@ -1,4 +1,4 @@
-import { Dialog } from '@radix-ui/themes';
+import { Dialog, Spinner } from '@radix-ui/themes';
 
 import { useState } from 'react';
 import type { RouteComponentProps } from 'wouter';
@@ -35,8 +35,10 @@ function MacroplanDialogContent({
     <>
       {!macroplan ? (
         <Dialog.Content maxWidth={CommonDialogMaxWidth}>
-          <Dialog.Title>Macroplan</Dialog.Title>
-          <Dialog.Description>Loading details...</Dialog.Description>
+          <Dialog.Title>Day Plan</Dialog.Title>
+          <Dialog.Description>
+            <Spinner />
+          </Dialog.Description>
         </Dialog.Content>
       ) : mode === MacroplanDialogMode.View ? (
         <MacroplanDialogContentView macroplan={macroplan} setMode={setMode} />

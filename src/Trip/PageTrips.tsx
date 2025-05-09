@@ -6,6 +6,7 @@ import {
   Container,
   Flex,
   Heading,
+  Spinner,
   Text,
 } from '@radix-ui/themes';
 import { useCallback, useMemo, useState } from 'react';
@@ -96,7 +97,7 @@ export function PageTrips(_props: RouteComponentProps) {
 
       <Container>
         {isLoading ? (
-          'Loading'
+          <Spinner />
         ) : error ? (
           `Error: ${error.message}`
         ) : (
@@ -165,7 +166,7 @@ function PastTrips({ user, now }: { user: DbUser | undefined; now: number }) {
           {limit !== 0 ? (
             <>
               {error ? `Error: ${error.message}` : null}
-              {isLoading ? 'Loading...' : null}
+              {isLoading ? <Spinner /> : null}
               {trips.length === 0 && !isLoading && !error
                 ? 'None'
                 : trips.map((trip) => {

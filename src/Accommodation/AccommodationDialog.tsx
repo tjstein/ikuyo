@@ -1,4 +1,4 @@
-import { Dialog } from '@radix-ui/themes';
+import { Dialog, Spinner } from '@radix-ui/themes';
 
 import { useState } from 'react';
 import type { RouteComponentProps } from 'wouter';
@@ -38,7 +38,9 @@ function AccommodationDialogContent({
       {!accommodation ? (
         <Dialog.Content maxWidth={CommonDialogMaxWidth}>
           <Dialog.Title>Accommodation</Dialog.Title>
-          <Dialog.Description>Loading details...</Dialog.Description>
+          <Dialog.Description>
+            <Spinner />
+          </Dialog.Description>
         </Dialog.Content>
       ) : mode === AccommodationDialogMode.View ? (
         <AccommodationDialogContentView

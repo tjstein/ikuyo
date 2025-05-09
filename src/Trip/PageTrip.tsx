@@ -1,4 +1,4 @@
-import { Container, Heading } from '@radix-ui/themes';
+import { Container, Heading, Skeleton, Spinner } from '@radix-ui/themes';
 import React from 'react';
 import { useMemo } from 'react';
 import { Redirect, Route, type RouteComponentProps, Switch } from 'wouter';
@@ -116,7 +116,7 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
             className={s.tripTitle}
             key="title"
           >
-            {trip?.title ?? 'Loading trip'}
+            {trip?.title ?? <Skeleton>Trip title</Skeleton>}
             {
               <Switch>
                 <Route path={RouteTripTimetableView.routePath}>
@@ -162,7 +162,7 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
             <Redirect replace to={RouteTripTimetableView.routePath} />
           </Switch>
         ) : isLoading ? (
-          'Loading'
+          <Spinner m="3" />
         ) : error ? (
           `Error: ${error.message}`
         ) : (

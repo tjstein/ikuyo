@@ -1,4 +1,4 @@
-import { Dialog } from '@radix-ui/themes';
+import { Dialog, Spinner } from '@radix-ui/themes';
 
 import { useState } from 'react';
 import type { RouteComponentProps } from 'wouter';
@@ -36,7 +36,9 @@ function ActivityDialogContent({
       {!activity ? (
         <Dialog.Content maxWidth={CommonDialogMaxWidth}>
           <Dialog.Title>Activity</Dialog.Title>
-          <Dialog.Description>Loading details...</Dialog.Description>
+          <Dialog.Description>
+            <Spinner />
+          </Dialog.Description>
         </Dialog.Content>
       ) : mode === ActivityDialogMode.View ? (
         <ActivityDialogContentView activity={activity} setMode={setMode} />

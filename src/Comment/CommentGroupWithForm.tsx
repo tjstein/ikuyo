@@ -1,4 +1,4 @@
-import { Text } from '@radix-ui/themes';
+import { Spinner, Text } from '@radix-ui/themes';
 import type { DbUser } from '../data/types';
 import { CommentForm } from './CommentForm';
 import { CommentGroup } from './CommentGroup';
@@ -36,7 +36,7 @@ export function CommentGroupWithForm({
       />
 
       {isLoading ? (
-        <Text>Loading comments...</Text>
+        <Spinner />
       ) : error ? (
         <Text>Error loading comments: {error.message}</Text>
       ) : (

@@ -1,7 +1,7 @@
 import type React from 'react';
 import { Suspense, forwardRef } from 'react';
 
-import { Text } from '@radix-ui/themes';
+import { Spinner } from '@radix-ui/themes';
 
 export function withLoading(
   {
@@ -9,7 +9,7 @@ export function withLoading(
   }: {
     fallback: () => React.ReactNode;
   } = {
-    fallback: () => <Text size="3">Loading...</Text>,
+    fallback: () => <Spinner m="3" />,
   },
 ) {
   return function withLoadingInner<T extends object>(

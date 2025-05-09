@@ -4,6 +4,7 @@ import {
   Flex,
   Grid,
   Heading,
+  Spinner,
   Text,
   TextField,
 } from '@radix-ui/themes';
@@ -114,7 +115,7 @@ export function PageLogin(_props: RouteComponentProps) {
       <Grid className={s.grid}>
         <Box maxWidth={CommonDialogMaxWidth} mx="2" px="2">
           {authUserLoading || isLoading ? (
-            'Loading'
+            <Spinner m="3" />
           ) : error ? (
             `Error: ${error.message}`
           ) : screen === AuthScreen.LoginSelection ? (

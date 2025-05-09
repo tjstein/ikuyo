@@ -1,5 +1,5 @@
 import { PlusIcon, QuestionMarkCircledIcon } from '@radix-ui/react-icons';
-import { Button, Section, Table, Tooltip } from '@radix-ui/themes';
+import { Button, Section, Spinner, Table, Tooltip } from '@radix-ui/themes';
 import { useState } from 'react';
 import { useTrip } from '../Trip/context';
 import { db } from '../data/db';
@@ -94,7 +94,7 @@ export function ExpenseList() {
           )}
         </Table.Body>
       </Table.Root>
-      {isLoading ? 'Loading expenses' : error ? `Error: ${error.message}` : ''}
+      {isLoading ? <Spinner /> : error ? `Error: ${error.message}` : ''}
     </Section>
   );
 }
