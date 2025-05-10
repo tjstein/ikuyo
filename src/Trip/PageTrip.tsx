@@ -5,9 +5,6 @@ import { Redirect, Route, type RouteComponentProps, Switch } from 'wouter';
 import { Navbar } from '../Nav/Navbar';
 import { db } from '../data/db';
 
-import { useAuthUser } from '../Auth/hooks';
-import type { DbUser } from '../data/types';
-
 import s from './PageTrip.module.css';
 
 import { TripMenu } from './TripMenu';
@@ -30,7 +27,7 @@ const ActivityList = withLoading()(
   ),
 );
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
-import { shallow } from 'zustand/shallow';
+import { shallow, useShallow } from 'zustand/shallow';
 import type { DbAccommodationWithTrip } from '../Accommodation/db';
 import type { DbActivityWithTrip } from '../Activity/db';
 import { ExpenseList } from '../Expense/ExpenseList';
@@ -49,33 +46,24 @@ import type { DbTrip, DbTripFull } from './db';
 export default PageTrip;
 export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
   const { id: tripId } = params;
-  const { user: authUser } = useAuthUser();
+  const { trip, isLoading, error } = useStableRefTrip(tripId);
 
-  const { isLoading, error, data } = db.useQuery({
-    trip: {
-      $: {
-        where: {
-          id: tripId,
-        },
-      },
-      activity: {},
-      accommodation: {},
-      macroplan: {},
-      tripUser: {
-        user: {},
-      },
-    },
-    user: {
-      $: { where: { email: authUser?.email ?? '' } },
-    },
-  });
-  const setTrip = useBoundStore((state) => state.setTrip);
+  return <PageTripInner trip={trip} isLoading={isLoading} error={error} />;
+}
 
-  const user = data?.user[0] as DbUser | undefined;
-  const rawTrip = data?.trip[0] as DbTrip | undefined;
+function PageTripInner({
+  trip,
+  isLoading,
+  error,
+}: {
+  trip: DbTripFull | undefined;
+  isLoading: boolean;
+  error: { message: string } | undefined;
+}) {
+  const user = useBoundStore(useShallow((state) => state.currentUser));
 
   const currentUserIsOwner = useMemo(() => {
-    for (const tripUser of rawTrip?.tripUser ?? []) {
+    for (const tripUser of trip?.tripUser ?? []) {
       if (
         user?.id === tripUser.user?.[0]?.id &&
         tripUser.role === TripUserRole.Owner
@@ -84,15 +72,7 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
       }
     }
     return false;
-  }, [rawTrip, user]);
-
-  const trip: undefined | DbTripFull = useStableRefTrip(rawTrip);
-  useEffect(() => {
-    if (trip) {
-      setTrip(trip);
-    }
-  }, [trip, setTrip]);
-
+  }, [trip, user]);
   return (
     <TripContext.Provider value={trip}>
       <DocTitle title={trip?.title ?? 'Trip'} />
@@ -161,12 +141,31 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
     </TripContext.Provider>
   );
 }
-
-function useStableRefTrip(rawTrip: DbTrip | undefined): DbTripFull | undefined {
+function useStableRefTrip(tripId: string): {
+  trip: DbTripFull | undefined;
+  isLoading: boolean;
+  error: { message: string } | undefined;
+} {
+  const { isLoading, error, data } = db.useQuery({
+    trip: {
+      $: {
+        where: {
+          id: tripId,
+        },
+      },
+      activity: {},
+      accommodation: {},
+      macroplan: {},
+      tripUser: {
+        user: {},
+      },
+    },
+  });
+  const rawTrip = data?.trip[0] as DbTrip | undefined;
   // Avoid re-render of trip object
   // Only re-render if trip, trip.activity, trip.accommodation, trip.macroplan is different
   const tripRef = useRef<DbTripFull | undefined>(undefined);
-  return useMemo(() => {
+  const trip = useMemo(() => {
     if (rawTrip) {
       let isShallowEqual = false;
 
@@ -285,6 +284,15 @@ function useStableRefTrip(rawTrip: DbTrip | undefined): DbTripFull | undefined {
     }
     return undefined;
   }, [rawTrip]);
+
+  const setTrip = useBoundStore((state) => state.setTrip);
+  useEffect(() => {
+    if (trip) {
+      setTrip(trip);
+    }
+  }, [trip, setTrip]);
+
+  return { trip, isLoading, error };
 }
 function omitKeysFromObject<T extends object, K extends keyof T>(
   obj: T,
