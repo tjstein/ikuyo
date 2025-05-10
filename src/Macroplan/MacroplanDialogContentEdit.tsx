@@ -2,7 +2,6 @@ import { Box, Dialog } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useCallback } from 'react';
 import { CommonDialogMaxWidth } from '../Dialog/ui';
-import { useBoundStore } from '../data/store';
 import type { DbMacroplanWithTrip } from './db';
 import {
   MacroplanDialogMode,
@@ -19,7 +18,6 @@ export function MacroplanDialogContentEdit({
   macroplan: DbMacroplanWithTrip;
   setMode: (mode: MacroplanDialogModeType) => void;
 }) {
-  const popDialog = useBoundStore((state) => state.popDialog);
   const tripStartStr = formatToDateInput(
     DateTime.fromMillis(macroplan.trip.timestampStart).setZone(
       macroplan.trip.timeZone,
@@ -46,35 +44,26 @@ export function MacroplanDialogContentEdit({
   }, [setMode]);
 
   return (
-    <Dialog.Root
-      defaultOpen
-      onOpenChange={(open) => {
-        if (!open) {
-          popDialog();
-        }
-      }}
-    >
-      <Dialog.Content maxWidth={CommonDialogMaxWidth}>
-        <Dialog.Title>Edit Day Plan</Dialog.Title>
-        <Dialog.Description>
-          Fill in the edited day plan details for this trip...
-        </Dialog.Description>
-        <Box height="16px" />
-        <MacroplanForm
-          mode={MacroplanFormMode.Edit}
-          tripId={macroplan.trip.id}
-          macroplanId={macroplan.id}
-          tripTimeZone={macroplan.trip.timeZone}
-          tripStartStr={tripStartStr}
-          tripEndStr={tripEndStr}
-          macroplanName={macroplan.name}
-          macroplanDateStartStr={macroplanDateStartStr}
-          macroplanDateEndStr={macroplanDateEndStr}
-          macroplanNotes={macroplan.notes}
-          onFormCancel={backToViewMode}
-          onFormSuccess={backToViewMode}
-        />
-      </Dialog.Content>
-    </Dialog.Root>
+    <Dialog.Content maxWidth={CommonDialogMaxWidth}>
+      <Dialog.Title>Edit Day Plan</Dialog.Title>
+      <Dialog.Description>
+        Fill in the edited day plan details for this trip...
+      </Dialog.Description>
+      <Box height="16px" />
+      <MacroplanForm
+        mode={MacroplanFormMode.Edit}
+        tripId={macroplan.trip.id}
+        macroplanId={macroplan.id}
+        tripTimeZone={macroplan.trip.timeZone}
+        tripStartStr={tripStartStr}
+        tripEndStr={tripEndStr}
+        macroplanName={macroplan.name}
+        macroplanDateStartStr={macroplanDateStartStr}
+        macroplanDateEndStr={macroplanDateEndStr}
+        macroplanNotes={macroplan.notes}
+        onFormCancel={backToViewMode}
+        onFormSuccess={backToViewMode}
+      />
+    </Dialog.Content>
   );
 }
