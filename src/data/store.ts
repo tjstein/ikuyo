@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { createUserSlice, type UserSlice } from '../Auth/hooks';
+import { createUserSlice, type UserSlice } from '../Auth/store';
 import { createDialogSlice, type DialogSlice } from '../Dialog/hooks';
 import { createToastSlice, type ToastSlice } from '../Toast/hooks';
 import { createTripSlice, type TripSlice } from '../Trip/store';

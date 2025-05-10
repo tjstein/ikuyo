@@ -8,27 +8,16 @@ import {
 } from '@radix-ui/themes';
 import { useCallback, useId, useState } from 'react';
 import type { RouteComponentProps } from 'wouter';
-import { useAuthUser } from '../Auth/hooks';
 import { UserAvatarMenu } from '../Auth/UserAvatarMenu';
-import { db, dbUpsertUser } from '../data/db';
+import { dbUpsertUser } from '../data/db';
 import { useBoundStore } from '../data/store';
-import type { DbUser } from '../data/types';
 import { DocTitle } from '../Nav/DocTitle';
 import { Navbar } from '../Nav/Navbar';
 import { dangerToken } from '../ui';
 
 export default PageAccount;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function PageAccount(_props: RouteComponentProps) {
-  const { user: authUser } = useAuthUser();
-
-  const { data } = db.useQuery({
-    user: {
-      $: { where: { email: authUser?.email ?? '' } },
-    },
-  });
-  const userData = data?.user[0] as DbUser | undefined;
-
+  const currentUser = useBoundStore((state) => state.currentUser);
   const resetToast = useBoundStore((state) => state.resetToast);
   const publishToast = useBoundStore((state) => state.publishToast);
 
@@ -46,13 +35,13 @@ export function PageAccount(_props: RouteComponentProps) {
       const formData = new FormData(elForm);
       const handle = (formData.get('handle') as string | null) ?? '';
 
-      if (!handle || !userData) {
+      if (!handle || !currentUser) {
         return;
       }
       try {
         resetToast();
         await dbUpsertUser({
-          ...userData,
+          ...currentUser,
           handle,
         });
         publishToast({
@@ -77,7 +66,7 @@ export function PageAccount(_props: RouteComponentProps) {
         elForm.reset();
       }
     };
-  }, [userData, resetToast, publishToast]);
+  }, [currentUser, resetToast, publishToast]);
 
   return (
     <>
@@ -88,7 +77,9 @@ export function PageAccount(_props: RouteComponentProps) {
             {'Account'}
           </Heading>,
         ]}
-        rightItems={[<UserAvatarMenu key="UserAvatarMenu" user={userData} />]}
+        rightItems={[
+          <UserAvatarMenu key="UserAvatarMenu" user={currentUser} />,
+        ]}
       />
       <Container p="2" my="2">
         <Heading as="h2">Edit Account Details</Heading>
@@ -113,7 +104,7 @@ export function PageAccount(_props: RouteComponentProps) {
               </Text>
             </Text>
             <TextField.Root
-              defaultValue={userData?.email}
+              defaultValue={currentUser?.email}
               name="email"
               type="email"
               disabled
@@ -128,7 +119,7 @@ export function PageAccount(_props: RouteComponentProps) {
               </Text>
             </Text>
             <TextField.Root
-              defaultValue={userData?.handle}
+              defaultValue={currentUser?.handle}
               name="handle"
               type="text"
               pattern="[a-z0-9_]{4,16}"

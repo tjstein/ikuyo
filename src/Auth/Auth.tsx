@@ -30,7 +30,6 @@ enum AuthScreen {
   InvalidState = 4,
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function PageLogin(_props: RouteComponentProps) {
   const { isLoading: authUserLoading, user: authUser, error } = db.useAuth();
   const [screen, setScreen] = useState(AuthScreen.LoginSelection);

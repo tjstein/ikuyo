@@ -6,6 +6,7 @@ import { Portal, Theme } from '@radix-ui/themes';
 import React from 'react';
 import { Redirect, Route, Switch } from 'wouter';
 import s from './App.module.css';
+import { useAuthUser } from './Auth/hooks';
 import { DialogRoot } from './Dialog/DialogRoot';
 import { withLoading } from './Loading/withLoading';
 import {
@@ -30,6 +31,7 @@ const PageAccount = withLoading()(
 
 function App() {
   const theme = useTheme();
+  useAuthUser();
   return (
     <>
       <Theme appearance={theme} accentColor="red">

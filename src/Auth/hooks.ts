@@ -1,19 +1,26 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
-import type { StateCreator } from 'zustand';
 import { db } from '../data/db';
-import { type BoundStoreType, useBoundStore } from '../data/store';
+import { useBoundStore } from '../data/store';
 import type { DbUser } from '../data/types';
-import { RouteLogin } from '../Routes/routes';
+import { RouteLogin, UnauthenticatedRoutes } from '../Routes/routes';
 
 export function useAuthUser() {
   const setCurrentUser = useBoundStore((state) => state.setCurrentUser);
   const { user, isLoading } = db.useAuth();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
 
   useEffect(() => {
     if (!isLoading && !user) {
-      setLocation(RouteLogin.asRootRoute());
+      if (
+        UnauthenticatedRoutes.some((route) => {
+          return `~${location}` === route.asRootRoute();
+        })
+      ) {
+        // nothing
+      } else {
+        setLocation(RouteLogin.asRootRoute());
+      }
     }
     if (!isLoading && user) {
       (async () => {
@@ -34,30 +41,5 @@ export function useAuthUser() {
         }
       })();
     }
-  }, [isLoading, user, setLocation, setCurrentUser]);
-  return {
-    user,
-    isLoading,
-  };
+  }, [isLoading, location, user, setLocation, setCurrentUser]);
 }
-
-export interface UserSlice {
-  currentUser: DbUser | undefined;
-  setCurrentUser: (user: DbUser | undefined) => void;
-}
-
-export const createUserSlice: StateCreator<
-  BoundStoreType,
-  [],
-  [],
-  UserSlice
-> = (set) => {
-  return {
-    currentUser: undefined,
-    setCurrentUser: (user) => {
-      set(() => ({
-        currentUser: user,
-      }));
-    },
-  };
-};
