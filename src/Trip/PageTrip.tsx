@@ -22,6 +22,20 @@ const ActivityList = withLoading()(
     }),
   ),
 );
+const ExpenseList = withLoading()(
+  React.lazy(() =>
+    import('../Expense/ExpenseList').then((module) => {
+      return { default: module.ExpenseList };
+    }),
+  ),
+);
+const TripHome = withLoading()(
+  React.lazy(() =>
+    import('./TripHome').then((module) => {
+      return { default: module.TripHome };
+    }),
+  ),
+);
 
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import { shallow, useShallow } from 'zustand/shallow';
@@ -29,10 +43,10 @@ import type { DbAccommodationWithTrip } from '../Accommodation/db';
 import type { DbActivityWithTrip } from '../Activity/db';
 import { useBoundStore } from '../data/store';
 import { TripUserRole } from '../data/TripUserRole';
-import { ExpenseList } from '../Expense/ExpenseList';
 import type { DbMacroplanWithTrip } from '../Macroplan/db';
 import {
   RouteTripExpenses,
+  RouteTripHome,
   RouteTripListView,
   RouteTripTimetableView,
 } from '../Routes/routes';
@@ -124,7 +138,8 @@ function PageTripInner({
               nest
             />
             <Route path={RouteTripExpenses.routePath} component={ExpenseList} />
-            <Redirect replace to={RouteTripTimetableView.routePath} />
+            <Route path={RouteTripHome.routePath} component={TripHome} />
+            <Redirect replace to={RouteTripHome.routePath} />
           </Switch>
         ) : isLoading ? (
           <Spinner m="3" />

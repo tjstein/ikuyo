@@ -22,6 +22,8 @@ export function TripForm({
   tripOriginCurrency,
   userId,
   activities,
+  onFormSuccess,
+  onFormCancel,
 }: {
   mode: TripFormMode;
   tripId?: string;
@@ -34,6 +36,8 @@ export function TripForm({
   tripOriginCurrency: string;
   userId?: string;
   activities?: DbActivity[];
+  onFormSuccess: () => void;
+  onFormCancel: () => void;
 }) {
   const [, setLocation] = useLocation();
   const idTitle = useId();
@@ -44,7 +48,6 @@ export function TripForm({
   const idOriginCurrency = useId();
   const idRegion = useId();
   const publishToast = useBoundStore((state) => state.publishToast);
-  const popDialog = useBoundStore((state) => state.popDialog);
 
   const [errorMessage, setErrorMessage] = useState('');
   const timeZones = useMemo(() => Intl.supportedValuesOf('timeZone'), []);
@@ -125,7 +128,7 @@ export function TripForm({
           close: {},
         });
         elForm.reset();
-        popDialog();
+        onFormSuccess();
       } else if (mode === TripFormMode.New && userId) {
         const { id: newId, result } = await dbAddTrip(
           {
@@ -149,19 +152,19 @@ export function TripForm({
           close: {},
         });
         elForm.reset();
-        popDialog();
+        onFormSuccess();
 
         setLocation(RouteTrip.asRouteTarget(newId));
       } else {
         // Shouldn't reach this block, but included for completeness
         elForm.reset();
-        popDialog();
+        onFormSuccess();
       }
     };
   }, [
     mode,
     publishToast,
-    popDialog,
+    onFormSuccess,
     tripId,
     userId,
     setLocation,
@@ -356,7 +359,7 @@ export function TripForm({
           size="2"
           variant="soft"
           color="gray"
-          onClick={popDialog}
+          onClick={onFormCancel}
         >
           Cancel
         </Button>

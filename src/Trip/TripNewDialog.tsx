@@ -10,14 +10,7 @@ export function TripNewDialog({ user }: { user: DbUser }) {
   const popDialog = useBoundStore((state) => state.popDialog);
 
   return (
-    <Dialog.Root
-      defaultOpen
-      onOpenChange={(open) => {
-        if (!open) {
-          popDialog();
-        }
-      }}
-    >
+    <Dialog.Root open>
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>New Trip</Dialog.Title>
         <Dialog.Description>
@@ -34,6 +27,8 @@ export function TripNewDialog({ user }: { user: DbUser }) {
           tripOriginCurrency=""
           tripRegion=""
           userId={user.id}
+          onFormCancel={popDialog}
+          onFormSuccess={popDialog}
         />
       </Dialog.Content>
     </Dialog.Root>

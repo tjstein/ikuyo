@@ -17,14 +17,9 @@ export function TripEditDialog({ trip }: { trip: DbTripWithActivity }) {
       .minus({ days: 1 }),
   );
   const popDialog = useBoundStore((state) => state.popDialog);
+
   return (
-    <Dialog.Root
-      onOpenChange={(open) => {
-        if (!open) {
-          popDialog();
-        }
-      }}
-    >
+    <Dialog.Root open>
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>Edit Trip</Dialog.Title>
         <Dialog.Description>
@@ -42,6 +37,8 @@ export function TripEditDialog({ trip }: { trip: DbTripWithActivity }) {
           tripOriginCurrency={trip.originCurrency}
           tripRegion={trip.region}
           activities={trip.activity}
+          onFormCancel={popDialog}
+          onFormSuccess={popDialog}
         />
       </Dialog.Content>
     </Dialog.Root>

@@ -1,8 +1,14 @@
-import { CalendarIcon, ListBulletIcon, TableIcon } from '@radix-ui/react-icons';
+import {
+  CalendarIcon,
+  HomeIcon,
+  ListBulletIcon,
+  TableIcon,
+} from '@radix-ui/react-icons';
 import { SegmentedControl, Tooltip } from '@radix-ui/themes';
 import { useLocation } from 'wouter';
 import {
   RouteTripExpenses,
+  RouteTripHome,
   RouteTripListView,
   RouteTripTimetableView,
 } from '../Routes/routes';
@@ -23,6 +29,16 @@ export function TripMenuFloating() {
             setLocation(value);
           }}
         >
+          <Tooltip content="Trip home">
+            <SegmentedControl.Item
+              value={RouteTripHome.routePath}
+              data-state={
+                location === (RouteTripHome.routePath as string) ? 'on' : 'off'
+              }
+            >
+              <HomeIcon className={s.controlIcon} />
+            </SegmentedControl.Item>
+          </Tooltip>
           <Tooltip content="Timetable view">
             <SegmentedControl.Item
               value={RouteTripTimetableView.routePath}

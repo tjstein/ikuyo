@@ -8,6 +8,7 @@ export const RoutePrivacy = createRouteParam('/privacy', identity);
 export const RouteTerms = createRouteParam('/terms', identity);
 
 // #region Trip
+export const RouteTripHome = createRouteParam('/home', identity, RouteTrip);
 export const RouteTripListView = createRouteParam('/list', identity, RouteTrip);
 export const RouteTripTimetableView = createRouteParam(
   '/timetable',
