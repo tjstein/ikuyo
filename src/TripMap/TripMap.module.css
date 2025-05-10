@@ -1,0 +1,34 @@
+.mapWrapper {
+  position: relative;
+  height: calc(100vh - var(--space-8));
+  width: 100%;
+}
+
+.map {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.popup:global(.maplibregl-popup-anchor-bottom) :global(.maplibregl-popup-tip) {
+  border-top-color: var(--color-panel-solid);
+}
+.popup:global(.maplibregl-popup-anchor-top) :global(.maplibregl-popup-tip) {
+  border-bottom-color: var(--color-panel-solid);
+}
+.popup:global(.maplibregl-popup-anchor-right) :global(.maplibregl-popup-tip) {
+  border-left-color: var(--color-panel-solid);
+}
+.popup:global(.maplibregl-popup-anchor-left) :global(.maplibregl-popup-tip) {
+  border-right-color: var(--color-panel-solid);
+}
+.popup > :global(.maplibregl-popup-content) {
+  padding: var(--space-2);
+  border-radius: var(--radius-2);
+  margin: 0;
+  background: var(--color-panel-solid);
+}
+
+.activityDescription {
+  white-space: pre-wrap;
+}

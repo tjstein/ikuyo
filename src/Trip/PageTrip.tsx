@@ -29,6 +29,13 @@ const ExpenseList = withLoading()(
     }),
   ),
 );
+const TripMap = withLoading()(
+  React.lazy(() =>
+    import('../TripMap/TripMap').then((module) => {
+      return { default: module.TripMap };
+    }),
+  ),
+);
 const TripHome = withLoading()(
   React.lazy(() =>
     import('./TripHome').then((module) => {
@@ -48,6 +55,7 @@ import {
   RouteTripExpenses,
   RouteTripHome,
   RouteTripListView,
+  RouteTripMap,
   RouteTripTimetableView,
 } from '../Routes/routes';
 import { TripContext } from './context';
@@ -107,6 +115,11 @@ function PageTripInner({
                   <DoubleArrowRightIcon />
                   List
                 </Route>
+                <Route path={RouteTripMap.routePath}>
+                  {' '}
+                  <DoubleArrowRightIcon />
+                  Map
+                </Route>
                 <Route path={RouteTripExpenses.routePath}>
                   {' '}
                   <DoubleArrowRightIcon /> Expenses
@@ -137,6 +150,7 @@ function PageTripInner({
               component={ActivityList}
               nest
             />
+            <Route path={RouteTripMap.routePath} component={TripMap} />
             <Route path={RouteTripExpenses.routePath} component={ExpenseList} />
             <Route path={RouteTripHome.routePath} component={TripHome} />
             <Redirect replace to={RouteTripHome.routePath} />

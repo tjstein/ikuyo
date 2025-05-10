@@ -2,6 +2,7 @@ import {
   CalendarIcon,
   HomeIcon,
   ListBulletIcon,
+  SewingPinIcon,
   TableIcon,
 } from '@radix-ui/react-icons';
 import { SegmentedControl, Tooltip } from '@radix-ui/themes';
@@ -10,6 +11,7 @@ import {
   RouteTripExpenses,
   RouteTripHome,
   RouteTripListView,
+  RouteTripMap,
   RouteTripTimetableView,
 } from '../Routes/routes';
 import s from './TripMenuFloating.module.css';
@@ -61,6 +63,16 @@ export function TripMenuFloating() {
               }
             >
               <ListBulletIcon className={s.controlIcon} />
+            </SegmentedControl.Item>
+          </Tooltip>
+          <Tooltip content="Map view">
+            <SegmentedControl.Item
+              value={RouteTripMap.routePath}
+              data-state={
+                location === (RouteTripMap.routePath as string) ? 'on' : 'off'
+              }
+            >
+              <SewingPinIcon className={s.controlIcon} />
             </SegmentedControl.Item>
           </Tooltip>
           <Tooltip content="Expenses">

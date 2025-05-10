@@ -17,6 +17,7 @@ export const RouteTripTimetableView = createRouteParam(
   identity,
   RouteTrip,
 );
+export const RouteTripMap = createRouteParam('/map', identity, RouteTrip);
 export const RouteTripExpenses = createRouteParam(
   '/expenses',
   identity,
