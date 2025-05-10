@@ -6,16 +6,15 @@ import {
   Text,
   TextField,
 } from '@radix-ui/themes';
-import { useAuthUser } from '../Auth/hooks';
-import { Navbar } from '../Nav/Navbar';
-import { db, dbUpsertUser } from '../data/db';
-import type { DbUser } from '../data/types';
-
 import { useCallback, useId, useState } from 'react';
 import type { RouteComponentProps } from 'wouter';
+import { useAuthUser } from '../Auth/hooks';
 import { UserAvatarMenu } from '../Auth/UserAvatarMenu';
-import { DocTitle } from '../Nav/DocTitle';
+import { db, dbUpsertUser } from '../data/db';
 import { useBoundStore } from '../data/store';
+import type { DbUser } from '../data/types';
+import { DocTitle } from '../Nav/DocTitle';
+import { Navbar } from '../Nav/Navbar';
 import { dangerToken } from '../ui';
 
 export default PageAccount;

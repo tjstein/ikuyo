@@ -1,22 +1,20 @@
+import { ClockIcon, HomeIcon, StackIcon } from '@radix-ui/react-icons';
+import { ContextMenu, Section, Text } from '@radix-ui/themes';
 import clsx from 'clsx';
 import type * as React from 'react';
-import { Activity } from '../Activity/Activity';
-import s from './Timetable.module.scss';
-
-import { ContextMenu, Section, Text } from '@radix-ui/themes';
-
-import { ClockIcon, HomeIcon, StackIcon } from '@radix-ui/react-icons';
 import { useMemo, useRef } from 'react';
 import { Route, Switch } from 'wouter';
 import { Accommodation } from '../Accommodation/Accommodation';
 import { AccommodationDialog } from '../Accommodation/AccommodationDialog';
 import { AccommodationNewDialog } from '../Accommodation/AccommodationNewDialog';
+import { Activity } from '../Activity/Activity';
 import { ActivityDialog } from '../Activity/ActivityDialog';
 import { ActivityNewDialog } from '../Activity/ActivityNewDialog';
 import {
   type DayGroups,
   groupActivitiesByDays,
 } from '../Activity/eventGrouping';
+import { useBoundStore } from '../data/store';
 import { Macroplan } from '../Macroplan/Macroplan';
 import { MacroplanDialog } from '../Macroplan/MacroplanDialog';
 import { MacroplanNewDialog } from '../Macroplan/MacroplanNewDialog';
@@ -25,9 +23,8 @@ import {
   RouteTripTimetableViewActivity,
   RouteTripTimetableViewMacroplan,
 } from '../Routes/routes';
-import { TripViewMode } from '../Trip/TripViewMode';
 import { useTrip } from '../Trip/context';
-import { useBoundStore } from '../data/store';
+import { TripViewMode } from '../Trip/TripViewMode';
 import {
   generateAccommodationGridTemplateColumns,
   getAccommodationIndexes,
@@ -36,6 +33,7 @@ import {
   generateMacroplanGridTemplateColumns,
   getMacroplanIndexes,
 } from './macroplan';
+import s from './Timetable.module.scss';
 import { pad2 } from './time';
 
 const times = new Array(24).fill(0).map((_, i) => {

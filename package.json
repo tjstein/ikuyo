@@ -33,7 +33,7 @@
     "zustand": "~5.0.3"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "2.0.0-beta.2",
     "@rsbuild/core": "^1.3.14",
     "@rsbuild/plugin-react": "^1.3.0",
     "@rsbuild/plugin-sass": "^1.3.1",
@@ -61,14 +61,37 @@
       "side-channel": "npm:@nolyfill/side-channel@^1"
     },
     "peerDependencyRules": {
-      "allowAny": ["react", "react-dom", "@types/react", "@types/react-dom"]
+      "allowAny": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ]
     },
-    "ignoredBuiltDependencies": ["core-js"],
-    "onlyBuiltDependencies": ["@biomejs/biome", "lefthook"],
+    "ignoredBuiltDependencies": [
+      "core-js"
+    ],
+    "onlyBuiltDependencies": [
+      "@biomejs/biome",
+      "lefthook"
+    ],
     "supportedArchitectures": {
-      "os": ["darwin", "linux", "win32", "current"],
-      "cpu": ["x64", "arm64"]
+      "os": [
+        "darwin",
+        "linux",
+        "win32",
+        "current"
+      ],
+      "cpu": [
+        "x64",
+        "arm64"
+      ]
     }
   },
-  "browserslist": ["> 0.2%", "Firefox ESR", "last 4 versions", "not dead"]
+  "browserslist": [
+    "> 0.2%",
+    "Firefox ESR",
+    "last 4 versions",
+    "not dead"
+  ]
 }

@@ -160,11 +160,9 @@ export function CommentForm({
                   </Button>
                 </>
               ) : (
-                <>
-                  <Button size="1" type="submit" formTarget={idForm}>
-                    Comment
-                  </Button>
-                </>
+                <Button size="1" type="submit" formTarget={idForm}>
+                  Comment
+                </Button>
               )}
             </Flex>
           </Flex>

@@ -1,7 +1,6 @@
 import { id, init } from '@instantdb/react';
-import type { DbUser } from './types';
-
 import schema from '../../instant.schema';
+import type { DbUser } from './types';
 
 // ID for app: ikuyo
 const INSTANT_APP_ID = process.env.INSTANT_APP_ID;

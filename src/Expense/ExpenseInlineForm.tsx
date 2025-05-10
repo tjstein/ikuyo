@@ -2,11 +2,11 @@ import { Button, Select, Table, Text, TextField } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import type * as React from 'react';
 import { useCallback, useId, useMemo, useRef, useState } from 'react';
-import type { DbTripFull } from '../Trip/db';
 import { useBoundStore } from '../data/store';
+import type { DbTripFull } from '../Trip/db';
 import { dangerToken } from '../ui';
-import { ExpenseMode } from './ExpenseMode';
 import { type DbExpense, dbAddExpense, dbUpdateExpense } from './db';
+import { ExpenseMode } from './ExpenseMode';
 import { formatToDateInput, getDateTimeFromDateInput } from './time';
 export function ExpenseInlineForm({
   trip,

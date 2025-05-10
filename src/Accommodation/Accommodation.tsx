@@ -1,17 +1,14 @@
 import { ClockIcon, HomeIcon } from '@radix-ui/react-icons';
 import { Box, ContextMenu, Text } from '@radix-ui/themes';
 import clsx from 'clsx';
-
+import type * as React from 'react';
 import { TripViewMode, type TripViewModeType } from '../Trip/TripViewMode';
 import { dangerToken } from '../ui';
 import s from './Accommodation.module.css';
 import { AccommodationDisplayTimeMode } from './AccommodationDisplayTimeMode';
+import { useAccommodationDialogHooks } from './accommodationDialogHooks';
 import type { DbAccommodationWithTrip } from './db';
 import { formatTime } from './time';
-
-import type * as React from 'react';
-
-import { useAccommodationDialogHooks } from './accommodationDialogHooks';
 export function Accommodation({
   className,
   accommodation,
@@ -52,18 +49,16 @@ export function Accommodation({
             {tripViewMode === TripViewMode.List &&
             (displayTimeMode === AccommodationDisplayTimeMode.CheckIn ||
               displayTimeMode === AccommodationDisplayTimeMode.CheckOut) ? (
-              <>
-                <Text as="div" size={responsiveTextSize} color="gray">
-                  <ClockIcon style={{ verticalAlign: '-2px' }} />{' '}
-                  {displayTimeMode}:{' '}
-                  {formatTime(
-                    displayTimeMode === AccommodationDisplayTimeMode.CheckIn
-                      ? accommodation.timestampCheckIn
-                      : accommodation.timestampCheckOut,
-                    accommodation.trip.timeZone,
-                  )}
-                </Text>
-              </>
+              <Text as="div" size={responsiveTextSize} color="gray">
+                <ClockIcon style={{ verticalAlign: '-2px' }} />{' '}
+                {displayTimeMode}:{' '}
+                {formatTime(
+                  displayTimeMode === AccommodationDisplayTimeMode.CheckIn
+                    ? accommodation.timestampCheckIn
+                    : accommodation.timestampCheckOut,
+                  accommodation.trip.timeZone,
+                )}
+              </Text>
             ) : null}
           </Box>
         </ContextMenu.Trigger>

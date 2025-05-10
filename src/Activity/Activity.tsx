@@ -3,20 +3,16 @@ import {
   InfoCircledIcon,
   SewingPinIcon,
 } from '@radix-ui/react-icons';
-import clsx from 'clsx';
-import { useMemo } from 'react';
-import style from './Activity.module.css';
-
 import { Box, ContextMenu, Text } from '@radix-ui/themes';
+import clsx from 'clsx';
 import { DateTime } from 'luxon';
-import { formatTime } from './time';
-
+import { useMemo } from 'react';
 import { TripViewMode, type TripViewModeType } from '../Trip/TripViewMode';
-
 import { dangerToken } from '../ui';
-
+import style from './Activity.module.css';
 import { useActivityDialogHooks } from './activityDialogHooks';
 import type { DbActivityWithTrip } from './db';
+import { formatTime } from './time';
 
 export function Activity({
   activity,
@@ -72,12 +68,10 @@ export function Activity({
             }}
           >
             {tripViewMode === TripViewMode.List ? (
-              <>
-                <Text as="div" size={responsiveTextSize} color="gray">
-                  <ClockIcon style={{ verticalAlign: '-2px' }} /> {timeStart} -{' '}
-                  {timeEnd}
-                </Text>
-              </>
+              <Text as="div" size={responsiveTextSize} color="gray">
+                <ClockIcon style={{ verticalAlign: '-2px' }} /> {timeStart} -{' '}
+                {timeEnd}
+              </Text>
             ) : null}
 
             <Text as="div" size={responsiveTextSize} weight="bold">

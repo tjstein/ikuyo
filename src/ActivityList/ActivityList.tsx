@@ -13,8 +13,8 @@ import {
   RouteTripListViewActivity,
   RouteTripListViewMacroplan,
 } from '../Routes/routes';
-import { TripViewMode } from '../Trip/TripViewMode';
 import { useTrip } from '../Trip/context';
+import { TripViewMode } from '../Trip/TripViewMode';
 import s from './ActivityList.module.css';
 
 export function ActivityList() {

@@ -1,5 +1,5 @@
-import { Fragment, useMemo } from 'react';
 import type * as React from 'react';
+import { Fragment, useMemo } from 'react';
 import createUrlRegExp from 'url-regex-safe';
 
 export function useParseTextIntoNodes(

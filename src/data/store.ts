@@ -1,8 +1,8 @@
 import { create } from 'zustand';
-import { type UserSlice, createUserSlice } from '../Auth/hooks';
-import { type DialogSlice, createDialogSlice } from '../Dialog/hooks';
-import { type ToastSlice, createToastSlice } from '../Toast/hooks';
-import { type TripSlice, createTripSlice } from '../Trip/store';
+import { createUserSlice, type UserSlice } from '../Auth/hooks';
+import { createDialogSlice, type DialogSlice } from '../Dialog/hooks';
+import { createToastSlice, type ToastSlice } from '../Toast/hooks';
+import { createTripSlice, type TripSlice } from '../Trip/store';
 
 export type BoundStoreType = ToastSlice & UserSlice & DialogSlice & TripSlice;
 

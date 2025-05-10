@@ -2,14 +2,14 @@ import { Button, Dialog, Flex, Heading, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useCallback } from 'react';
 import { useLocation } from 'wouter';
-import { CommonDialogMaxWidth } from '../Dialog/ui';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
+import { CommonDialogMaxWidth } from '../Dialog/ui';
+import type { DbMacroplanWithTrip } from './db';
 import s from './Macroplan.module.css';
 import {
   MacroplanDialogMode,
   type MacroplanDialogModeType,
 } from './MacroplanDialogMode';
-import type { DbMacroplanWithTrip } from './db';
 
 export function MacroplanDialogContentView({
   macroplan,

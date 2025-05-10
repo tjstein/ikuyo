@@ -2,16 +2,12 @@ import { AlertDialog, Button, Flex, Text } from '@radix-ui/themes';
 import { useCallback } from 'react';
 import { useLocation } from 'wouter';
 import { CommonDialogMaxWidth } from '../Dialog/ui';
-import { RouteTrips } from '../Routes/routes';
 import { useBoundStore } from '../data/store';
+import { RouteTrips } from '../Routes/routes';
 import { dangerToken } from '../ui';
 import { type DbTripFull, dbDeleteTrip } from './db';
 
-export function TripDeleteDialog({
-  trip,
-}: {
-  trip: DbTripFull;
-}) {
+export function TripDeleteDialog({ trip }: { trip: DbTripFull }) {
   const [, setLocation] = useLocation();
   const publishToast = useBoundStore((state) => state.publishToast);
   const popDialog = useBoundStore((state) => state.popDialog);

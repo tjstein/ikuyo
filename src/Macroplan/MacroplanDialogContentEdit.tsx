@@ -3,13 +3,13 @@ import { DateTime } from 'luxon';
 import { useCallback } from 'react';
 import { CommonDialogMaxWidth } from '../Dialog/ui';
 import { useBoundStore } from '../data/store';
+import type { DbMacroplanWithTrip } from './db';
 import {
   MacroplanDialogMode,
   type MacroplanDialogModeType,
 } from './MacroplanDialogMode';
 import { MacroplanForm } from './MacroplanForm';
 import { MacroplanFormMode } from './MacroplanFormMode';
-import type { DbMacroplanWithTrip } from './db';
 import { formatToDateInput } from './time';
 
 export function MacroplanDialogContentEdit({

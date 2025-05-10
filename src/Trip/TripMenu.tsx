@@ -4,16 +4,16 @@ import { Link, useLocation } from 'wouter';
 import { AccommodationNewDialog } from '../Accommodation/AccommodationNewDialog';
 import { ActivityNewDialog } from '../Activity/ActivityNewDialog';
 import { UserAvatarMenu } from '../Auth/UserAvatarMenu';
-import { MacroplanNewDialog } from '../Macroplan/MacroplanNewDialog';
-import { RouteAccount, RouteLogin, RouteTrips } from '../Routes/routes';
 import { db } from '../data/db';
 import { useBoundStore } from '../data/store';
 import type { DbUser } from '../data/types';
+import { MacroplanNewDialog } from '../Macroplan/MacroplanNewDialog';
+import { RouteAccount, RouteLogin, RouteTrips } from '../Routes/routes';
+import type { DbTripFull } from './db';
 import { TripDeleteDialog } from './TripDeleteDialog';
 import { TripEditDialog } from './TripEditDialog';
 import s from './TripMenu.module.css';
 import { TripSharingDialog } from './TripSharingDialog';
-import type { DbTripFull } from './db';
 
 export function TripMenu({
   trip,
@@ -113,27 +113,25 @@ export function TripMenu({
             View trips
           </DropdownMenu.Item>
 
-          <>
-            {/* On small screen, account section is under hamburger menu  */}
-            <DropdownMenu.Separator className={s.onlyForXs} />
-            <DropdownMenu.Label className={s.onlyForXs}>
-              Account
-            </DropdownMenu.Label>
-            <DropdownMenu.Item asChild className={s.onlyForXs}>
-              <Link to={RouteAccount.asRootRoute()}>Edit account</Link>
-            </DropdownMenu.Item>
+          {/* On small screen, account section is under hamburger menu  */}
+          <DropdownMenu.Separator className={s.onlyForXs} />
+          <DropdownMenu.Label className={s.onlyForXs}>
+            Account
+          </DropdownMenu.Label>
+          <DropdownMenu.Item asChild className={s.onlyForXs}>
+            <Link to={RouteAccount.asRootRoute()}>Edit account</Link>
+          </DropdownMenu.Item>
 
-            <DropdownMenu.Item
-              className={s.onlyForXs}
-              onClick={() => {
-                void db.auth.signOut().then(() => {
-                  setLocation(RouteLogin.asRootRoute());
-                });
-              }}
-            >
-              Log out
-            </DropdownMenu.Item>
-          </>
+          <DropdownMenu.Item
+            className={s.onlyForXs}
+            onClick={() => {
+              void db.auth.signOut().then(() => {
+                setLocation(RouteLogin.asRootRoute());
+              });
+            }}
+          >
+            Log out
+          </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Root>
       <div className={s.userAvatar}>

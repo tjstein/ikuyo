@@ -1,8 +1,8 @@
 import type { StateCreator } from 'zustand';
 import type { DbAccommodationWithTrip } from '../Accommodation/db';
 import type { DbActivityWithTrip } from '../Activity/db';
-import type { DbMacroplanWithTrip } from '../Macroplan/db';
 import type { BoundStoreType } from '../data/store';
+import type { DbMacroplanWithTrip } from '../Macroplan/db';
 import type { DbTrip, DbTripFull } from './db';
 
 export interface TripSlice {

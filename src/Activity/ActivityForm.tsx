@@ -195,10 +195,7 @@ export function ActivityForm({
     ],
   );
   const setMarkerCoordinate = useCallback(
-    async (coordinate: {
-      lng: number;
-      lat: number;
-    }) => {
+    async (coordinate: { lng: number; lat: number }) => {
       dispatchCoordinateState({
         type: 'setMarkerCoordinate',
         lat: coordinate.lat,

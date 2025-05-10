@@ -2,16 +2,12 @@ import { Box, Dialog } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { CommonDialogMaxWidth } from '../Dialog/ui';
 import { useBoundStore } from '../data/store';
+import type { DbTripWithActivity } from './db';
 import { TripForm } from './TripForm';
 import { TripFormMode } from './TripFormMode';
-import type { DbTripWithActivity } from './db';
 import { formatToDateInput } from './time';
 
-export function TripEditDialog({
-  trip,
-}: {
-  trip: DbTripWithActivity;
-}) {
+export function TripEditDialog({ trip }: { trip: DbTripWithActivity }) {
   const tripStartStr = formatToDateInput(
     DateTime.fromMillis(trip.timestampStart).setZone(trip.timeZone),
   );

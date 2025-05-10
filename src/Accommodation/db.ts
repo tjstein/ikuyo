@@ -1,6 +1,6 @@
 import { id } from '@instantdb/core';
-import type { DbTrip, DbTripWithAccommodation } from '../Trip/db';
 import { db } from '../data/db';
+import type { DbTrip, DbTripWithAccommodation } from '../Trip/db';
 
 export type DbAccommodationWithTrip = Omit<DbAccommodation, 'trip'> & {
   trip: DbTripWithAccommodation;

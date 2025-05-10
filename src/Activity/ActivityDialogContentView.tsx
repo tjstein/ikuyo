@@ -1,9 +1,7 @@
+import { Cross1Icon } from '@radix-ui/react-icons';
 import { Button, Dialog, Flex, Heading, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
-
 import { useCallback, useMemo } from 'react';
-
-import { Cross1Icon } from '@radix-ui/react-icons';
 import { useLocation } from 'wouter';
 import { CommentGroupWithForm } from '../Comment/CommentGroupWithForm';
 import {
@@ -11,8 +9,8 @@ import {
   type DbComment,
   type DbCommentGroup,
 } from '../Comment/db';
-import { CommonCommentDialogMaxWidth } from '../Dialog/ui';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
+import { CommonCommentDialogMaxWidth } from '../Dialog/ui';
 import { db } from '../data/db';
 import { useBoundStore } from '../data/store';
 import s from './Activity.module.css';

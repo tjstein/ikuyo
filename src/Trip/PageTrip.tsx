@@ -1,16 +1,12 @@
 import { Container, Heading, Skeleton, Spinner } from '@radix-ui/themes';
-import React, { useEffect, useRef } from 'react';
-import { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Redirect, Route, type RouteComponentProps, Switch } from 'wouter';
-import { Navbar } from '../Nav/Navbar';
 import { db } from '../data/db';
-
-import s from './PageTrip.module.css';
-
-import { TripMenu } from './TripMenu';
-
 import { withLoading } from '../Loading/withLoading';
 import { DocTitle } from '../Nav/DocTitle';
+import { Navbar } from '../Nav/Navbar';
+import s from './PageTrip.module.css';
+import { TripMenu } from './TripMenu';
 
 const Timetable = withLoading()(
   React.lazy(() =>
@@ -26,10 +22,13 @@ const ActivityList = withLoading()(
     }),
   ),
 );
+
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import { shallow, useShallow } from 'zustand/shallow';
 import type { DbAccommodationWithTrip } from '../Accommodation/db';
 import type { DbActivityWithTrip } from '../Activity/db';
+import { useBoundStore } from '../data/store';
+import { TripUserRole } from '../data/TripUserRole';
 import { ExpenseList } from '../Expense/ExpenseList';
 import type { DbMacroplanWithTrip } from '../Macroplan/db';
 import {
@@ -37,11 +36,9 @@ import {
   RouteTripListView,
   RouteTripTimetableView,
 } from '../Routes/routes';
-import { TripUserRole } from '../data/TripUserRole';
-import { useBoundStore } from '../data/store';
-import { TripMenuFloating } from './TripMenuFloating';
 import { TripContext } from './context';
 import type { DbTrip, DbTripFull } from './db';
+import { TripMenuFloating } from './TripMenuFloating';
 
 export default PageTrip;
 export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {

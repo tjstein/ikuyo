@@ -1,14 +1,9 @@
-import type React from 'react';
-import { Suspense, forwardRef } from 'react';
-
 import { Spinner } from '@radix-ui/themes';
+import type React from 'react';
+import { forwardRef, Suspense } from 'react';
 
 export function withLoading(
-  {
-    fallback,
-  }: {
-    fallback: () => React.ReactNode;
-  } = {
+  { fallback }: { fallback: () => React.ReactNode } = {
     fallback: () => <Spinner m="3" />,
   },
 ) {

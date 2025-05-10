@@ -24,7 +24,6 @@ body {
 /* 3. Enable keyword animations */
 @media (prefers-reduced-motion: no-preference) {
   html {
-    /* biome-ignore lint/correctness/noUnknownProperty: not recognized by Biome */
     interpolate-size: allow-keywords;
   }
 }

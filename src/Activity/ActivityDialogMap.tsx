@@ -11,10 +11,7 @@ export function ActivityMap({
 }: {
   mapOptions: { lng: number; lat: number; zoom?: number };
   marker?: { lng: number; lat: number };
-  setMarkerCoordinate?: (coordinate: {
-    lng: number;
-    lat: number;
-  }) => void;
+  setMarkerCoordinate?: (coordinate: { lng: number; lat: number }) => void;
   setMapZoom?: (zoom: number) => void;
 }) {
   const mapContainer = useRef<HTMLDivElement>(null);

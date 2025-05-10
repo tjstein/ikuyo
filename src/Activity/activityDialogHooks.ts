@@ -1,15 +1,14 @@
 import { useCallback } from 'react';
-import { TripViewMode, type TripViewModeType } from '../Trip/TripViewMode';
-import {
-  ActivityDialogMode,
-  type ActivityDialogModeType,
-} from './ActivityDialogMode';
-
 import { useLocation } from 'wouter';
 import {
   RouteTripListViewActivity,
   RouteTripTimetableViewActivity,
 } from '../Routes/routes';
+import { TripViewMode, type TripViewModeType } from '../Trip/TripViewMode';
+import {
+  ActivityDialogMode,
+  type ActivityDialogModeType,
+} from './ActivityDialogMode';
 
 export function useActivityDialogHooks(
   tripViewMode: TripViewModeType,

@@ -9,24 +9,22 @@ import {
   Spinner,
   Text,
 } from '@radix-ui/themes';
+import { DateTime } from 'luxon';
 import { useCallback, useMemo, useState } from 'react';
 import { Link, type RouteComponentProps } from 'wouter';
-import { UserAvatarMenu } from '../Auth/UserAvatarMenu';
 import { useAuthUser } from '../Auth/hooks';
-import { Navbar } from '../Nav/Navbar';
+import { UserAvatarMenu } from '../Auth/UserAvatarMenu';
 import { db } from '../data/db';
+import { useBoundStore } from '../data/store';
 import type { DbUser } from '../data/types';
+import { DocTitle } from '../Nav/DocTitle';
+import { Navbar } from '../Nav/Navbar';
+import { RouteTrip } from '../Routes/routes';
+import type { DbTrip } from './db';
 import s from './PageTrips.module.css';
 import { TripGroup } from './TripGroup';
-import { formatTimestampToReadableDate } from './time';
-
-import { DateTime } from 'luxon';
-import { DocTitle } from '../Nav/DocTitle';
-
-import { RouteTrip } from '../Routes/routes';
-import { useBoundStore } from '../data/store';
 import { TripNewDialog } from './TripNewDialog';
-import type { DbTrip } from './db';
+import { formatTimestampToReadableDate } from './time';
 
 export default PageTrips;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

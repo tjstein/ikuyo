@@ -1,14 +1,14 @@
-import { type TransactionChunk, id, lookup } from '@instantdb/core';
+import { id, lookup, type TransactionChunk } from '@instantdb/core';
 import { DateTime } from 'luxon';
 import type {
   DbAccommodation,
   DbAccommodationWithTrip,
 } from '../Accommodation/db';
 import type { DbActivity, DbActivityWithTrip } from '../Activity/db';
-import type { DbMacroplan, DbMacroplanWithTrip } from '../Macroplan/db';
-import { TripUserRole } from '../data/TripUserRole';
 import { db } from '../data/db';
+import { TripUserRole } from '../data/TripUserRole';
 import type { DbUser } from '../data/types';
+import type { DbMacroplan, DbMacroplanWithTrip } from '../Macroplan/db';
 
 export type DbTripFull = Omit<
   DbTrip,

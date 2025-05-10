@@ -2,8 +2,8 @@ import { Button, Dialog, Flex, Heading, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useCallback } from 'react';
 import { useLocation } from 'wouter';
-import { CommonDialogMaxWidth } from '../Dialog/ui';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
+import { CommonDialogMaxWidth } from '../Dialog/ui';
 import {
   AccommodationDialogMode,
   type AccommodationDialogModeType,

@@ -5,11 +5,7 @@ import type { DbUser } from '../data/types';
 import { TripForm } from './TripForm';
 import { TripFormMode } from './TripFormMode';
 
-export function TripNewDialog({
-  user,
-}: {
-  user: DbUser;
-}) {
+export function TripNewDialog({ user }: { user: DbUser }) {
   const currentTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const popDialog = useBoundStore((state) => state.popDialog);
 

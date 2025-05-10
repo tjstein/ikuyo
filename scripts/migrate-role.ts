@@ -2,6 +2,7 @@
 import 'dotenv/config';
 import { id, init } from '@instantdb/admin';
 import schema from '../instant.schema.ts';
+
 const INSTANT_APP_ID = process.env.INSTANT_APP_ID || '';
 const INSTANT_APP_ADMIN_TOKEN = process.env.INSTANT_APP_ADMIN_TOKEN || '';
 

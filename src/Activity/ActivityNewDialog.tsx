@@ -2,18 +2,14 @@ import { Box, Dialog } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useMemo } from 'react';
 import { CommonDialogMaxWidth } from '../Dialog/ui';
-import type { DbTrip } from '../Trip/db';
 import { useBoundStore } from '../data/store';
+import type { DbTrip } from '../Trip/db';
 import { ActivityForm } from './ActivityForm';
 import { ActivityFormMode } from './ActivityFormMode';
 import { getNewActivityTimestamp } from './activityStorage';
 import { formatToDatetimeLocalInput } from './time';
 
-export function ActivityNewDialog({
-  trip,
-}: {
-  trip: DbTrip;
-}) {
+export function ActivityNewDialog({ trip }: { trip: DbTrip }) {
   const popDialog = useBoundStore((state) => state.popDialog);
   const tripStartStr = formatToDatetimeLocalInput(
     DateTime.fromMillis(trip.timestampStart).setZone(trip.timeZone),

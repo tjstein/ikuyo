@@ -2,8 +2,8 @@ import { Box, Container, Flex, Heading } from '@radix-ui/themes';
 import clsx from 'clsx';
 import type React from 'react';
 import { Link } from 'wouter';
-import { RouteTrips } from '../Routes/routes';
 import imgUrl from '../logo/ikuyo.svg';
+import { RouteTrips } from '../Routes/routes';
 import s from './Navbar.module.css';
 
 export function Navbar({

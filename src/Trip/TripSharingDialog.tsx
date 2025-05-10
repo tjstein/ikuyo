@@ -11,12 +11,12 @@ import {
 } from '@radix-ui/themes';
 import { type SyntheticEvent, useCallback, useMemo, useState } from 'react';
 import { CommonDialogMaxWidth } from '../Dialog/ui';
-import { TripUserRole } from '../data/TripUserRole';
 import { useBoundStore } from '../data/store';
+import { TripUserRole } from '../data/TripUserRole';
 import type { DbUser } from '../data/types';
 import { dangerToken } from '../ui';
-import s from './TripSharingDialog.module.css';
 import { type DbTrip, dbAddUserToTrip, dbRemoveUserFromTrip } from './db';
+import s from './TripSharingDialog.module.css';
 
 export function TripSharingDialog({
   trip,

@@ -16,7 +16,9 @@ import {
 
 export function Comment<ObjectType extends DbCommentGroupObjectType>({
   comment,
-}: { comment: DbComment<ObjectType> }) {
+}: {
+  comment: DbComment<ObjectType>;
+}) {
   const { user } = comment;
   const formattedDateTimeStringCreated = useMemo(() => {
     return formatTimestampToDateTimeString(comment.createdAt);

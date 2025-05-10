@@ -1,6 +1,6 @@
 import { id } from '@instantdb/core';
-import type { DbTrip, DbTripWithMacroplan } from '../Trip/db';
 import { db } from '../data/db';
+import type { DbTrip, DbTripWithMacroplan } from '../Trip/db';
 
 export type DbMacroplanWithTrip = Omit<DbMacroplan, 'trip'> & {
   trip: DbTripWithMacroplan;

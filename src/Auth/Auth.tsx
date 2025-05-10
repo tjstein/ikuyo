@@ -1,3 +1,4 @@
+import { ArrowLeftIcon } from '@radix-ui/react-icons';
 import {
   Box,
   Button,
@@ -11,15 +12,13 @@ import {
 import type React from 'react';
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { Link, type RouteComponentProps, useLocation } from 'wouter';
+import { CommonDialogMaxWidth } from '../Dialog/ui';
 import { db, dbUpsertUser } from '../data/db';
 import { useBoundStore } from '../data/store';
-import s from './Auth.module.css';
-
-import { ArrowLeftIcon } from '@radix-ui/react-icons';
-import { CommonDialogMaxWidth } from '../Dialog/ui';
+import imgUrl from '../logo/ikuyo.svg';
 import { DocTitle } from '../Nav/DocTitle';
 import { RouteAccount, RouteTrips } from '../Routes/routes';
-import imgUrl from '../logo/ikuyo.svg';
+import s from './Auth.module.css';
 
 export default PageLogin;
 
@@ -130,7 +129,7 @@ export function PageLogin(_props: RouteComponentProps) {
           ) : screen === AuthScreen.LoginViaEmailVerify ? (
             <MagicCode setScreen={setScreen} sentEmail={sentEmail} />
           ) : (
-            <>Invalid State</>
+            'Invalid State'
           )}
         </Box>
       </Grid>

@@ -1,11 +1,11 @@
 import { id } from '@instantdb/core';
 import type { DbAccommodation } from '../Accommodation/db';
 import type { DbActivity } from '../Activity/db';
+import { db } from '../data/db';
+import type { DbUser } from '../data/types';
 import type { DbExpense } from '../Expense/db';
 import type { DbMacroplan } from '../Macroplan/db';
 import type { DbTrip } from '../Trip/db';
-import { db } from '../data/db';
-import type { DbUser } from '../data/types';
 
 export const COMMENT_GROUP_STATUS = {
   UNRESOLVED: 0,

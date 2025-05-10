@@ -4,11 +4,11 @@ import { useLocation } from 'wouter';
 import { CommonDialogMaxWidth } from '../Dialog/ui';
 import { useBoundStore } from '../data/store';
 import { dangerToken } from '../ui';
+import { type DbMacroplanWithTrip, dbDeleteMacroplan } from './db';
 import {
   MacroplanDialogMode,
   type MacroplanDialogModeType,
 } from './MacroplanDialogMode';
-import { type DbMacroplanWithTrip, dbDeleteMacroplan } from './db';
 
 export function MacroplanDialogContentDelete({
   macroplan,

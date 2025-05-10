@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import type { StateCreator } from 'zustand';
-import { RouteLogin } from '../Routes/routes';
 import { db } from '../data/db';
 import { type BoundStoreType, useBoundStore } from '../data/store';
 import type { DbUser } from '../data/types';
+import { RouteLogin } from '../Routes/routes';
 
 export function useAuthUser() {
   const setCurrentUser = useBoundStore((state) => state.setCurrentUser);

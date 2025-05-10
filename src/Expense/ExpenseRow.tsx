@@ -2,12 +2,12 @@ import { Pencil1Icon, TrashIcon } from '@radix-ui/react-icons';
 import { Button, Flex, Popover, Table, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useState } from 'react';
-import type { DbTripFull } from '../Trip/db';
 import { useBoundStore } from '../data/store';
+import type { DbTripFull } from '../Trip/db';
 import { dangerToken } from '../ui';
+import { type DbExpense, dbDeleteExpense } from './db';
 import { ExpenseInlineForm } from './ExpenseInlineForm';
 import { ExpenseMode } from './ExpenseMode';
-import { type DbExpense, dbDeleteExpense } from './db';
 import { formatTimestampToReadableDate } from './time';
 
 export function ExpenseRow({
