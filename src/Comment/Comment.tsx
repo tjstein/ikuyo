@@ -16,8 +16,10 @@ import {
 
 export function Comment<ObjectType extends DbCommentGroupObjectType>({
   comment,
+  onFormFocus,
 }: {
   comment: DbComment<ObjectType>;
+  onFormFocus: () => void;
 }) {
   const { user } = comment;
   const formattedDateTimeStringCreated = useMemo(() => {
@@ -68,6 +70,7 @@ export function Comment<ObjectType extends DbCommentGroupObjectType>({
             objectId={comment.group.object.id}
             objectType={comment.group.object.type}
             setCommentMode={setCommentMode}
+            onFormFocus={onFormFocus}
           />
         ) : (
           <>
