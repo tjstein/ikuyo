@@ -102,6 +102,7 @@ export async function dbAddComment<ObjectType extends DbCommentGroupObjectType>(
     transactions.push(
       db.tx.commentGroup[commentGroupId]
         .update({
+          status: 0,
           createdAt: now,
           lastUpdatedAt: now,
         })
