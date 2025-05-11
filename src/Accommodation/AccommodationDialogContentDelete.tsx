@@ -1,25 +1,23 @@
-import { Button, Dialog, Flex } from '@radix-ui/themes';
+import { Button, Dialog, Flex, Skeleton } from '@radix-ui/themes';
 import { useCallback } from 'react';
 import { useLocation } from 'wouter';
-import { CommonDialogMaxWidth } from '../Dialog/ui';
+import type { DialogContentProps } from '../Dialog/DialogRoute';
 import { useBoundStore } from '../data/store';
 import { dangerToken } from '../ui';
-import {
-  AccommodationDialogMode,
-  type AccommodationDialogModeType,
-} from './AccommodationDialogMode';
+import { AccommodationDialogMode } from './AccommodationDialogMode';
 import { type DbAccommodationWithTrip, dbDeleteAccommodation } from './db';
 
 export function AccommodationDialogContentDelete({
-  accommodation,
+  data: accommodation,
   setMode,
-}: {
-  accommodation: DbAccommodationWithTrip;
-  setMode: (mode: AccommodationDialogModeType) => void;
-}) {
+  dialogContentProps,
+}: DialogContentProps<DbAccommodationWithTrip>) {
   const [, setLocation] = useLocation();
   const publishToast = useBoundStore((state) => state.publishToast);
   const deleteAccommodation = useCallback(() => {
+    if (!accommodation) {
+      return;
+    }
     void dbDeleteAccommodation(accommodation)
       .then(() => {
         publishToast({
@@ -41,10 +39,11 @@ export function AccommodationDialogContentDelete({
   }, [publishToast, accommodation, setLocation]);
 
   return (
-    <Dialog.Content maxWidth={CommonDialogMaxWidth}>
+    <Dialog.Content {...dialogContentProps}>
       <Dialog.Title>Delete Accommodation</Dialog.Title>
       <Dialog.Description size="2">
-        Are you sure to delete accommodation "{accommodation.name}"?
+        Are you sure to delete accommodation "
+        {accommodation?.name ?? <Skeleton>Hotel ABC</Skeleton>}"?
       </Dialog.Description>
 
       <Flex gap="3" mt="4" justify="end">

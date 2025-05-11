@@ -1,25 +1,24 @@
-import { Button, Dialog, Flex } from '@radix-ui/themes';
+import { Button, Dialog, Flex, Skeleton } from '@radix-ui/themes';
 import { useCallback } from 'react';
 import { useLocation } from 'wouter';
-import { CommonDialogMaxWidth } from '../Dialog/ui';
+import type { DialogContentProps } from '../Dialog/DialogRoute';
 import { useBoundStore } from '../data/store';
 import { dangerToken } from '../ui';
 import { type DbMacroplanWithTrip, dbDeleteMacroplan } from './db';
-import {
-  MacroplanDialogMode,
-  type MacroplanDialogModeType,
-} from './MacroplanDialogMode';
+import { MacroplanDialogMode } from './MacroplanDialogMode';
 
 export function MacroplanDialogContentDelete({
-  macroplan,
+  data: macroplan,
   setMode,
-}: {
-  macroplan: DbMacroplanWithTrip;
-  setMode: (mode: MacroplanDialogModeType) => void;
-}) {
+  dialogContentProps,
+}: DialogContentProps<DbMacroplanWithTrip>) {
   const [, setLocation] = useLocation();
   const publishToast = useBoundStore((state) => state.publishToast);
   const deleteMacroplan = useCallback(() => {
+    if (!macroplan) {
+      console.error('No macroplan to delete');
+      return;
+    }
     void dbDeleteMacroplan(macroplan)
       .then(() => {
         publishToast({
@@ -41,10 +40,11 @@ export function MacroplanDialogContentDelete({
   }, [publishToast, macroplan, setLocation]);
 
   return (
-    <Dialog.Content maxWidth={CommonDialogMaxWidth}>
+    <Dialog.Content {...dialogContentProps}>
       <Dialog.Title>Delete Day Plan</Dialog.Title>
       <Dialog.Description size="2">
-        Are you sure to delete day plan "{macroplan.name}"?
+        Are you sure to delete day plan "
+        {macroplan?.name ?? <Skeleton>Day plan</Skeleton>}"?
       </Dialog.Description>
 
       <Flex gap="3" mt="4" justify="end">

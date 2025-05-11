@@ -1,22 +1,24 @@
-import { Button, Dialog, Flex, Heading, Text } from '@radix-ui/themes';
+import {
+  Button,
+  Dialog,
+  Flex,
+  Heading,
+  Skeleton,
+  Text,
+} from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useCallback } from 'react';
 import { useLocation } from 'wouter';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
-import { CommonDialogMaxWidth } from '../Dialog/ui';
-import {
-  AccommodationDialogMode,
-  type AccommodationDialogModeType,
-} from './AccommodationDialogMode';
+import type { DialogContentProps } from '../Dialog/DialogRoute';
+import { AccommodationDialogMode } from './AccommodationDialogMode';
 import type { DbAccommodationWithTrip } from './db';
 
 export function AccommodationDialogContentView({
-  accommodation,
+  data: accommodation,
   setMode,
-}: {
-  accommodation: DbAccommodationWithTrip;
-  setMode: (mode: AccommodationDialogModeType) => void;
-}) {
+  dialogContentProps,
+}: DialogContentProps<DbAccommodationWithTrip>) {
   const [, setLocation] = useLocation();
   const accommodationCheckInStr = accommodation
     ? DateTime.fromMillis(accommodation.timestampCheckIn)
@@ -39,14 +41,14 @@ export function AccommodationDialogContentView({
     setMode(AccommodationDialogMode.Delete);
   }, [setMode]);
   return (
-    <Dialog.Content maxWidth={CommonDialogMaxWidth}>
+    <Dialog.Content {...dialogContentProps}>
       <Dialog.Title>View Accommodation</Dialog.Title>
       <Dialog.Description>Accommodation details</Dialog.Description>
       <Flex direction="column" gap="3" mt="3">
         <Heading as="h2" size="4">
           Name
         </Heading>
-        <Text>{accommodation?.name}</Text>
+        <Text>{accommodation?.name ?? <Skeleton>Hotel ABC</Skeleton>}</Text>
         <Heading as="h2" size="4">
           Check In
         </Heading>

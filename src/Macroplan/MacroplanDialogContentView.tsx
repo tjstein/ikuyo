@@ -1,33 +1,39 @@
-import { Button, Dialog, Flex, Heading, Text } from '@radix-ui/themes';
+import {
+  Button,
+  Dialog,
+  Flex,
+  Heading,
+  Skeleton,
+  Text,
+} from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useCallback } from 'react';
 import { useLocation } from 'wouter';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
-import { CommonDialogMaxWidth } from '../Dialog/ui';
+import type { DialogContentProps } from '../Dialog/DialogRoute';
 import type { DbMacroplanWithTrip } from './db';
 import s from './Macroplan.module.css';
-import {
-  MacroplanDialogMode,
-  type MacroplanDialogModeType,
-} from './MacroplanDialogMode';
+import { MacroplanDialogMode } from './MacroplanDialogMode';
 
 export function MacroplanDialogContentView({
-  macroplan,
+  data: macroplan,
   setMode,
-}: {
-  macroplan: DbMacroplanWithTrip;
-  setMode: (mode: MacroplanDialogModeType) => void;
-}) {
+  dialogContentProps,
+}: DialogContentProps<DbMacroplanWithTrip>) {
   const [, setLocation] = useLocation();
-  const macroplanDateStartStr = DateTime.fromMillis(macroplan.timestampStart)
-    .setZone(macroplan.trip.timeZone)
-    .toFormat('dd LLLL yyyy');
-  const macroplanDateEndStr = DateTime.fromMillis(macroplan.timestampEnd)
-    .setZone(macroplan.trip.timeZone)
-    .minus({ minute: 1 })
-    .toFormat('dd LLLL yyyy');
+  const macroplanDateStartStr = macroplan
+    ? DateTime.fromMillis(macroplan.timestampStart)
+        .setZone(macroplan.trip.timeZone)
+        .toFormat('dd LLLL yyyy')
+    : undefined;
+  const macroplanDateEndStr = macroplan
+    ? DateTime.fromMillis(macroplan.timestampEnd)
+        .setZone(macroplan.trip.timeZone)
+        .minus({ minute: 1 })
+        .toFormat('dd LLLL yyyy')
+    : undefined;
 
-  const notes = useParseTextIntoNodes(macroplan.notes || '');
+  const notes = useParseTextIntoNodes(macroplan?.notes);
   const closeDialog = useCallback(() => {
     setLocation('');
   }, [setLocation]);
@@ -39,14 +45,14 @@ export function MacroplanDialogContentView({
   }, [setMode]);
 
   return (
-    <Dialog.Content maxWidth={CommonDialogMaxWidth}>
+    <Dialog.Content {...dialogContentProps}>
       <Dialog.Title>View Day Plan</Dialog.Title>
       <Dialog.Description>Details of day plan</Dialog.Description>
       <Flex direction="column" gap="3" mt="3">
         <Heading as="h2" size="4">
           Plan
         </Heading>
-        <Text>{macroplan.name}</Text>
+        <Text>{macroplan?.name ?? <Skeleton>Day plan</Skeleton>}</Text>
         <Heading as="h2" size="4">
           Start
         </Heading>
@@ -55,7 +61,7 @@ export function MacroplanDialogContentView({
           End
         </Heading>
         <Text>{macroplanDateEndStr}</Text>
-        {macroplan.notes ? (
+        {macroplan?.notes ? (
           <>
             <Heading as="h2" size="4">
               Notes
