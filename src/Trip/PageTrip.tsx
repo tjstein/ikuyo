@@ -1,4 +1,4 @@
-import { Container, Heading, Skeleton, Spinner } from '@radix-ui/themes';
+import { Heading, Skeleton, Spinner } from '@radix-ui/themes';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Redirect, Route, type RouteComponentProps, Switch } from 'wouter';
 import { db } from '../data/db';
@@ -134,32 +134,30 @@ function PageTripInner({
           />,
         ]}
       />
-      <Container>
-        {trip ? (
-          <Switch>
-            <Route
-              path={RouteTripTimetableView.routePath}
-              component={Timetable}
-              nest
-            />
-            <Route
-              path={RouteTripListView.routePath}
-              component={ActivityList}
-              nest
-            />
-            <Route path={RouteTripMap.routePath} component={TripMap} />
-            <Route path={RouteTripExpenses.routePath} component={ExpenseList} />
-            <Route path={RouteTripHome.routePath} component={TripHome} />
-            <Redirect replace to={RouteTripHome.routePath} />
-          </Switch>
-        ) : isLoading ? (
-          <Spinner m="3" />
-        ) : error ? (
-          `Error: ${error.message}`
-        ) : (
-          ''
-        )}
-      </Container>
+      {trip ? (
+        <Switch>
+          <Route
+            path={RouteTripTimetableView.routePath}
+            component={Timetable}
+            nest
+          />
+          <Route
+            path={RouteTripListView.routePath}
+            component={ActivityList}
+            nest
+          />
+          <Route path={RouteTripMap.routePath} component={TripMap} />
+          <Route path={RouteTripExpenses.routePath} component={ExpenseList} />
+          <Route path={RouteTripHome.routePath} component={TripHome} />
+          <Redirect replace to={RouteTripHome.routePath} />
+        </Switch>
+      ) : isLoading ? (
+        <Spinner m="3" />
+      ) : error ? (
+        `Error: ${error.message}`
+      ) : (
+        ''
+      )}
       <TripMenuFloating />
     </TripContext.Provider>
   );

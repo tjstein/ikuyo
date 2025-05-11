@@ -109,7 +109,7 @@ export function TripMap() {
   }, [activitiesWithLocation, mapOptions]);
 
   return (
-    <Container className={s.mapWrapper}>
+    <div className={s.mapWrapper}>
       <div ref={mapContainer} className={s.map} />
       {popupPortals.map(({ activity, popup }) => {
         const activityStartStr = DateTime.fromMillis(activity.timestampStart)
@@ -145,6 +145,6 @@ export function TripMap() {
           popup,
         );
       })}
-    </Container>
+    </div>
   );
 }

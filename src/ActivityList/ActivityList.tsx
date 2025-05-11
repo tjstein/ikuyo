@@ -15,6 +15,7 @@ import {
 } from '../Routes/routes';
 import { useTrip } from '../Trip/context';
 import { TripViewMode } from '../Trip/TripViewMode';
+import { TripMap } from '../TripMap/TripMap';
 import s from './ActivityList.module.css';
 
 export function ActivityList() {
@@ -23,58 +24,81 @@ export function ActivityList() {
 
   return (
     <>
-      <Flex className={s.list} direction="column" gap="2">
-        {dayGroups.map((dayGroup) => {
-          return [
-            <Heading
-              key={dayGroup.startDateTime.toISO()}
-              as="h2"
-              size="4"
-              className={s.listSubheader}
-            >
-              {dayGroup.startDateTime.toFormat('cccc, dd LLLL yyyy')}
-            </Heading>,
-            ...Object.values(dayGroup.macroplans).map((macroplan, i) => {
-              return (
-                <Macroplan
-                  key={`${macroplan.id}-${String(i)}`}
-                  macroplan={macroplan}
-                  className={s.listItem}
-                  tripViewMode={TripViewMode.List}
-                />
-              );
-            }),
-            ...Object.values(dayGroup.accommodations).map(
-              (accommodation, i) => {
-                const props = dayGroup.accommodationProps.get(accommodation.id);
+      <Flex
+        gap="1"
+        justify="between"
+        direction={{ initial: 'column', sm: 'row' }}
+      >
+        <Flex
+          className={s.list}
+          direction="column"
+          gap="2"
+          flexGrow="1"
+          maxWidth={{ initial: '100%', sm: '50%' }}
+        >
+          {dayGroups.map((dayGroup) => {
+            return [
+              <Heading
+                key={dayGroup.startDateTime.toISO()}
+                as="h2"
+                size="4"
+                className={s.listSubheader}
+              >
+                {dayGroup.startDateTime.toFormat('cccc, dd LLLL yyyy')}
+              </Heading>,
+              ...Object.values(dayGroup.macroplans).map((macroplan, i) => {
                 return (
-                  <Accommodation
-                    key={`${accommodation.id}-${String(i)}`}
-                    accommodation={accommodation}
-                    tripViewMode={TripViewMode.List}
+                  <Macroplan
+                    key={`${macroplan.id}-${String(i)}`}
+                    macroplan={macroplan}
                     className={s.listItem}
-                    {...props}
+                    tripViewMode={TripViewMode.List}
                   />
                 );
-              },
-            ),
-            ...Object.values(dayGroup.activities).map((activity) => {
-              const columnIndex = dayGroup.activityColumnIndexMap.get(
-                activity.id,
-              );
-              return (
-                <Activity
-                  key={activity.id}
-                  className={s.listItem}
-                  activity={activity}
-                  columnIndex={columnIndex?.start ?? 1}
-                  columnEndIndex={columnIndex?.end ?? 1}
-                  tripViewMode={TripViewMode.List}
-                />
-              );
-            }),
-          ];
-        })}
+              }),
+              ...Object.values(dayGroup.accommodations).map(
+                (accommodation, i) => {
+                  const props = dayGroup.accommodationProps.get(
+                    accommodation.id,
+                  );
+                  return (
+                    <Accommodation
+                      key={`${accommodation.id}-${String(i)}`}
+                      accommodation={accommodation}
+                      tripViewMode={TripViewMode.List}
+                      className={s.listItem}
+                      {...props}
+                    />
+                  );
+                },
+              ),
+              ...Object.values(dayGroup.activities).map((activity) => {
+                const columnIndex = dayGroup.activityColumnIndexMap.get(
+                  activity.id,
+                );
+                return (
+                  <Activity
+                    key={activity.id}
+                    className={s.listItem}
+                    activity={activity}
+                    columnIndex={columnIndex?.start ?? 1}
+                    columnEndIndex={columnIndex?.end ?? 1}
+                    tripViewMode={TripViewMode.List}
+                  />
+                );
+              }),
+            ];
+          })}
+        </Flex>
+        <Flex
+          direction="column"
+          gap="2"
+          flexGrow="1"
+          maxWidth={{ initial: '100%', sm: '50%' }}
+          display={{ initial: 'none', sm: 'flex' }}
+        >
+          <TripMap />
+        </Flex>
       </Flex>
 
       <Switch>
