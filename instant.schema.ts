@@ -20,6 +20,9 @@ const _schema = i.schema({
       phoneNumber: i.string(),
       timestampCheckIn: i.number(),
       timestampCheckOut: i.number(),
+      locationLat: i.number().optional(),
+      locationLng: i.number().optional(),
+      locationZoom: i.number().optional(),
     }),
     macroplan: i.entity({
       name: i.string(),
@@ -34,9 +37,9 @@ const _schema = i.schema({
       description: i.string(),
       lastUpdatedAt: i.number(),
       location: i.string(),
-      locationLat: i.number(),
-      locationLng: i.number(),
-      locationZoom: i.number(),
+      locationLat: i.number().optional(),
+      locationLng: i.number().optional(),
+      locationZoom: i.number().optional(),
 
       timestampEnd: i.number(),
       timestampStart: i.number(),
@@ -44,7 +47,6 @@ const _schema = i.schema({
     }),
     expense: i.entity({
       amount: i.number(),
-      amountInDefaultCurrency: i.number(),
       amountInOriginCurrency: i.number(),
       createdAt: i.number(),
       currency: i.string(),
