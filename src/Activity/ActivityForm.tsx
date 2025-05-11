@@ -385,6 +385,7 @@ export function ActivityForm({
               lng: coordinateState.lng ?? 0,
               lat: coordinateState.lat ?? 0,
               zoom: coordinateState.zoom ?? 9,
+              region: tripRegion,
             }}
             marker={
               coordinateState.lng && coordinateState.lat

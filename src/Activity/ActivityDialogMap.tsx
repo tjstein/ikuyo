@@ -2,14 +2,15 @@ import { MapStyle, Map as MapTilerMap, Marker } from '@maptiler/sdk';
 import { useEffect, useRef } from 'react';
 import s from './ActivityDialogMap.module.css';
 import '@maptiler/sdk/style.css';
-
+import { GeocodingControl } from '@maptiler/geocoding-control/maptilersdk';
+import '@maptiler/geocoding-control/style.css';
 export function ActivityMap({
   mapOptions,
   marker,
   setMarkerCoordinate,
   setMapZoom,
 }: {
-  mapOptions: { lng: number; lat: number; zoom?: number };
+  mapOptions: { lng: number; lat: number; zoom?: number; region?: string };
   marker?: { lng: number; lat: number };
   setMarkerCoordinate?: (coordinate: { lng: number; lat: number }) => void;
   setMapZoom?: (zoom: number) => void;
@@ -36,11 +37,14 @@ export function ActivityMap({
       }
     });
 
+    let mapMarker: null | Marker = null;
+
     if (marker) {
-      new Marker({
+      mapMarker = new Marker({
         color: 'var(--accent-indicator)',
         draggable: !!setMarkerCoordinate,
-      })
+      });
+      mapMarker
         .setLngLat([marker.lng, marker.lat])
         .addTo(map.current)
         .on('dragend', (event: { type: 'dragend'; target: Marker }) => {
@@ -50,6 +54,28 @@ export function ActivityMap({
             setMarkerCoordinate({ lng, lat });
           }
         });
+    }
+
+    if (marker && setMarkerCoordinate) {
+      const gc = new GeocodingControl({
+        limit: 5,
+        country: mapOptions?.region?.toLowerCase(),
+        proximity: [{ type: 'map-center' }],
+        types: ['poi'],
+        marker: false,
+      });
+      gc.on('pick', ({ feature }) => {
+        if (!map.current) return;
+
+        console.log('ActivityDialogMap geocoding pick', feature);
+
+        if (feature?.center) {
+          const [lng, lat] = feature.center;
+          mapMarker?.setLngLat([lng, lat]);
+          setMarkerCoordinate({ lng, lat });
+        }
+      });
+      map.current.addControl(gc);
     }
   }, [mapOptions, marker, setMarkerCoordinate, setMapZoom]);
 
