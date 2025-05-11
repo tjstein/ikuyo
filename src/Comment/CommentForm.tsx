@@ -21,6 +21,7 @@ export function CommentForm({
   tripId,
   objectId,
   objectType,
+  onFormFocus,
 }: {
   mode: CommentModeType;
   user?: DbUser;
@@ -28,6 +29,7 @@ export function CommentForm({
   commentId?: string;
   commentContent?: string;
   setCommentMode: (mode: CommentModeType) => void;
+  onFormFocus: () => void;
 
   tripId: string;
   objectId: string;
@@ -114,6 +116,7 @@ export function CommentForm({
   return (
     <form
       id={idForm}
+      onFocus={onFormFocus}
       onInput={() => {
         setErrorMessage('');
       }}

@@ -1,5 +1,12 @@
 import { Cross1Icon } from '@radix-ui/react-icons';
-import { Button, Dialog, Flex, Heading, Text } from '@radix-ui/themes';
+import {
+  Button,
+  Dialog,
+  Flex,
+  Heading,
+  Skeleton,
+  Text,
+} from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useCallback, useMemo } from 'react';
 import { useLocation } from 'wouter';
@@ -10,53 +17,58 @@ import {
   type DbCommentGroup,
 } from '../Comment/db';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
+import type { DialogContentProps } from '../Dialog/DialogRoute';
 import { CommonCommentDialogMaxWidth } from '../Dialog/ui';
 import { db } from '../data/db';
 import { useBoundStore } from '../data/store';
 import s from './Activity.module.css';
 import { ActivityMap } from './ActivityDialogMap';
-import {
-  ActivityDialogMode,
-  type ActivityDialogModeType,
-} from './ActivityDialogMode';
+import { ActivityDialogMode } from './ActivityDialogMode';
 import type { DbActivityWithTrip } from './db';
 
 export function ActivityDialogContentView({
-  activity,
+  data: activity,
   setMode,
-}: {
-  activity: DbActivityWithTrip;
-  setMode: (mode: ActivityDialogModeType) => void;
-}) {
+  dialogContentProps,
+  setDialogClosable,
+}: DialogContentProps<DbActivityWithTrip>) {
   const [, setLocation] = useLocation();
-  const activityStartStr = DateTime.fromMillis(activity.timestampStart)
-    .setZone(activity.trip.timeZone)
-    .toFormat('dd LLLL yyyy HH:mm');
-  const activityEndStr = DateTime.fromMillis(activity.timestampEnd)
-    .setZone(activity.trip.timeZone)
-    // since 1 activity must be in same day, so might as well just show the time for end
-    .toFormat('HH:mm');
+  const activityStartStr = activity
+    ? DateTime.fromMillis(activity.timestampStart)
+        .setZone(activity.trip.timeZone)
+        .toFormat('dd LLLL yyyy HH:mm')
+    : undefined;
+  const activityEndStr = activity
+    ? DateTime.fromMillis(activity.timestampEnd)
+        .setZone(activity.trip.timeZone)
+        // since 1 activity must be in same day, so might as well just show the time for end
+        .toFormat('HH:mm')
+    : undefined;
   const currentUser = useBoundStore((state) => state.currentUser);
 
-  const descriptions = useParseTextIntoNodes(activity.description || '');
-  const commentGroupQuery = db.useQuery({
-    commentGroup: {
-      comment: {
-        user: {},
-      },
-      trip: {},
-      object: {},
-      $: {
-        where: {
-          'trip.id': activity.trip.id,
-          'object.type': 'activity',
-          'object.activity.id': activity.id,
-        },
-        limit: 1,
-      },
-    },
-  });
-  const rawCommentGroup = commentGroupQuery?.data?.commentGroup[0];
+  const descriptions = useParseTextIntoNodes(activity?.description);
+  const commentGroupQuery = db.useQuery(
+    activity
+      ? {
+          commentGroup: {
+            comment: {
+              user: {},
+            },
+            trip: {},
+            object: {},
+            $: {
+              where: {
+                'trip.id': activity.trip.id,
+                'object.type': 'activity',
+                'object.activity.id': activity.id,
+              },
+              limit: 1,
+            },
+          },
+        }
+      : {},
+  );
+  const rawCommentGroup = commentGroupQuery?.data?.commentGroup?.[0];
   const commentGroup: undefined | DbCommentGroup<'activity'> = useMemo(() => {
     if (rawCommentGroup) {
       const cg = {
@@ -85,9 +97,15 @@ export function ActivityDialogContentView({
   const closeDialog = useCallback(() => {
     setLocation('');
   }, [setLocation]);
+  const setDialogUnclosable = useCallback(() => {
+    setDialogClosable(false);
+  }, [setDialogClosable]);
 
   return (
-    <Dialog.Content maxWidth={CommonCommentDialogMaxWidth}>
+    <Dialog.Content
+      {...dialogContentProps}
+      maxWidth={CommonCommentDialogMaxWidth}
+    >
       <Button
         type="button"
         size="2"
@@ -141,7 +159,7 @@ export function ActivityDialogContentView({
           <Heading as="h2" size="4">
             Title
           </Heading>
-          <Text>{activity.title}</Text>
+          <Text>{activity?.title ?? <Skeleton>Activity Title</Skeleton>}</Text>
           <Heading as="h2" size="4">
             Time
           </Heading>
@@ -149,7 +167,7 @@ export function ActivityDialogContentView({
             {activityStartStr} to {activityEndStr}
           </Text>
 
-          {activity.location ? (
+          {activity?.location ? (
             <>
               <Heading as="h2" size="4">
                 Location
@@ -159,7 +177,7 @@ export function ActivityDialogContentView({
           ) : (
             <></>
           )}
-          {activity.description ? (
+          {activity?.description ? (
             <>
               <Heading as="h2" size="4">
                 Description
@@ -170,7 +188,7 @@ export function ActivityDialogContentView({
             <></>
           )}
 
-          {activity.locationLat && activity.locationLng ? (
+          {activity?.locationLat && activity?.locationLng ? (
             <ActivityMap
               mapOptions={{
                 lng: activity.locationLng,
@@ -195,13 +213,14 @@ export function ActivityDialogContentView({
             Comments
           </Heading>
           <CommentGroupWithForm
-            tripId={activity.trip.id}
-            objectId={activity.id}
+            tripId={activity?.trip?.id}
+            objectId={activity?.id}
             objectType={COMMENT_GROUP_OBJECT_TYPE.ACTIVITY}
             user={currentUser}
             commentGroup={commentGroup}
             isLoading={commentGroupQuery.isLoading}
             error={commentGroupQuery.error}
+            onFormFocus={setDialogUnclosable}
           />
         </Flex>
       </Flex>

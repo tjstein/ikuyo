@@ -1,25 +1,23 @@
-import { Button, Dialog, Flex } from '@radix-ui/themes';
+import { Button, Dialog, Flex, Skeleton } from '@radix-ui/themes';
 import { useCallback } from 'react';
 import { useLocation } from 'wouter';
-import { CommonDialogMaxWidth } from '../Dialog/ui';
+import { type DialogContentProps, DialogMode } from '../Dialog/DialogRoute';
 import { useBoundStore } from '../data/store';
 import { dangerToken } from '../ui';
-import {
-  ActivityDialogMode,
-  type ActivityDialogModeType,
-} from './ActivityDialogMode';
-import { type DbActivity, dbDeleteActivity } from './db';
+import { type DbActivityWithTrip, dbDeleteActivity } from './db';
 
 export function ActivityDialogContentDelete({
-  activity,
+  data: activity,
   setMode,
-}: {
-  activity: DbActivity;
-  setMode: (mode: ActivityDialogModeType) => void;
-}) {
+  dialogContentProps,
+}: DialogContentProps<DbActivityWithTrip>) {
   const [, setLocation] = useLocation();
   const publishToast = useBoundStore((state) => state.publishToast);
   const deleteActivity = useCallback(() => {
+    if (!activity) {
+      console.error('Activity is undefined');
+      return;
+    }
     void dbDeleteActivity(activity)
       .then(() => {
         publishToast({
@@ -40,10 +38,11 @@ export function ActivityDialogContentDelete({
   }, [publishToast, activity, setLocation]);
 
   return (
-    <Dialog.Content maxWidth={CommonDialogMaxWidth}>
+    <Dialog.Content {...dialogContentProps}>
       <Dialog.Title>Delete Activity</Dialog.Title>
       <Dialog.Description size="2">
-        Are you sure to delete activity "{activity.title}"?
+        Are you sure to delete activity "
+        {activity?.title ?? <Skeleton>Activity name</Skeleton>}"?
       </Dialog.Description>
 
       <Flex gap="3" mt="4" justify="end">
@@ -51,7 +50,7 @@ export function ActivityDialogContentDelete({
           variant="soft"
           color="gray"
           onClick={() => {
-            setMode(ActivityDialogMode.View);
+            setMode(DialogMode.View);
           }}
         >
           Cancel

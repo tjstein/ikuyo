@@ -13,27 +13,32 @@ export function CommentGroupWithForm({
   objectType,
   isLoading,
   error,
+  onFormFocus,
 }: {
   user?: DbUser;
   commentGroup?: undefined | DbCommentGroup<DbCommentGroupObjectType>;
 
-  tripId: string;
-  objectId: string;
+  tripId: string | undefined;
+  objectId: string | undefined;
   objectType: DbCommentGroupObjectType;
   isLoading?: boolean;
   error?: { message: string };
+  onFormFocus: () => void;
 }) {
   return (
     <>
-      <CommentForm
-        mode={CommentMode.Add}
-        tripId={tripId}
-        objectId={objectId}
-        objectType={objectType}
-        user={user}
-        commentGroupId={commentGroup?.id}
-        setCommentMode={() => {}}
-      />
+      {tripId && objectId ? (
+        <CommentForm
+          mode={CommentMode.Add}
+          tripId={tripId}
+          objectId={objectId}
+          objectType={objectType}
+          user={user}
+          commentGroupId={commentGroup?.id}
+          setCommentMode={() => {}}
+          onFormFocus={onFormFocus}
+        />
+      ) : null}
 
       {isLoading ? (
         <Spinner />
