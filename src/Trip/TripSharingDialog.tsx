@@ -134,7 +134,7 @@ export function TripSharingDialog({
     >
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>Share Trip</Dialog.Title>
-        <Dialog.Description>
+        <Dialog.Description size="2">
           Share this trip with other people!
         </Dialog.Description>
 

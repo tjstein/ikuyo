@@ -40,7 +40,7 @@ export function ActivityNewDialog({ trip }: { trip: DbTrip }) {
     <Dialog.Root open>
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>New Activity</Dialog.Title>
-        <Dialog.Description>
+        <Dialog.Description size="2">
           Fill in your new activity details...
         </Dialog.Description>
         <Box height="16px" />

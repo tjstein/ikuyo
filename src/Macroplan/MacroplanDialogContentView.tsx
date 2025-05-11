@@ -8,7 +8,6 @@ import {
 } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useCallback } from 'react';
-import { useLocation } from 'wouter';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import type { DialogContentProps } from '../Dialog/DialogRoute';
 import type { DbMacroplanWithTrip } from './db';
@@ -19,8 +18,8 @@ export function MacroplanDialogContentView({
   data: macroplan,
   setMode,
   dialogContentProps,
+  DialogTitleSection,
 }: DialogContentProps<DbMacroplanWithTrip>) {
-  const [, setLocation] = useLocation();
   const macroplanDateStartStr = macroplan
     ? DateTime.fromMillis(macroplan.timestampStart)
         .setZone(macroplan.trip.timeZone)
@@ -34,9 +33,7 @@ export function MacroplanDialogContentView({
     : undefined;
 
   const notes = useParseTextIntoNodes(macroplan?.notes);
-  const closeDialog = useCallback(() => {
-    setLocation('');
-  }, [setLocation]);
+
   const goToEditMode = useCallback(() => {
     setMode(MacroplanDialogMode.Edit);
   }, [setMode]);
@@ -46,8 +43,28 @@ export function MacroplanDialogContentView({
 
   return (
     <Dialog.Content {...dialogContentProps}>
-      <Dialog.Title>View Day Plan</Dialog.Title>
-      <Dialog.Description>Details of day plan</Dialog.Description>
+      <DialogTitleSection title="View Day Plan" />
+      <Flex gap="3" mb="3" justify="start">
+        <Button
+          type="button"
+          size="2"
+          variant="soft"
+          color="gray"
+          onClick={goToEditMode}
+        >
+          Edit
+        </Button>
+        <Button
+          type="button"
+          size="2"
+          variant="soft"
+          color="gray"
+          onClick={goToDeleteMode}
+        >
+          Delete
+        </Button>
+      </Flex>
+      <Dialog.Description size="2">Details of day plan</Dialog.Description>
       <Flex direction="column" gap="3" mt="3">
         <Heading as="h2" size="4">
           Plan
@@ -71,30 +88,6 @@ export function MacroplanDialogContentView({
         ) : (
           <></>
         )}
-      </Flex>
-      <Flex gap="3" mt="5" justify="end">
-        <Button
-          mr="auto"
-          type="button"
-          size="2"
-          variant="soft"
-          color="gray"
-          onClick={goToDeleteMode}
-        >
-          Delete
-        </Button>
-        <Button
-          type="button"
-          size="2"
-          variant="soft"
-          color="gray"
-          onClick={goToEditMode}
-        >
-          Edit
-        </Button>
-        <Button type="button" size="2" onClick={closeDialog}>
-          Close
-        </Button>
       </Flex>
     </Dialog.Content>
   );

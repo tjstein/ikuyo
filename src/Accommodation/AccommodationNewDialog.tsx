@@ -43,7 +43,7 @@ export function AccommodationNewDialog({ trip }: { trip: DbTrip }) {
     <Dialog.Root open>
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>New Accommodation</Dialog.Title>
-        <Dialog.Description>
+        <Dialog.Description size="2">
           Fill in the new accommodation details for this trip...
         </Dialog.Description>
         <Box height="16px" />

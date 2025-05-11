@@ -11,6 +11,7 @@ export function MacroplanDialogContentDelete({
   data: macroplan,
   setMode,
   dialogContentProps,
+  DialogTitleSection,
 }: DialogContentProps<DbMacroplanWithTrip>) {
   const [, setLocation] = useLocation();
   const publishToast = useBoundStore((state) => state.publishToast);
@@ -41,7 +42,7 @@ export function MacroplanDialogContentDelete({
 
   return (
     <Dialog.Content {...dialogContentProps}>
-      <Dialog.Title>Delete Day Plan</Dialog.Title>
+      <DialogTitleSection title="Delete Day Plan" />
       <Dialog.Description size="2">
         Are you sure to delete day plan "
         {macroplan?.name ?? <Skeleton>Day plan</Skeleton>}"?

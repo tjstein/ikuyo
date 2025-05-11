@@ -12,6 +12,7 @@ export function MacroplanDialogContentEdit({
   data: macroplan,
   setMode,
   dialogContentProps,
+  DialogTitleSection,
 }: DialogContentProps<DbMacroplanWithTrip>) {
   const tripStartStr = macroplan
     ? formatToDateInput(
@@ -48,8 +49,8 @@ export function MacroplanDialogContentEdit({
 
   return (
     <Dialog.Content {...dialogContentProps}>
-      <Dialog.Title>Edit Day Plan</Dialog.Title>
-      <Dialog.Description>
+      <DialogTitleSection title="Edit Day Plan" />
+      <Dialog.Description size="2">
         Fill in the edited day plan details for this trip...
       </Dialog.Description>
       <Box height="16px" />

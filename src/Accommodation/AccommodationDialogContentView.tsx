@@ -8,7 +8,6 @@ import {
 } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useCallback } from 'react';
-import { useLocation } from 'wouter';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import type { DialogContentProps } from '../Dialog/DialogRoute';
 import { AccommodationDialogMode } from './AccommodationDialogMode';
@@ -18,8 +17,8 @@ export function AccommodationDialogContentView({
   data: accommodation,
   setMode,
   dialogContentProps,
+  DialogTitleSection,
 }: DialogContentProps<DbAccommodationWithTrip>) {
-  const [, setLocation] = useLocation();
   const accommodationCheckInStr = accommodation
     ? DateTime.fromMillis(accommodation.timestampCheckIn)
         .setZone(accommodation.trip.timeZone)
@@ -31,9 +30,7 @@ export function AccommodationDialogContentView({
         .toFormat('dd LLLL yyyy HH:mm')
     : '';
   const notes = useParseTextIntoNodes(accommodation?.notes);
-  const closeDialog = useCallback(() => {
-    setLocation('');
-  }, [setLocation]);
+
   const goToEditMode = useCallback(() => {
     setMode(AccommodationDialogMode.Edit);
   }, [setMode]);
@@ -42,8 +39,28 @@ export function AccommodationDialogContentView({
   }, [setMode]);
   return (
     <Dialog.Content {...dialogContentProps}>
-      <Dialog.Title>View Accommodation</Dialog.Title>
-      <Dialog.Description>Accommodation details</Dialog.Description>
+      <DialogTitleSection title="View Accommodation" />
+      <Flex gap="3" mb="3" justify="start">
+        <Button
+          type="button"
+          size="2"
+          variant="soft"
+          color="gray"
+          onClick={goToEditMode}
+        >
+          Edit
+        </Button>
+        <Button
+          type="button"
+          size="2"
+          variant="soft"
+          color="gray"
+          onClick={goToDeleteMode}
+        >
+          Delete
+        </Button>
+      </Flex>
+      <Dialog.Description size="2">Accommodation details</Dialog.Description>
       <Flex direction="column" gap="3" mt="3">
         <Heading as="h2" size="4">
           Name
@@ -88,30 +105,6 @@ export function AccommodationDialogContentView({
         ) : (
           <></>
         )}
-      </Flex>
-      <Flex gap="3" mt="5" justify="end">
-        <Button
-          mr="auto"
-          type="button"
-          size="2"
-          variant="soft"
-          color="gray"
-          onClick={goToDeleteMode}
-        >
-          Delete
-        </Button>
-        <Button
-          type="button"
-          size="2"
-          variant="soft"
-          color="gray"
-          onClick={goToEditMode}
-        >
-          Edit
-        </Button>
-        <Button type="button" size="2" onClick={closeDialog}>
-          Close
-        </Button>
       </Flex>
     </Dialog.Content>
   );

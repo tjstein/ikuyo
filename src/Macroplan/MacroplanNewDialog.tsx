@@ -43,7 +43,7 @@ export function MacroplanNewDialog({ trip }: { trip: DbTrip }) {
     <Dialog.Root open>
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>New Day Plan</Dialog.Title>
-        <Dialog.Description>
+        <Dialog.Description size="2">
           <Text as="p">
             Day plan is a high-level plan to organize your trip into multiple
             segments.

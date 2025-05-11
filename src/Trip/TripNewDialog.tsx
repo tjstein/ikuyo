@@ -13,7 +13,7 @@ export function TripNewDialog({ user }: { user: DbUser }) {
     <Dialog.Root open>
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>New Trip</Dialog.Title>
-        <Dialog.Description>
+        <Dialog.Description size="2">
           Fill in your new trip details...
         </Dialog.Description>
         <Box height="16px" />

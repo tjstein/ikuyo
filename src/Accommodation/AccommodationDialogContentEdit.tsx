@@ -12,6 +12,7 @@ export function AccommodationDialogContentEdit({
   data: accommodation,
   setMode,
   dialogContentProps,
+  DialogTitleSection,
 }: DialogContentProps<DbAccommodationWithTrip>) {
   const tripStartStr = accommodation
     ? formatToDatetimeLocalInput(
@@ -48,8 +49,8 @@ export function AccommodationDialogContentEdit({
 
   return (
     <Dialog.Content {...dialogContentProps}>
-      <Dialog.Title>Edit Accommodation</Dialog.Title>
-      <Dialog.Description>
+      <DialogTitleSection title="Edit Accommodation" />
+      <Dialog.Description size="2">
         Fill in the edited accommodation details for this trip...
       </Dialog.Description>
       <Box height="16px" />

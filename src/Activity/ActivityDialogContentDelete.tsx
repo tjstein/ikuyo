@@ -10,6 +10,7 @@ export function ActivityDialogContentDelete({
   data: activity,
   setMode,
   dialogContentProps,
+  DialogTitleSection,
 }: DialogContentProps<DbActivityWithTrip>) {
   const [, setLocation] = useLocation();
   const publishToast = useBoundStore((state) => state.publishToast);
@@ -39,7 +40,7 @@ export function ActivityDialogContentDelete({
 
   return (
     <Dialog.Content {...dialogContentProps}>
-      <Dialog.Title>Delete Activity</Dialog.Title>
+      <DialogTitleSection title="Delete Activity" />
       <Dialog.Description size="2">
         Are you sure to delete activity "
         {activity?.title ?? <Skeleton>Activity name</Skeleton>}"?

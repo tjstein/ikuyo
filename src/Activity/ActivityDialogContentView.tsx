@@ -1,4 +1,3 @@
-import { Cross1Icon } from '@radix-ui/react-icons';
 import {
   Button,
   Dialog,
@@ -9,7 +8,6 @@ import {
 } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useCallback, useMemo } from 'react';
-import { useLocation } from 'wouter';
 import { CommentGroupWithForm } from '../Comment/CommentGroupWithForm';
 import {
   COMMENT_GROUP_OBJECT_TYPE,
@@ -31,8 +29,8 @@ export function ActivityDialogContentView({
   setMode,
   dialogContentProps,
   setDialogClosable,
+  DialogTitleSection,
 }: DialogContentProps<DbActivityWithTrip>) {
-  const [, setLocation] = useLocation();
   const activityStartStr = activity
     ? DateTime.fromMillis(activity.timestampStart)
         .setZone(activity.trip.timeZone)
@@ -94,9 +92,6 @@ export function ActivityDialogContentView({
   const goToDeleteMode = useCallback(() => {
     setMode(ActivityDialogMode.Delete);
   }, [setMode]);
-  const closeDialog = useCallback(() => {
-    setLocation('');
-  }, [setLocation]);
   const setDialogUnclosable = useCallback(() => {
     setDialogClosable(false);
   }, [setDialogClosable]);
@@ -106,21 +101,7 @@ export function ActivityDialogContentView({
       {...dialogContentProps}
       maxWidth={CommonCommentDialogMaxWidth}
     >
-      <Button
-        type="button"
-        size="2"
-        variant="soft"
-        color="gray"
-        style={{
-          position: 'absolute',
-          top: 'var(--space-5)',
-          right: 'var(--space-5)',
-        }}
-        onClick={closeDialog}
-      >
-        <Cross1Icon />
-      </Button>
-
+      <DialogTitleSection title="View Activity" />
       <Flex
         gap="5"
         justify="between"
@@ -129,22 +110,10 @@ export function ActivityDialogContentView({
         <Flex
           direction="column"
           gap="3"
-          mt="3"
           flexGrow="1"
           maxWidth={{ initial: '100%', md: '50%' }}
         >
-          <Dialog.Title mb="0">View Activity</Dialog.Title>
-          <Flex gap="3" justify="end">
-            <Button
-              mr="auto"
-              type="button"
-              size="2"
-              variant="soft"
-              color="gray"
-              onClick={goToDeleteMode}
-            >
-              Delete
-            </Button>
+          <Flex gap="3" mb="3" justify="start">
             <Button
               type="button"
               size="2"
@@ -154,8 +123,17 @@ export function ActivityDialogContentView({
             >
               Edit
             </Button>
+            <Button
+              type="button"
+              size="2"
+              variant="soft"
+              color="gray"
+              onClick={goToDeleteMode}
+            >
+              Delete
+            </Button>
           </Flex>
-          <Dialog.Description>Activity details</Dialog.Description>
+          <Dialog.Description size="2">Activity details</Dialog.Description>
           <Heading as="h2" size="4">
             Title
           </Heading>
@@ -204,12 +182,11 @@ export function ActivityDialogContentView({
         </Flex>
         <Flex
           direction="column"
-          mt="6"
           gap="3"
           flexGrow="1"
           maxWidth={{ initial: '100%', md: '50%' }}
         >
-          <Heading as="h2" size="4" mt="2">
+          <Heading as="h2" size="4">
             Comments
           </Heading>
           <CommentGroupWithForm

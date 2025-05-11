@@ -1,4 +1,5 @@
-import { Dialog } from '@radix-ui/themes';
+import { Cross1Icon } from '@radix-ui/react-icons';
+import { Box, Button, Dialog, Flex } from '@radix-ui/themes';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { type RouteComponentProps, useLocation } from 'wouter';
 import { CommonDialogMaxWidth } from './ui';
@@ -31,6 +32,7 @@ export type DialogContentProps<DataType> = {
   setMode: (mode: DialogModeType) => void;
   dialogContentProps: Dialog.ContentProps;
   setDialogClosable: (closable: boolean) => void;
+  DialogTitleSection: React.ComponentType<{ title: string }>;
 };
 export function createDialogRoute<DataType>({
   DialogContentView,
@@ -115,6 +117,7 @@ export function createDialogRoute<DataType>({
             setMode={setMode}
             dialogContentProps={dialogContentProps}
             setDialogClosable={setDialogClosable}
+            DialogTitleSection={DialogTitleSection}
           />
         ) : mode === DialogMode.Edit ? (
           <DialogContentEdit
@@ -122,6 +125,7 @@ export function createDialogRoute<DataType>({
             setMode={setMode}
             dialogContentProps={dialogContentProps}
             setDialogClosable={setDialogClosable}
+            DialogTitleSection={DialogTitleSection}
           />
         ) : mode === DialogMode.Delete ? (
           <DialogContentDelete
@@ -129,10 +133,34 @@ export function createDialogRoute<DataType>({
             setMode={setMode}
             dialogContentProps={dialogContentProps}
             setDialogClosable={setDialogClosable}
+            DialogTitleSection={DialogTitleSection}
           />
         ) : null}
       </Dialog.Root>
     );
   }
   return DialogRoute;
+}
+
+function DialogTitleSection({ title }: { title: string }) {
+  const [, setLocation] = useLocation();
+  const closeDialog = useCallback(() => {
+    setLocation('');
+  }, [setLocation]);
+  return (
+    <Flex justify="between" align="center" mt="-3" mx="-3" mb="3">
+      <Box mt="3" mx="3">
+        <Dialog.Title mb="0">{title}</Dialog.Title>
+      </Box>
+      <Button
+        type="button"
+        size="2"
+        variant="soft"
+        color="gray"
+        onClick={closeDialog}
+      >
+        <Cross1Icon />
+      </Button>
+    </Flex>
+  );
 }

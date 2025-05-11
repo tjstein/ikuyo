@@ -22,7 +22,7 @@ export function TripEditDialog({ trip }: { trip: DbTripWithActivity }) {
     <Dialog.Root open>
       <Dialog.Content maxWidth={CommonDialogMaxWidth}>
         <Dialog.Title>Edit Trip</Dialog.Title>
-        <Dialog.Description>
+        <Dialog.Description size="2">
           Fill in your edited trip details...
         </Dialog.Description>
         <Box height="16px" />

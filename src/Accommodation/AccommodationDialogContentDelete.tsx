@@ -11,6 +11,7 @@ export function AccommodationDialogContentDelete({
   data: accommodation,
   setMode,
   dialogContentProps,
+  DialogTitleSection,
 }: DialogContentProps<DbAccommodationWithTrip>) {
   const [, setLocation] = useLocation();
   const publishToast = useBoundStore((state) => state.publishToast);
@@ -40,7 +41,7 @@ export function AccommodationDialogContentDelete({
 
   return (
     <Dialog.Content {...dialogContentProps}>
-      <Dialog.Title>Delete Accommodation</Dialog.Title>
+      <DialogTitleSection title="Delete Accommodation" />
       <Dialog.Description size="2">
         Are you sure to delete accommodation "
         {accommodation?.name ?? <Skeleton>Hotel ABC</Skeleton>}"?

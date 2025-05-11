@@ -12,6 +12,7 @@ export function ActivityDialogContentEdit({
   data: activity,
   setMode,
   dialogContentProps,
+  DialogTitleSection,
 }: DialogContentProps<DbActivityWithTrip>) {
   const tripStartStr = activity
     ? formatToDatetimeLocalInput(
@@ -47,8 +48,8 @@ export function ActivityDialogContentEdit({
 
   return (
     <Dialog.Content {...dialogContentProps}>
-      <Dialog.Title>Edit Activity</Dialog.Title>
-      <Dialog.Description>
+      <DialogTitleSection title="Edit Activity" />
+      <Dialog.Description size="2">
         Fill in your edited activity details...
       </Dialog.Description>
       <Box height="16px" />
