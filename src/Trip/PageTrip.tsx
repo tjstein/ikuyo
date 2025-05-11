@@ -45,12 +45,9 @@ const TripHome = withLoading()(
 );
 
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
-import { shallow, useShallow } from 'zustand/shallow';
-import type { DbAccommodationWithTrip } from '../Accommodation/db';
-import type { DbActivityWithTrip } from '../Activity/db';
+import { useShallow } from 'zustand/shallow';
 import { useBoundStore } from '../data/store';
 import { TripUserRole } from '../data/TripUserRole';
-import type { DbMacroplanWithTrip } from '../Macroplan/db';
 import {
   RouteTripExpenses,
   RouteTripHome,
@@ -193,8 +190,7 @@ function useStableRefTrip(tripId: string): {
   const tripRef = useRef<DbTripFull | undefined>(undefined);
   const trip = useMemo(() => {
     if (rawTrip) {
-      let isShallowEqual = false;
-
+      let isObjectEqual = false;
       // Reference to the trip in the activities, accommodations and macroplans
       const tripWithBackReference = {
         ...rawTrip,
@@ -215,93 +211,26 @@ function useStableRefTrip(tripId: string): {
           }) ?? [],
       } as DbTripFull;
 
-      isShallowEqual = shallow(
-        tripRef.current
-          ? omitKeysFromObject(tripRef.current, [
-              'accommodation',
-              'activity',
-              'macroplan',
-              'tripUser',
-            ])
-          : undefined,
-        omitKeysFromObject(tripWithBackReference, [
-          'accommodation',
-          'activity',
-          'macroplan',
-          'tripUser',
-        ]),
-      );
+      isObjectEqual =
+        isObjectEqualForSimpleKeys(tripRef.current, tripWithBackReference) &&
+        isArrayOfObjectsEqual(
+          tripRef.current?.accommodation,
+          tripWithBackReference.accommodation,
+        ) &&
+        isArrayOfObjectsEqual(
+          tripRef.current?.activity,
+          tripWithBackReference.activity,
+        ) &&
+        isArrayOfObjectsEqual(
+          tripRef.current?.macroplan,
+          tripWithBackReference.macroplan,
+        ) &&
+        isArrayOfObjectsEqual(
+          tripRef.current?.tripUser,
+          tripWithBackReference.tripUser,
+        );
 
-      if (tripRef.current?.accommodation) {
-        if (
-          tripRef.current.accommodation.length !==
-          tripWithBackReference.accommodation.length
-        ) {
-          isShallowEqual = false;
-        }
-        const accommodationMap: { [id: string]: DbAccommodationWithTrip } = {};
-        for (const accommodation of tripRef.current.accommodation) {
-          accommodationMap[accommodation.id] = accommodation;
-        }
-        for (const accommodation of tripWithBackReference.accommodation) {
-          const isEqual = shallow(
-            omitKeysFromObject(accommodation, ['trip']),
-            omitKeysFromObject(accommodationMap[accommodation.id], ['trip']),
-          );
-          if (!isEqual) {
-            isShallowEqual = false;
-            break;
-          }
-        }
-      }
-
-      if (tripRef.current?.activity) {
-        if (
-          tripRef.current.activity.length !==
-          tripWithBackReference.activity.length
-        ) {
-          isShallowEqual = false;
-        }
-        const activityMap: { [id: string]: DbActivityWithTrip } = {};
-        for (const activity of tripRef.current.activity) {
-          activityMap[activity.id] = activity;
-        }
-        for (const activity of tripWithBackReference.activity) {
-          const isEqual = shallow(
-            omitKeysFromObject(activity, ['trip']),
-            omitKeysFromObject(activityMap[activity.id], ['trip']),
-          );
-          if (!isEqual) {
-            isShallowEqual = false;
-            break;
-          }
-        }
-      }
-
-      if (tripRef.current?.macroplan) {
-        if (
-          tripRef.current.macroplan.length !==
-          tripWithBackReference.macroplan.length
-        ) {
-          isShallowEqual = false;
-        }
-        const macroplanMap: { [id: string]: DbMacroplanWithTrip } = {};
-        for (const macroplan of tripRef.current.macroplan) {
-          macroplanMap[macroplan.id] = macroplan;
-        }
-        for (const macroplan of tripWithBackReference.macroplan) {
-          const isEqual = shallow(
-            omitKeysFromObject(macroplan, ['trip']),
-            omitKeysFromObject(macroplanMap[macroplan.id], ['trip']),
-          );
-          if (!isEqual) {
-            isShallowEqual = false;
-            break;
-          }
-        }
-      }
-
-      if (isShallowEqual) {
+      if (isObjectEqual) {
         return tripRef.current;
       }
 
@@ -320,13 +249,96 @@ function useStableRefTrip(tripId: string): {
 
   return { trip, isLoading, error };
 }
-function omitKeysFromObject<T extends object, K extends keyof T>(
-  obj: T,
-  keys: K[],
-): Omit<T, K> {
-  const newObj = { ...obj };
-  for (const key of keys) {
-    delete newObj[key];
+
+function isObjectEqualForSimpleKeys<T extends object, K extends keyof T>(
+  obj1: T | undefined,
+  obj2: T | undefined,
+): boolean {
+  if (obj1 === obj2) {
+    // both are equal, or both are undefined
+    return true;
   }
-  return newObj;
+  if (!obj1 || !obj2) {
+    // one of them is undefined
+    return false;
+  }
+  const keys1 = Object.keys(obj1 ?? {}) as K[];
+  const keys2 = Object.keys(obj2 ?? {}) as K[];
+  // Check if both objects have the same number of keys
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+  // Check if all keys are present in both objects
+  const keys1Set = new Set(keys1);
+  const keys2Set = new Set(keys2);
+  for (const key of keys1) {
+    if (!keys2Set.has(key)) {
+      return false;
+    }
+  }
+  for (const key of keys2) {
+    if (!keys1Set.has(key)) {
+      return false;
+    }
+  }
+  // keys1 === keys2
+  for (const key of keys1) {
+    if (typeof obj1[key] === 'object' && obj1[key] !== null) {
+      continue; // Skip nested objects
+    }
+    if (obj1[key] !== obj2[key]) {
+      return false;
+    }
+  }
+  return true;
+}
+function isArrayOfObjectsEqual<T extends { id: string } & object>(
+  arr1: T[] | undefined,
+  arr2: T[] | undefined,
+): boolean {
+  if (arr1 === arr2) {
+    return true;
+  }
+  if (!arr1 || !arr2) {
+    return false;
+  }
+  if (arr1.length !== arr2.length) {
+    return false;
+  }
+  const arr1Ids = new Set(arr1.map((item) => item.id));
+  const arr2Ids = new Set(arr2.map((item) => item.id));
+
+  // Check if both arrays have the same number of ids
+  for (const key of arr1Ids) {
+    if (!arr2Ids.has(key)) {
+      return false;
+    }
+  }
+  for (const key of arr2Ids) {
+    if (!arr1Ids.has(key)) {
+      return false;
+    }
+  }
+  const arr1Map = new Map<string, T>();
+  const arr2Map = new Map<string, T>();
+  for (const item of arr1) {
+    arr1Map.set(item.id, item);
+  }
+  for (const item of arr2) {
+    arr2Map.set(item.id, item);
+  }
+
+  // ids are equal in both arrays
+  for (const id of arr1Ids) {
+    const obj1 = arr1Map.get(id);
+    const obj2 = arr2Map.get(id);
+    if (!obj1 || !obj2) {
+      return false;
+    }
+    const isEqual = isObjectEqualForSimpleKeys(obj1, obj2);
+    if (!isEqual) {
+      return false;
+    }
+  }
+  return true;
 }
