@@ -4,6 +4,7 @@ import { REGIONS_MAP } from '../data/intl/regions';
 import { useTrip } from './context';
 import { formatTimestampToReadableDate } from './time';
 
+const containerPx = { initial: '1', md: '0' };
 export function TripHome() {
   const trip = useTrip();
 
@@ -16,7 +17,7 @@ export function TripHome() {
   const tripDuration = tripEndDateTime.diff(tripStartDateTime, 'days');
 
   return (
-    <Container mt="2">
+    <Container mt="2" px={containerPx}>
       <Heading as="h2" size="4" mb="2">
         {trip.title}
       </Heading>
