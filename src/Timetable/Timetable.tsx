@@ -2,7 +2,7 @@ import { ClockIcon, HomeIcon, StackIcon } from '@radix-ui/react-icons';
 import { ContextMenu, Section, Text } from '@radix-ui/themes';
 import clsx from 'clsx';
 import type * as React from 'react';
-import { useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { Route, Switch } from 'wouter';
 import { Accommodation } from '../Accommodation/Accommodation';
 import { AccommodationDialog } from '../Accommodation/AccommodationDialog';
@@ -71,7 +71,22 @@ export function Timetable() {
   }, [dayGroups]);
   const timetableRef = useRef<HTMLDivElement>(null);
   const pushDialog = useBoundStore((state) => state.pushDialog);
+  const openActivityNewDialog = useCallback(() => {
+    () => {
+      pushDialog(ActivityNewDialog, { trip });
+    };
+  }, [pushDialog, trip]);
+  const openAccommodationNewDialog = useCallback(() => {
+    () => {
+      pushDialog(AccommodationNewDialog, { trip });
+    };
+  }, [pushDialog, trip]);
 
+  const openMacroplanNewDialog = useCallback(() => {
+    () => {
+      pushDialog(MacroplanNewDialog, { trip });
+    };
+  }, [pushDialog, trip]);
   return (
     <Section py="0">
       <ContextMenu.Root>
@@ -170,59 +185,15 @@ export function Timetable() {
 
         <ContextMenu.Content>
           <ContextMenu.Label>{trip.title}</ContextMenu.Label>
-          <ContextMenu.Item
-            onClick={() => {
-              // TODO: what if when we create a new activity here, we prefill with the time/date of the current selection?
-              // console.log(
-              //   'timetable rect',
-              //   timetableRef.current?.getBoundingClientRect().toJSON(),
-              // );
-              // {
-              //   const {
-              //     offsetTop,
-              //     clientTop,
-              //     scrollTop,
-              //     offsetLeft,
-              //     clientLeft,
-              //     scrollLeft,
-              //   } = e.currentTarget;
-              //   console.log('e currentTarget', {
-              //     offsetTop,
-              //     clientTop,
-              //     scrollTop,
-              //     offsetLeft,
-              //     clientLeft,
-              //     scrollLeft,
-              //   });
-              //   console.log('e clientX clientY', e.clientX, e.clientY);
-              //   console.log('e pageX pageY', e.pageX, e.pageY);
-              //   console.log('e screenX screenY', e.screenX, e.screenY);
-              // }
-              if (trip) {
-                pushDialog(ActivityNewDialog, { trip });
-              }
-            }}
-          >
+          <ContextMenu.Item onClick={openActivityNewDialog}>
             New activity
           </ContextMenu.Item>
 
-          <ContextMenu.Item
-            onClick={() => {
-              if (trip) {
-                pushDialog(AccommodationNewDialog, { trip });
-              }
-            }}
-          >
+          <ContextMenu.Item onClick={openAccommodationNewDialog}>
             New acommodation
           </ContextMenu.Item>
 
-          <ContextMenu.Item
-            onClick={() => {
-              if (trip) {
-                pushDialog(MacroplanNewDialog, { trip });
-              }
-            }}
-          >
+          <ContextMenu.Item onClick={openMacroplanNewDialog}>
             New day plan
           </ContextMenu.Item>
         </ContextMenu.Content>
