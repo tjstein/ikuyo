@@ -27,20 +27,13 @@ export function ActivityList() {
   const dayGroups = useMemo(() => groupActivitiesByDays(trip), [trip]);
   const pushDialog = useBoundStore((state) => state.pushDialog);
   const openActivityNewDialog = useCallback(() => {
-    () => {
-      pushDialog(ActivityNewDialog, { trip });
-    };
+    pushDialog(ActivityNewDialog, { trip });
   }, [pushDialog, trip]);
   const openAccommodationNewDialog = useCallback(() => {
-    () => {
-      pushDialog(AccommodationNewDialog, { trip });
-    };
+    pushDialog(AccommodationNewDialog, { trip });
   }, [pushDialog, trip]);
-
   const openMacroplanNewDialog = useCallback(() => {
-    () => {
-      pushDialog(MacroplanNewDialog, { trip });
-    };
+    pushDialog(MacroplanNewDialog, { trip });
   }, [pushDialog, trip]);
   return (
     <>
