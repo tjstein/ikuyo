@@ -59,13 +59,13 @@ export type DbCommentGroupObject<ObjectType extends DbCommentGroupObjectType> =
 
     commentGroup: DbCommentGroup<ObjectType> | undefined;
 
-    trip: ObjectType extends 'trip' ? DbTrip : undefined;
-    macroplan: ObjectType extends 'macroplan' ? DbMacroplan : undefined;
-    activity: ObjectType extends 'activity' ? DbActivity : undefined;
-    accommodation: ObjectType extends 'accommodation'
-      ? DbAccommodation
-      : undefined;
-    expense: ObjectType extends 'expense' ? DbExpense : undefined;
+    trip: Array<ObjectType extends 'trip' ? DbTrip : undefined>;
+    macroplan: Array<ObjectType extends 'macroplan' ? DbMacroplan : undefined>;
+    activity: Array<ObjectType extends 'activity' ? DbActivity : undefined>;
+    accommodation: Array<
+      ObjectType extends 'accommodation' ? DbAccommodation : undefined
+    >;
+    expense: Array<ObjectType extends 'expense' ? DbExpense : undefined>;
   };
 
 export async function dbAddComment<ObjectType extends DbCommentGroupObjectType>(

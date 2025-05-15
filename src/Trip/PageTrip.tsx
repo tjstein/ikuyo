@@ -43,12 +43,20 @@ const TripHome = withLoading()(
     }),
   ),
 );
+const TripComment = withLoading()(
+  React.lazy(() =>
+    import('./TripComment/TripComment').then((module) => {
+      return { default: module.TripComment };
+    }),
+  ),
+);
 
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import { useShallow } from 'zustand/shallow';
 import { useBoundStore } from '../data/store';
 import { TripUserRole } from '../data/TripUserRole';
 import {
+  RouteTripComment,
   RouteTripExpenses,
   RouteTripHome,
   RouteTripListView,
@@ -121,6 +129,10 @@ function PageTripInner({
                   {' '}
                   <DoubleArrowRightIcon /> Expenses
                 </Route>
+                <Route path={RouteTripComment.routePath}>
+                  {' '}
+                  <DoubleArrowRightIcon /> Comments
+                </Route>
               </Switch>
             }
           </Heading>,
@@ -148,6 +160,7 @@ function PageTripInner({
           />
           <Route path={RouteTripMap.routePath} component={TripMap} />
           <Route path={RouteTripExpenses.routePath} component={ExpenseList} />
+          <Route path={RouteTripComment.routePath} component={TripComment} />
           <Route path={RouteTripHome.routePath} component={TripHome} />
           <Redirect replace to={RouteTripHome.routePath} />
         </Switch>
@@ -178,11 +191,31 @@ function useStableRefTrip(tripId: string): {
       accommodation: {},
       macroplan: {},
       tripUser: {
-        user: {},
+        user: {
+          $: { fields: ['id', 'handle', 'activated'] },
+        },
+      },
+      commentGroup: {
+        comment: {
+          user: {
+            $: { fields: ['id', 'handle', 'activated'] },
+          },
+        },
+        object: {
+          activity: { $: { fields: ['id', 'title'] } },
+          accommodation: { $: { fields: ['id', 'name'] } },
+          expense: { $: { fields: ['id', 'title'] } },
+          trip: { $: { fields: ['id', 'title'] } },
+          macroplan: { $: { fields: ['id', 'name'] } },
+          $: {
+            fields: ['type'],
+          },
+        },
       },
     },
   });
   const rawTrip = data?.trip[0] as DbTrip | undefined;
+  console.log('rawTrip', rawTrip);
   // Avoid re-render of trip object
   // Only re-render if trip, trip.activity, trip.accommodation, trip.macroplan is different
   const tripRef = useRef<DbTripFull | undefined>(undefined);
@@ -206,6 +239,15 @@ function useStableRefTrip(tripId: string): {
           rawTrip.macroplan?.map((macroplan) => {
             macroplan.trip = rawTrip;
             return macroplan;
+          }) ?? [],
+        commentGroup:
+          rawTrip.commentGroup?.map((commentGroup) => {
+            commentGroup.trip = rawTrip;
+            commentGroup.comment = commentGroup.comment.map((comment) => {
+              comment.group = commentGroup;
+              return comment;
+            });
+            return commentGroup;
           }) ?? [],
       } as DbTripFull;
 

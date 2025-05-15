@@ -23,6 +23,11 @@ export const RouteTripExpenses = createRouteParam(
   identity,
   RouteTrip,
 );
+export const RouteTripComment = createRouteParam(
+  '/comment',
+  identity,
+  RouteTrip,
+);
 // #endregion Trip
 // #region Trip Timetable
 export const RouteTripTimetableViewActivity = createRouteParam(

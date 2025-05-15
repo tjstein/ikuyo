@@ -1,5 +1,6 @@
 import {
   CalendarIcon,
+  ChatBubbleIcon,
   HomeIcon,
   ListBulletIcon,
   SewingPinIcon,
@@ -8,6 +9,7 @@ import {
 import { SegmentedControl, Tooltip } from '@radix-ui/themes';
 import { useLocation } from 'wouter';
 import {
+  RouteTripComment,
   RouteTripExpenses,
   RouteTripHome,
   RouteTripListView,
@@ -85,6 +87,18 @@ export function TripMenuFloating() {
               }
             >
               <TableIcon className={s.controlIcon} />
+            </SegmentedControl.Item>
+          </Tooltip>
+          <Tooltip content="Comment">
+            <SegmentedControl.Item
+              value={RouteTripComment.routePath}
+              data-state={
+                location === (RouteTripComment.routePath as string)
+                  ? 'on'
+                  : 'off'
+              }
+            >
+              <ChatBubbleIcon className={s.controlIcon} />
             </SegmentedControl.Item>
           </Tooltip>
         </SegmentedControl.Root>

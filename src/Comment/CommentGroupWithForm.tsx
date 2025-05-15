@@ -45,7 +45,12 @@ export function CommentGroupWithForm({
       ) : error ? (
         <Text>Error loading comments: {error.message}</Text>
       ) : (
-        <CommentGroup commentGroup={commentGroup} onFormFocus={onFormFocus} />
+        <CommentGroup
+          commentGroup={commentGroup}
+          onFormFocus={onFormFocus}
+          showCommentObjectTarget={false}
+          showControls
+        />
       )}
     </>
   );

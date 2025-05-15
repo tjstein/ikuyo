@@ -1,9 +1,17 @@
 import { Button, Card, Flex, Popover, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useMemo, useState } from 'react';
+import { Link } from 'wouter';
 import { UserAvatar } from '../Auth/UserAvatar';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import { useBoundStore } from '../data/store';
+import {
+  RouteTripExpenses,
+  RouteTripTimetableView,
+  RouteTripTimetableViewAccommodation,
+  RouteTripTimetableViewActivity,
+  RouteTripTimetableViewMacroplan,
+} from '../Routes/routes';
 import { dangerToken } from '../ui';
 import s from './Comment.module.css';
 import { CommentForm } from './CommentForm';
@@ -17,11 +25,19 @@ import {
 export function Comment<ObjectType extends DbCommentGroupObjectType>({
   comment,
   onFormFocus,
+  showCommentObjectTarget,
+  showControls,
 }: {
   comment: DbComment<ObjectType>;
   onFormFocus: () => void;
+  showCommentObjectTarget: boolean;
+  showControls: boolean;
 }) {
+  const currentUser = useBoundStore((state) => state.currentUser);
   const { user } = comment;
+  const isCommentOwnedByCurrentUser = useMemo(() => {
+    return currentUser && user && currentUser.id === user.id;
+  }, [currentUser, user]);
   const formattedDateTimeStringCreated = useMemo(() => {
     return formatTimestampToDateTimeString(comment.createdAt);
   }, [comment.createdAt]);
@@ -33,6 +49,55 @@ export function Comment<ObjectType extends DbCommentGroupObjectType>({
   const [commentMode, setCommentMode] = useState<CommentModeType>(
     CommentMode.View,
   );
+  const [objectTargetName, objectTargetLinkRoutePath] = useMemo(() => {
+    if (!showCommentObjectTarget) {
+      return ['', ''];
+    }
+    if (comment.group?.object) {
+      const objectType = comment.group.object.type;
+      if (objectType === 'activity') {
+        const activity = comment.group.object.activity?.[0];
+        if (activity) {
+          return [
+            activity.title,
+            RouteTripTimetableView.asRouteTarget() +
+              RouteTripTimetableViewActivity.asRouteTarget(activity.id),
+          ];
+        }
+      } else if (objectType === 'macroplan') {
+        const macroplan = comment.group.object.macroplan?.[0];
+        if (macroplan) {
+          return [
+            macroplan.name,
+            RouteTripTimetableView.asRouteTarget() +
+              RouteTripTimetableViewMacroplan.asRouteTarget(macroplan.id),
+          ];
+        }
+      } else if (objectType === 'accommodation') {
+        const accommodation = comment.group.object.accommodation?.[0];
+        if (accommodation) {
+          return [
+            accommodation.name,
+            RouteTripTimetableView.asRouteTarget() +
+              RouteTripTimetableViewAccommodation.asRouteTarget(
+                accommodation.id,
+              ),
+          ];
+        }
+      } else if (objectType === 'expense') {
+        const expense = comment.group.object.expense?.[0];
+        if (expense) {
+          return [expense.title, RouteTripExpenses.asRouteTarget()];
+        }
+      } else if (objectType === 'trip') {
+        const trip = comment.group.object.trip?.[0];
+        if (trip) {
+          return [trip.title, '/'];
+        }
+      }
+    }
+    return ['', ''];
+  }, [comment.group?.object, showCommentObjectTarget]);
   return (
     <Flex gap="3" align="start">
       <UserAvatar user={user} />
@@ -41,6 +106,13 @@ export function Comment<ObjectType extends DbCommentGroupObjectType>({
           <Text size="2" weight="bold">
             {user?.handle}
           </Text>
+          {showCommentObjectTarget &&
+          objectTargetName &&
+          objectTargetLinkRoutePath ? (
+            <Text size="1">
+              on <Link to={objectTargetLinkRoutePath}>{objectTargetName}</Link>
+            </Text>
+          ) : null}
           <Text
             size="1"
             title={`Created ${formattedDateTimeStringCreated}${
@@ -79,75 +151,76 @@ export function Comment<ObjectType extends DbCommentGroupObjectType>({
                 {nodes}
               </Text>
             </Card>
+            {showControls && isCommentOwnedByCurrentUser ? (
+              <Flex align="baseline" gap="2">
+                <Button
+                  size="1"
+                  variant="ghost"
+                  color="gray"
+                  onClick={() => {
+                    setCommentMode(CommentMode.Edit);
+                  }}
+                >
+                  Edit
+                </Button>
+                <Text size="1">•</Text>
 
-            <Flex align="baseline" gap="2">
-              <Button
-                size="1"
-                variant="ghost"
-                color="gray"
-                onClick={() => {
-                  setCommentMode(CommentMode.Edit);
-                }}
-              >
-                Edit
-              </Button>
-              <Text size="1">•</Text>
-
-              <Popover.Root>
-                <Popover.Trigger>
-                  <Button size="1" variant="ghost" color="gray">
-                    Delete
-                  </Button>
-                </Popover.Trigger>
-                <Popover.Content size="2">
-                  <Text as="p" size="2">
-                    Delete comment?
-                  </Text>
-                  <Text as="p" size="2" color={dangerToken}>
-                    This action is irreversible!
-                  </Text>
-                  <Flex gap="2" mt="4" justify="end">
-                    <Popover.Close>
-                      <Button size="2" variant="soft" color="gray">
-                        Cancel
-                      </Button>
-                    </Popover.Close>
-                    <Button
-                      size="2"
-                      variant="solid"
-                      color={dangerToken}
-                      onClick={() => {
-                        dbDeleteComment(comment)
-                          .then(() => {
-                            publishToast({
-                              root: {},
-                              title: {
-                                children: 'Comment deleted',
-                              },
-                              close: {},
-                            });
-                          })
-                          .catch((error: unknown) => {
-                            console.error(
-                              `Error deleting comment "${comment.id}"`,
-                              error,
-                            );
-                            publishToast({
-                              root: {},
-                              title: {
-                                children: 'Error deleting comment',
-                              },
-                              close: {},
-                            });
-                          });
-                      }}
-                    >
+                <Popover.Root>
+                  <Popover.Trigger>
+                    <Button size="1" variant="ghost" color="gray">
                       Delete
                     </Button>
-                  </Flex>
-                </Popover.Content>
-              </Popover.Root>
-            </Flex>
+                  </Popover.Trigger>
+                  <Popover.Content size="2">
+                    <Text as="p" size="2">
+                      Delete comment?
+                    </Text>
+                    <Text as="p" size="2" color={dangerToken}>
+                      This action is irreversible!
+                    </Text>
+                    <Flex gap="2" mt="4" justify="end">
+                      <Popover.Close>
+                        <Button size="2" variant="soft" color="gray">
+                          Cancel
+                        </Button>
+                      </Popover.Close>
+                      <Button
+                        size="2"
+                        variant="solid"
+                        color={dangerToken}
+                        onClick={() => {
+                          dbDeleteComment(comment)
+                            .then(() => {
+                              publishToast({
+                                root: {},
+                                title: {
+                                  children: 'Comment deleted',
+                                },
+                                close: {},
+                              });
+                            })
+                            .catch((error: unknown) => {
+                              console.error(
+                                `Error deleting comment "${comment.id}"`,
+                                error,
+                              );
+                              publishToast({
+                                root: {},
+                                title: {
+                                  children: 'Error deleting comment',
+                                },
+                                close: {},
+                              });
+                            });
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </Flex>
+                  </Popover.Content>
+                </Popover.Root>
+              </Flex>
+            ) : null}
           </>
         )}
       </Flex>

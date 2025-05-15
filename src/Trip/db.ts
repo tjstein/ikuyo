@@ -5,6 +5,7 @@ import type {
   DbAccommodationWithTrip,
 } from '../Accommodation/db';
 import type { DbActivity, DbActivityWithTrip } from '../Activity/db';
+import type { DbCommentGroup, DbCommentGroupObjectType } from '../Comment/db';
 import { db } from '../data/db';
 import { TripUserRole } from '../data/TripUserRole';
 import type { DbUser } from '../data/types';
@@ -12,11 +13,12 @@ import type { DbMacroplan, DbMacroplanWithTrip } from '../Macroplan/db';
 
 export type DbTripFull = Omit<
   DbTrip,
-  'activity' | 'accommodation' | 'macroplan'
+  'activity' | 'accommodation' | 'macroplan' | 'commentGroup'
 > & {
   accommodation: DbAccommodationWithTrip[];
   activity: DbActivityWithTrip[];
   macroplan: DbMacroplanWithTrip[];
+  commentGroup: DbCommentGroup<DbCommentGroupObjectType>[];
 };
 
 export type DbTripWithAccommodation = Omit<DbTrip, 'accommodation'> & {
@@ -50,6 +52,7 @@ export type DbTrip = {
   macroplan: DbMacroplan[] | undefined;
 
   tripUser: DbTripUser[] | undefined;
+  commentGroup: DbCommentGroup<DbCommentGroupObjectType>[] | undefined;
 };
 
 export type DbTripUser = {
@@ -73,6 +76,7 @@ export async function dbAddTrip(
     | 'accommodation'
     | 'tripUser'
     | 'macroplan'
+    | 'commentGroup'
   >,
   {
     userId,
@@ -112,6 +116,7 @@ export async function dbUpdateTrip(
     | 'activity'
     | 'tripUser'
     | 'macroplan'
+    | 'commentGroup'
   >,
   {
     previousTimeZone,
