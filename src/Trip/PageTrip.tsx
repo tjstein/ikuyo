@@ -1,7 +1,6 @@
 import { Heading, Skeleton, Spinner } from '@radix-ui/themes';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Redirect, Route, type RouteComponentProps, Switch } from 'wouter';
-import { shallow as shallowEqual } from 'zustand/shallow';
 import { db } from '../data/db';
 import { withLoading } from '../Loading/withLoading';
 import { DocTitle } from '../Nav/DocTitle';
@@ -294,7 +293,7 @@ function useStableRefTrip(tripId: string): {
           tripRef.current?.tripUser,
           tripWithBackReference.tripUser,
         ) &&
-        shallowEqual(
+        isArrayOfObjectsEqual(
           tripRef.current?.commentGroup,
           tripWithBackReference.commentGroup,
         );
@@ -361,10 +360,9 @@ function isObjectEqualForSimpleKeys<T extends object, K extends keyof T>(
   }
   return true;
 }
-function isArrayOfObjectsEqual<T extends { id: string } & object>(
-  arr1: T[] | undefined,
-  arr2: T[] | undefined,
-): boolean {
+function isArrayOfObjectsEqual<
+  T extends { id: string; [key: string]: unknown },
+>(arr1: T[] | undefined, arr2: T[] | undefined): boolean {
   if (arr1 === arr2) {
     return true;
   }
@@ -407,6 +405,17 @@ function isArrayOfObjectsEqual<T extends { id: string } & object>(
     const isEqual = isObjectEqualForSimpleKeys(obj1, obj2);
     if (!isEqual) {
       return false;
+    }
+    const keys = Object.keys(obj1);
+    for (const key of keys) {
+      const value1 = obj1[key];
+      const value2 = obj2[key];
+      if (Array.isArray(value1) && Array.isArray(value2)) {
+        const isEqual = isArrayOfObjectsEqual(value1, value2);
+        if (!isEqual) {
+          return false;
+        }
+      }
     }
   }
   return true;
