@@ -7,6 +7,7 @@ import {
   TableIcon,
 } from '@radix-ui/react-icons';
 import { SegmentedControl, Tooltip } from '@radix-ui/themes';
+import { memo } from 'react';
 import { useLocation } from 'wouter';
 import {
   RouteTripComment,
@@ -18,7 +19,7 @@ import {
 } from '../Routes/routes';
 import s from './TripMenuFloating.module.css';
 
-export function TripMenuFloating() {
+function TripMenuFloatingInner() {
   const [location, setLocation] = useLocation();
   return (
     <nav className={s.nav}>
@@ -106,3 +107,4 @@ export function TripMenuFloating() {
     </nav>
   );
 }
+export const TripMenuFloating = memo(TripMenuFloatingInner);

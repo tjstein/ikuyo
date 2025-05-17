@@ -2,7 +2,7 @@ import { ClockIcon, HomeIcon, StackIcon } from '@radix-ui/react-icons';
 import { ContextMenu, Section, Text } from '@radix-ui/themes';
 import clsx from 'clsx';
 import type * as React from 'react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { Route, Switch } from 'wouter';
 import { Accommodation } from '../Accommodation/Accommodation';
 import { AccommodationDialog } from '../Accommodation/AccommodationDialog';
@@ -44,9 +44,7 @@ const times = new Array(24).fill(0).map((_, i) => {
     <TimetableTime
       timeStart={`${pad2(i)}:00`}
       key={`${pad2(i)}:00`}
-      style={{
-        gridRowStart: `t${pad2(i)}00`,
-      }}
+      gridRowStart={`t${pad2(i)}00`}
     />
   );
 });
@@ -225,10 +223,8 @@ export function Timetable() {
                     'ccc, dd LLL yyyy',
                   )}
                   key={dayGroup.startDateTime.toISODate()}
-                  style={{
-                    gridColumnStart: `d${String(i + 1)}`,
-                    gridColumnEnd: `de${String(i + 1)}`,
-                  }}
+                  gridColumnStart={`d${String(i + 1)}`}
+                  gridColumnEnd={`de${String(i + 1)}`}
                 />
               );
             })}
@@ -242,14 +238,12 @@ export function Timetable() {
                       key={macroplan.id}
                       macroplan={macroplan}
                       tripViewMode={TripViewMode.List}
-                      style={{
-                        gridColumnStart: `d${String(
-                          columnIndex.start,
-                        )}-c${String(columnIndex.startColumn)}`,
-                        gridColumnEnd: `d${String(columnIndex.end)}-ce${String(
-                          columnIndex.endColumn,
-                        )}`,
-                      }}
+                      gridColumnStart={`d${String(
+                        columnIndex.start,
+                      )}-c${String(columnIndex.startColumn)}`}
+                      gridColumnEnd={`d${String(columnIndex.end)}-ce${String(
+                        columnIndex.endColumn,
+                      )}`}
                     />
                   );
                 })}
@@ -268,14 +262,12 @@ export function Timetable() {
                       key={accommodation.id}
                       accommodation={accommodation}
                       tripViewMode={TripViewMode.Timetable}
-                      style={{
-                        gridColumnStart: `d${String(
-                          columnIndex.start,
-                        )}-c${String(columnIndex.startColumn)}`,
-                        gridColumnEnd: `d${String(columnIndex.end)}-ce${String(
-                          columnIndex.endColumn,
-                        )}`,
-                      }}
+                      gridColumnStart={`d${String(
+                        columnIndex.start,
+                      )}-c${String(columnIndex.startColumn)}`}
+                      gridColumnEnd={`d${String(columnIndex.end)}-ce${String(
+                        columnIndex.endColumn,
+                      )}`}
                     />
                   );
                 })}
@@ -375,13 +367,21 @@ function generateMainGridTemplateColumns(dayGroups: DayGroups): string {
   return str;
 }
 
-function TimetableDayHeader({
+function TimetableDayHeaderInner({
   dateString,
-  style,
+  gridColumnStart,
+  gridColumnEnd,
 }: {
   dateString: string;
-  style: React.CSSProperties;
+  gridColumnStart: string;
+  gridColumnEnd: string;
 }) {
+  const style = useMemo(() => {
+    return {
+      gridColumnStart: gridColumnStart,
+      gridColumnEnd: gridColumnEnd,
+    };
+  }, [gridColumnStart, gridColumnEnd]);
   return (
     <Text
       as="div"
@@ -393,6 +393,16 @@ function TimetableDayHeader({
     </Text>
   );
 }
+const TimetableDayHeader = memo(
+  TimetableDayHeaderInner,
+  (prevProps, nextProps) => {
+    return (
+      prevProps.dateString === nextProps.dateString &&
+      prevProps.gridColumnStart === nextProps.gridColumnStart &&
+      prevProps.gridColumnEnd === nextProps.gridColumnEnd
+    );
+  },
+);
 
 function TimetableMacroplanHeader() {
   return (
@@ -415,21 +425,28 @@ function TimetableTimeHeader() {
     </Text>
   );
 }
-function TimetableTime({
+function TimetableTimeInner({
   timeStart: time,
-  style,
+  gridRowStart,
 }: {
   timeStart: string;
-  style: React.CSSProperties;
+  gridRowStart: string;
 }) {
   return (
     <Text
       as="div"
       size={{ initial: '1', sm: '3' }}
       className={s.timetableTime}
-      style={style}
+      style={{ gridRowStart: gridRowStart }}
     >
       {time}
     </Text>
   );
 }
+
+const TimetableTime = memo(TimetableTimeInner, (prevProps, nextProps) => {
+  return (
+    prevProps.timeStart === nextProps.timeStart &&
+    prevProps.gridRowStart === nextProps.gridRowStart
+  );
+});

@@ -1,7 +1,8 @@
 import { Avatar } from '@radix-ui/themes';
+import { memo } from 'react';
 import type { DbUser } from '../data/types';
 
-export function UserAvatar({ user }: { user: DbUser | null | undefined }) {
+function UserAvatarInner({ user }: { user: DbUser | null | undefined }) {
   return (
     <Avatar
       highContrast={true}
@@ -13,3 +14,9 @@ export function UserAvatar({ user }: { user: DbUser | null | undefined }) {
     />
   );
 }
+export const UserAvatar = memo(UserAvatarInner, (prevProps, nextProps) => {
+  return (
+    prevProps.user?.id === nextProps.user?.id &&
+    prevProps.user?.handle === nextProps.user?.handle
+  );
+});

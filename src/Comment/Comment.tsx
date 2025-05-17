@@ -1,6 +1,6 @@
 import { Button, Card, Flex, Popover, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
-import { useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { Link } from 'wouter';
 import { UserAvatar } from '../Auth/UserAvatar';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
@@ -22,7 +22,7 @@ import {
   dbDeleteComment,
 } from './db';
 
-export function Comment<ObjectType extends DbCommentGroupObjectType>({
+function CommentInner<ObjectType extends DbCommentGroupObjectType>({
   comment,
   onFormFocus,
   showCommentObjectTarget,
@@ -232,3 +232,13 @@ function formatTimestampToDateTimeString(timestamp: number): string {
   const dateTime = DateTime.fromMillis(timestamp);
   return dateTime.toFormat('d LLLL yyyy, HH:mm ZZ');
 }
+export const Comment = memo(CommentInner, (prevProps, nextProps) => {
+  return (
+    prevProps.comment.id === nextProps.comment.id &&
+    prevProps.comment.content === nextProps.comment.content &&
+    prevProps.comment.createdAt === nextProps.comment.createdAt &&
+    prevProps.comment.lastUpdatedAt === nextProps.comment.lastUpdatedAt &&
+    prevProps.showCommentObjectTarget === nextProps.showCommentObjectTarget &&
+    prevProps.showControls === nextProps.showControls
+  );
+});

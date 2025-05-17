@@ -1,6 +1,6 @@
 import { Box, ContextMenu, Text } from '@radix-ui/themes';
 import clsx from 'clsx';
-import type * as React from 'react';
+import { memo, useMemo } from 'react';
 import type { TripViewModeType } from '../Trip/TripViewMode';
 import { dangerToken } from '../ui';
 import type { DbMacroplanWithTrip } from './db';
@@ -9,15 +9,17 @@ import { useMacroplanDialogHooks } from './macroplanDialogHooks';
 
 const responsiveTextSize = { initial: '1' as const };
 
-export function Macroplan({
+function MacroplanInner({
   className,
   macroplan,
-  style,
+  gridColumnStart,
+  gridColumnEnd,
   tripViewMode,
 }: {
   className?: string;
   macroplan: DbMacroplanWithTrip;
-  style?: React.CSSProperties;
+  gridColumnStart?: string;
+  gridColumnEnd?: string;
   tripViewMode: TripViewModeType;
 }) {
   const {
@@ -25,6 +27,12 @@ export function Macroplan({
     openMacroplanEditDialog,
     openMacroplanViewDialog,
   } = useMacroplanDialogHooks(tripViewMode, macroplan.id);
+  const style = useMemo(() => {
+    return {
+      gridColumnStart: gridColumnStart,
+      gridColumnEnd: gridColumnEnd,
+    };
+  }, [gridColumnStart, gridColumnEnd]);
 
   return (
     <>
@@ -65,3 +73,12 @@ export function Macroplan({
     </>
   );
 }
+export const Macroplan = memo(MacroplanInner, (prevProps, nextProps) => {
+  return (
+    prevProps.macroplan.id === nextProps.macroplan.id &&
+    prevProps.macroplan.name === nextProps.macroplan.name &&
+    prevProps.className === nextProps.className &&
+    prevProps.gridColumnStart === nextProps.gridColumnStart &&
+    prevProps.gridColumnEnd === nextProps.gridColumnEnd
+  );
+});

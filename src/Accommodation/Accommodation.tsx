@@ -1,7 +1,7 @@
 import { ClockIcon, HomeIcon } from '@radix-ui/react-icons';
 import { Box, ContextMenu, Text } from '@radix-ui/themes';
 import clsx from 'clsx';
-import type * as React from 'react';
+import { memo, useMemo } from 'react';
 import { TripViewMode, type TripViewModeType } from '../Trip/TripViewMode';
 import { dangerToken } from '../ui';
 import s from './Accommodation.module.css';
@@ -9,18 +9,21 @@ import { AccommodationDisplayTimeMode } from './AccommodationDisplayTimeMode';
 import { useAccommodationDialogHooks } from './accommodationDialogHooks';
 import type { DbAccommodationWithTrip } from './db';
 import { formatTime } from './time';
-export function Accommodation({
+
+function AccommodationInner({
   className,
   accommodation,
   tripViewMode,
   displayTimeMode,
-  style,
+  gridColumnStart,
+  gridColumnEnd,
 }: {
   className?: string;
   accommodation: DbAccommodationWithTrip;
   tripViewMode: TripViewModeType;
   displayTimeMode?: AccommodationDisplayTimeMode;
-  style?: React.CSSProperties;
+  gridColumnStart?: string;
+  gridColumnEnd?: string;
 }) {
   const responsiveTextSize = { initial: '1' as const };
   const {
@@ -28,6 +31,12 @@ export function Accommodation({
     openAccommodationEditDialog,
     openAccommodationViewDialog,
   } = useAccommodationDialogHooks(tripViewMode, accommodation.id);
+  const style = useMemo(() => {
+    return {
+      gridColumnStart: gridColumnStart,
+      gridColumnEnd: gridColumnEnd,
+    };
+  }, [gridColumnStart, gridColumnEnd]);
   return (
     <>
       <ContextMenu.Root>
@@ -82,3 +91,16 @@ export function Accommodation({
     </>
   );
 }
+export const Accommodation = memo(
+  AccommodationInner,
+  (prevProps, nextProps) => {
+    return (
+      prevProps.accommodation.id === nextProps.accommodation.id &&
+      prevProps.accommodation.name === nextProps.accommodation.name &&
+      prevProps.tripViewMode === nextProps.tripViewMode &&
+      prevProps.displayTimeMode === nextProps.displayTimeMode &&
+      prevProps.gridColumnStart === nextProps.gridColumnStart &&
+      prevProps.gridColumnEnd === nextProps.gridColumnEnd
+    );
+  },
+);

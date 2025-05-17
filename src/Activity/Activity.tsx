@@ -6,7 +6,7 @@ import {
 import { Box, ContextMenu, Text } from '@radix-ui/themes';
 import clsx from 'clsx';
 import { DateTime } from 'luxon';
-import { useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { TripViewMode, type TripViewModeType } from '../Trip/TripViewMode';
 import { dangerToken } from '../ui';
 import style from './Activity.module.css';
@@ -14,7 +14,7 @@ import { useActivityDialogHooks } from './activityDialogHooks';
 import type { DbActivityWithTrip } from './db';
 import { formatTime } from './time';
 
-export function Activity({
+function ActivityInner({
   activity,
   className,
   columnIndex,
@@ -182,3 +182,16 @@ function getDayStartEnd(activity: DbActivityWithTrip): [number, number] {
   const diffEnd = activityEnd.diff(tripStart, 'day');
   return [Math.floor(diffStart.days) + 1, Math.floor(diffEnd.days) + 1];
 }
+export const Activity = memo(ActivityInner, (prevProps, nextProps) => {
+  return (
+    prevProps.activity.id === nextProps.activity.id &&
+    prevProps.activity.title === nextProps.activity.title &&
+    prevProps.activity.timestampStart === nextProps.activity.timestampStart &&
+    prevProps.activity.timestampEnd === nextProps.activity.timestampEnd &&
+    prevProps.activity.location === nextProps.activity.location &&
+    prevProps.className === nextProps.className &&
+    prevProps.columnIndex === nextProps.columnIndex &&
+    prevProps.columnEndIndex === nextProps.columnEndIndex &&
+    prevProps.tripViewMode === nextProps.tripViewMode
+  );
+});

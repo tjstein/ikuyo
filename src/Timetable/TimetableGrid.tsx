@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { TimetableCell } from './TimetableCell';
 import { pad2 } from './time';
 
@@ -6,7 +6,7 @@ interface TimetableGridProps {
   days: number;
 }
 
-export function TimetableGrid({ days }: TimetableGridProps) {
+function TimetableGridInner({ days }: TimetableGridProps) {
   // Create an array of hours (0-23)
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
@@ -50,3 +50,9 @@ export function TimetableGrid({ days }: TimetableGridProps) {
     </>
   );
 }
+export const TimetableGrid = memo(
+  TimetableGridInner,
+  (prevProps, nextProps) => {
+    return prevProps.days === nextProps.days;
+  },
+);
