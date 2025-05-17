@@ -7,17 +7,12 @@ import {
   Text,
 } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { CommentGroupWithForm } from '../Comment/CommentGroupWithForm';
-import {
-  COMMENT_GROUP_OBJECT_TYPE,
-  type DbComment,
-  type DbCommentGroup,
-} from '../Comment/db';
+import { COMMENT_GROUP_OBJECT_TYPE } from '../Comment/db';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import type { DialogContentProps } from '../Dialog/DialogRoute';
 import { CommonCommentDialogMaxWidth } from '../Dialog/ui';
-import { db } from '../data/db';
 import { useBoundStore } from '../data/store';
 import s from './Activity.module.css';
 import { ActivityMap } from './ActivityDialogMap';
@@ -45,47 +40,7 @@ export function ActivityDialogContentView({
   const currentUser = useBoundStore((state) => state.currentUser);
 
   const descriptions = useParseTextIntoNodes(activity?.description);
-  const commentGroupQuery = db.useQuery(
-    activity
-      ? {
-          commentGroup: {
-            comment: {
-              user: {},
-            },
-            trip: {},
-            object: {},
-            $: {
-              where: {
-                'trip.id': activity.trip.id,
-                'object.type': 'activity',
-                'object.activity.id': activity.id,
-              },
-              limit: 1,
-            },
-          },
-        }
-      : {},
-  );
-  const rawCommentGroup = commentGroupQuery?.data?.commentGroup?.[0];
-  const commentGroup: undefined | DbCommentGroup<'activity'> = useMemo(() => {
-    if (rawCommentGroup) {
-      const cg = {
-        ...rawCommentGroup,
-      } as DbCommentGroup<'activity'>;
-      cg.comment = rawCommentGroup.comment.map(
-        (comment) =>
-          ({
-            ...comment,
-            group: cg,
-            user: comment.user,
-          }) as DbComment<'activity'>,
-      );
-      // sort by createdAt desc
-      cg.comment.sort((a, b) => b.createdAt - a.createdAt);
-      return cg;
-    }
-    return undefined;
-  }, [rawCommentGroup]);
+
   const goToEditMode = useCallback(() => {
     setMode(ActivityDialogMode.Edit);
   }, [setMode]);
@@ -194,9 +149,7 @@ export function ActivityDialogContentView({
             objectId={activity?.id}
             objectType={COMMENT_GROUP_OBJECT_TYPE.ACTIVITY}
             user={currentUser}
-            commentGroup={commentGroup}
-            isLoading={commentGroupQuery.isLoading}
-            error={commentGroupQuery.error}
+            commentGroup={activity?.commentGroup}
             onFormFocus={setDialogUnclosable}
           />
         </Flex>

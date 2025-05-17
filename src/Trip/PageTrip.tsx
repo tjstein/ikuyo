@@ -1,6 +1,7 @@
 import { Heading, Skeleton, Spinner } from '@radix-ui/themes';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Redirect, Route, type RouteComponentProps, Switch } from 'wouter';
+import { shallow as shallowEqual } from 'zustand/shallow';
 import { db } from '../data/db';
 import { withLoading } from '../Loading/withLoading';
 import { DocTitle } from '../Nav/DocTitle';
@@ -53,6 +54,7 @@ const TripComment = withLoading()(
 
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import { useShallow } from 'zustand/shallow';
+import type { DbCommentGroup } from '../Comment/db';
 import { useBoundStore } from '../data/store';
 import { TripUserRole } from '../data/TripUserRole';
 import {
@@ -219,15 +221,46 @@ function useStableRefTrip(tripId: string): {
   // Avoid re-render of trip object
   // Only re-render if trip, trip.activity, trip.accommodation, trip.macroplan is different
   const tripRef = useRef<DbTripFull | undefined>(undefined);
+
   const trip = useMemo(() => {
     if (rawTrip) {
       let isObjectEqual = false;
+
+      const commentGroupActivityByActivityId = new Map<
+        string,
+        DbCommentGroup<'activity'>
+      >();
+      const commentGroup =
+        rawTrip.commentGroup?.map((commentGroup) => {
+          commentGroup.trip = rawTrip;
+          commentGroup.comment = commentGroup.comment.map((comment) => {
+            comment.group = commentGroup;
+            return comment;
+          });
+          if (
+            commentGroup.object?.type === 'activity' &&
+            commentGroup.object?.activity?.[0]
+          ) {
+            commentGroupActivityByActivityId.set(
+              commentGroup.object.activity[0].id,
+              commentGroup as DbCommentGroup<'activity'>,
+            );
+          }
+          return commentGroup;
+        }) ?? [];
+
       // Reference to the trip in the activities, accommodations and macroplans
       const tripWithBackReference = {
         ...rawTrip,
         activity:
           rawTrip.activity?.map((activity) => {
             activity.trip = rawTrip;
+            const commentGroup = commentGroupActivityByActivityId.get(
+              activity.id,
+            );
+            if (commentGroup) {
+              activity.commentGroup = commentGroup;
+            }
             return activity;
           }) ?? [],
         accommodation:
@@ -240,15 +273,7 @@ function useStableRefTrip(tripId: string): {
             macroplan.trip = rawTrip;
             return macroplan;
           }) ?? [],
-        commentGroup:
-          rawTrip.commentGroup?.map((commentGroup) => {
-            commentGroup.trip = rawTrip;
-            commentGroup.comment = commentGroup.comment.map((comment) => {
-              comment.group = commentGroup;
-              return comment;
-            });
-            return commentGroup;
-          }) ?? [],
+        commentGroup: commentGroup,
       } as DbTripFull;
 
       isObjectEqual =
@@ -268,6 +293,10 @@ function useStableRefTrip(tripId: string): {
         isArrayOfObjectsEqual(
           tripRef.current?.tripUser,
           tripWithBackReference.tripUser,
+        ) &&
+        shallowEqual(
+          tripRef.current?.commentGroup,
+          tripWithBackReference.commentGroup,
         );
 
       if (isObjectEqual) {

@@ -1,4 +1,5 @@
 import { id } from '@instantdb/core';
+import type { DbCommentGroup } from '../Comment/db';
 import { db } from '../data/db';
 import type { DbTrip, DbTripWithActivity } from '../Trip/db';
 
@@ -28,6 +29,8 @@ export type DbActivity = {
   lastUpdatedAt: number;
 
   trip: DbTrip | undefined;
+
+  commentGroup?: DbCommentGroup<'activity'>;
 };
 
 export async function dbAddActivity(
