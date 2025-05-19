@@ -56,6 +56,14 @@ export default defineConfig({
   },
   output: {
     polyfill: 'usage',
+    injectStyles: process.env.NODE_ENV === 'development',
+    sourceMap: {
+      css: true,
+      js:
+        process.env.NODE_ENV === 'production'
+          ? 'source-map'
+          : 'cheap-module-source-map',
+    },
   },
   plugins: [pluginReact(), pluginSass()],
   performance: {
