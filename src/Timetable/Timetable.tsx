@@ -205,6 +205,7 @@ export function Timetable() {
     <Section py="0">
       <ContextMenu.Root>
         <ContextMenu.Trigger>
+          {/** biome-ignore lint/a11y/noStaticElementInteractions: Only drag-and-drop */}
           <div
             className={clsx(s.timetable, isDragging && s.dragging)}
             style={timetableStyle}

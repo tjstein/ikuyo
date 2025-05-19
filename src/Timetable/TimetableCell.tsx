@@ -1,5 +1,6 @@
 import clsx from 'clsx';
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import s from './Timetable.module.scss';
 
 interface TimetableCellProps {
@@ -25,6 +26,7 @@ export function TimetableCell({ row, column, children }: TimetableCellProps) {
   };
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: Drag-and-drop events are used
     <div
       className={clsx(s.timetableCell, { [s.dragOver]: isDragOver })}
       data-grid-cell={true}

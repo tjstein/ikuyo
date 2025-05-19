@@ -67,8 +67,8 @@ export function calculateNewTimestamps(
 
   console.log('New timestamps calculated', {
     day: newDayIndex + 1,
-    timeOffset: timeOffset / (60 * 60 * 1000) + ' hours',
-    originalDuration: originalDuration / (60 * 60 * 1000) + ' hours',
+    timeOffset: `${timeOffset / (60 * 60 * 1000)} hours`,
+    originalDuration: `${originalDuration / (60 * 60 * 1000)} hours`,
     newStartTimestamp: DateTime.fromMillis(newStartTimestamp)
       .setZone(tripTimeZone)
       .toISO(),
