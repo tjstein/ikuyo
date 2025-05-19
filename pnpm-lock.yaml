@@ -5,6 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
+  caniuse-lite: 1.0.30001718
   esbuild: 0.25.2
   '@types/react': 19.1.4
   '@types/react-dom': 19.1.5

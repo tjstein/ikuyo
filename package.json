@@ -53,6 +53,7 @@
   "packageManager": "pnpm@10.10.0",
   "pnpm": {
     "overrides": {
+      "caniuse-lite": "1.0.30001718",
       "esbuild": "0.25.2",
       "@types/react": "19.1.4",
       "@types/react-dom": "19.1.5",
@@ -90,9 +91,9 @@
     }
   },
   "browserslist": [
-    "> 0.2%",
+    "> 0.4%",
+    "last 3 versions",
     "Firefox ESR",
-    "last 4 versions",
     "not dead"
   ]
 }
