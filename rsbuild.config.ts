@@ -57,4 +57,13 @@ export default defineConfig({
     polyfill: 'usage',
   },
   plugins: [pluginReact(), pluginSass()],
+  performance: {
+    chunkSplit: {
+      forceSplitting: {
+        'lib-maptiler': /node_modules[\\/]@maptiler/,
+        'lib-instant': /node_modules[\\/]@instantdb/,
+        'lib-radix': /(node_modules[\\/]@radix-ui)/,
+      },
+    },
+  },
 });
