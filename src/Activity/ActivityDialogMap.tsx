@@ -27,6 +27,7 @@ export function ActivityMap({
       style: MapStyle.OPENSTREETMAP,
       center: [mapOptions.lng, mapOptions.lat],
       zoom: mapOptions.zoom,
+      apiKey: process.env.MAPTILER_API_KEY,
     });
 
     map.current.on('zoomend', () => {

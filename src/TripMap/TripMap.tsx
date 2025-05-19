@@ -77,6 +77,7 @@ export function TripMap() {
       style: MapStyle.OPENSTREETMAP,
       zoom: mapOptions?.zoom,
       center: mapOptions ? mapOptions.center : undefined,
+      apiKey: process.env.MAPTILER_API_KEY,
     });
 
     const newPopupPortals: typeof popupPortals = [];

@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginSass } from '@rsbuild/plugin-sass';
+import { RsdoctorRspackPlugin } from '@rsdoctor/rspack-plugin';
 
 const INSTANT_APP_ID = process.env.INSTANT_APP_ID;
 const MAPTILER_API_KEY = process.env.MAPTILER_API_KEY;
@@ -60,10 +61,25 @@ export default defineConfig({
   performance: {
     chunkSplit: {
       forceSplitting: {
+        'lib-wouter': /node_modules[\\/]wouter/,
+        'lib-maplibre': /node_modules[\\/]maplibre-gl/,
         'lib-maptiler': /node_modules[\\/]@maptiler/,
-        'lib-instant': /node_modules[\\/]@instantdb/,
-        'lib-radix': /(node_modules[\\/]@radix-ui)/,
+        'lib-instant': /node_modules[\\/](@instantdb|mutative|uuid)/,
+        'lib-radix': /node_modules[\\/](@radix-ui|@floating-ui)/,
       },
+    },
+  },
+  tools: {
+    rspack: {
+      plugins: [
+        process.env.RSDOCTOR === 'true' &&
+          new RsdoctorRspackPlugin({
+            port: 5555,
+            supports: {
+              generateTileGraph: true,
+            },
+          }),
+      ],
     },
   },
 });
