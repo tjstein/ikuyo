@@ -39,15 +39,14 @@ import s from './Timetable.module.scss';
 import { TimetableGrid } from './TimetableGrid';
 import { pad2 } from './time';
 
-const times = new Array(24).fill(0).map((_, i) => {
+const TimetableTime = memo(TimetableTimeInner, (prevProps, nextProps) => {
   return (
-    <TimetableTime
-      timeStart={`${pad2(i)}:00`}
-      key={`${pad2(i)}:00`}
-      gridRowStart={`t${pad2(i)}00`}
-    />
+    prevProps.timeStart === nextProps.timeStart &&
+    prevProps.gridRowStart === nextProps.gridRowStart
   );
 });
+
+const times = new Array(24).fill(0);
 
 export function Timetable() {
   const trip = useTrip();
@@ -275,7 +274,15 @@ export function Timetable() {
               </div>
             ) : null}
 
-            {times}
+            {times.map((_, i) => {
+              return (
+                <TimetableTime
+                  timeStart={`${pad2(i)}:00`}
+                  key={`${pad2(i)}:00`}
+                  gridRowStart={`t${pad2(i)}00`}
+                />
+              );
+            })}
 
             {dayGroups.map((dayGroup) => {
               return Object.values(dayGroup.activities).map((activity) => {
@@ -444,10 +451,3 @@ function TimetableTimeInner({
     </Text>
   );
 }
-
-const TimetableTime = memo(TimetableTimeInner, (prevProps, nextProps) => {
-  return (
-    prevProps.timeStart === nextProps.timeStart &&
-    prevProps.gridRowStart === nextProps.gridRowStart
-  );
-});
