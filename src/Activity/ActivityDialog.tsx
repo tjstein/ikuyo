@@ -1,13 +1,13 @@
 import { createDialogRoute } from '../Dialog/DialogRoute';
-import { useBoundStore } from '../data/store';
+import { useDeepBoundStore } from '../data/store';
+import type { TripSliceActivity } from '../Trip/store/types';
 import { ActivityDialogContentDelete } from './ActivityDialogContentDelete';
 import { ActivityDialogContentEdit } from './ActivityDialogContentEdit';
 import { ActivityDialogContentView } from './ActivityDialogContentView';
-import type { DbActivityWithTrip } from './db';
 
-export const ActivityDialog = createDialogRoute<DbActivityWithTrip>({
+export const ActivityDialog = createDialogRoute<TripSliceActivity>({
   DialogContentView: ActivityDialogContentView,
   DialogContentEdit: ActivityDialogContentEdit,
   DialogContentDelete: ActivityDialogContentDelete,
-  getData: (id) => useBoundStore((state) => state.getActivity(id)),
+  getData: (id) => useDeepBoundStore((state) => state.getActivity(id)),
 });

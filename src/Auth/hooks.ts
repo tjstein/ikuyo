@@ -1,17 +1,34 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
-import { db } from '../data/db';
-import { useBoundStore } from '../data/store';
-import type { DbUser } from '../data/types';
+import { useBoundStore, useDeepBoundStore } from '../data/store';
 import { RouteLogin, UnauthenticatedRoutes } from '../Routes/routes';
 
+export function useCurrentUser() {
+  const currentUser = useDeepBoundStore((state) => state.currentUser);
+  return currentUser;
+}
 export function useAuthUser() {
-  const setCurrentUser = useBoundStore((state) => state.setCurrentUser);
-  const { user, isLoading } = db.useAuth();
+  const { authUser, authUserLoading, authUserError } = useDeepBoundStore(
+    (state) => ({
+      authUser: state.authUser,
+      authUserLoading: state.authUserLoading,
+      authUserError: state.authUserError,
+    }),
+  );
+  return { authUser, authUserLoading, authUserError };
+}
+export function useSubscribeUser() {
+  const subscribeUser = useBoundStore((state) => state.subscribeUser);
+  useEffect(() => {
+    subscribeUser();
+  }, [subscribeUser]);
+}
+export function useRedirectUnauthenticatedRoutes() {
+  const { authUser, authUserLoading } = useAuthUser();
   const [location, setLocation] = useLocation();
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!authUserLoading && !authUser) {
       if (
         UnauthenticatedRoutes.some((route) => {
           return `~${location}` === route.asRootRoute();
@@ -22,24 +39,5 @@ export function useAuthUser() {
         setLocation(RouteLogin.asRootRoute());
       }
     }
-    if (!isLoading && user) {
-      (async () => {
-        const userEmail = user?.email;
-        if (userEmail) {
-          const { data: userData } = await db.queryOnce({
-            user: {
-              $: {
-                where: {
-                  email: userEmail,
-                },
-                limit: 1,
-              },
-            },
-          });
-          const user = userData.user[0] as DbUser | undefined;
-          setCurrentUser(user);
-        }
-      })();
-    }
-  }, [isLoading, location, user, setLocation, setCurrentUser]);
+  }, [authUserLoading, location, authUser, setLocation]);
 }

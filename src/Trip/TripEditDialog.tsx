@@ -2,12 +2,13 @@ import { Box, Dialog } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { CommonDialogMaxWidth } from '../Dialog/ui';
 import { useBoundStore } from '../data/store';
-import type { DbTripWithActivity } from './db';
+import { useTripActivities } from './hooks';
+import type { TripSliceTrip } from './store/types';
 import { TripForm } from './TripForm';
 import { TripFormMode } from './TripFormMode';
 import { formatToDateInput } from './time';
 
-export function TripEditDialog({ trip }: { trip: DbTripWithActivity }) {
+export function TripEditDialog({ trip }: { trip: TripSliceTrip }) {
   const tripStartStr = formatToDateInput(
     DateTime.fromMillis(trip.timestampStart).setZone(trip.timeZone),
   );
@@ -17,6 +18,7 @@ export function TripEditDialog({ trip }: { trip: DbTripWithActivity }) {
       .minus({ days: 1 }),
   );
   const popDialog = useBoundStore((state) => state.popDialog);
+  const activities = useTripActivities(trip.activityIds);
 
   return (
     <Dialog.Root open>
@@ -36,7 +38,7 @@ export function TripEditDialog({ trip }: { trip: DbTripWithActivity }) {
           tripCurrency={trip.currency}
           tripOriginCurrency={trip.originCurrency}
           tripRegion={trip.region}
-          activities={trip.activity}
+          activities={activities}
           onFormCancel={popDialog}
           onFormSuccess={popDialog}
         />

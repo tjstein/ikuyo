@@ -10,7 +10,8 @@ import { DateTime } from 'luxon';
 import { useCallback } from 'react';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import type { DialogContentProps } from '../Dialog/DialogRoute';
-import type { DbMacroplanWithTrip } from './db';
+import { useTrip } from '../Trip/hooks';
+import type { TripSliceMacroplan } from '../Trip/store/types';
 import s from './Macroplan.module.css';
 import { MacroplanDialogMode } from './MacroplanDialogMode';
 
@@ -19,18 +20,22 @@ export function MacroplanDialogContentView({
   setMode,
   dialogContentProps,
   DialogTitleSection,
-}: DialogContentProps<DbMacroplanWithTrip>) {
-  const macroplanDateStartStr = macroplan
-    ? DateTime.fromMillis(macroplan.timestampStart)
-        .setZone(macroplan.trip.timeZone)
-        .toFormat('dd LLLL yyyy')
-    : undefined;
-  const macroplanDateEndStr = macroplan
-    ? DateTime.fromMillis(macroplan.timestampEnd)
-        .setZone(macroplan.trip.timeZone)
-        .minus({ minute: 1 })
-        .toFormat('dd LLLL yyyy')
-    : undefined;
+}: DialogContentProps<TripSliceMacroplan>) {
+  const trip = useTrip(macroplan?.tripId);
+
+  const macroplanDateStartStr =
+    macroplan && trip
+      ? DateTime.fromMillis(macroplan.timestampStart)
+          .setZone(trip.timeZone)
+          .toFormat('dd LLLL yyyy')
+      : undefined;
+  const macroplanDateEndStr =
+    macroplan && trip
+      ? DateTime.fromMillis(macroplan.timestampEnd)
+          .setZone(trip.timeZone)
+          .minus({ minute: 1 })
+          .toFormat('dd LLLL yyyy')
+      : undefined;
 
   const notes = useParseTextIntoNodes(macroplan?.notes);
 

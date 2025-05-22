@@ -13,11 +13,12 @@ import { COMMENT_GROUP_OBJECT_TYPE } from '../Comment/db';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import type { DialogContentProps } from '../Dialog/DialogRoute';
 import { CommonCommentDialogMaxWidth } from '../Dialog/ui';
-import { useBoundStore } from '../data/store';
+import { useDeepBoundStore } from '../data/store';
+import { useTrip } from '../Trip/hooks';
+import type { TripSliceActivity } from '../Trip/store/types';
 import s from './Activity.module.css';
 import { ActivityMap } from './ActivityDialogMap';
 import { ActivityDialogMode } from './ActivityDialogMode';
-import type { DbActivityWithTrip } from './db';
 
 export function ActivityDialogContentView({
   data: activity,
@@ -25,19 +26,22 @@ export function ActivityDialogContentView({
   dialogContentProps,
   setDialogClosable,
   DialogTitleSection,
-}: DialogContentProps<DbActivityWithTrip>) {
-  const activityStartStr = activity
-    ? DateTime.fromMillis(activity.timestampStart)
-        .setZone(activity.trip.timeZone)
-        .toFormat('dd LLLL yyyy HH:mm')
-    : undefined;
-  const activityEndStr = activity
-    ? DateTime.fromMillis(activity.timestampEnd)
-        .setZone(activity.trip.timeZone)
-        // since 1 activity must be in same day, so might as well just show the time for end
-        .toFormat('HH:mm')
-    : undefined;
-  const currentUser = useBoundStore((state) => state.currentUser);
+}: DialogContentProps<TripSliceActivity>) {
+  const trip = useTrip(activity?.tripId);
+  const activityStartStr =
+    activity && trip
+      ? DateTime.fromMillis(activity.timestampStart)
+          .setZone(trip.timeZone)
+          .toFormat('dd LLLL yyyy HH:mm')
+      : undefined;
+  const activityEndStr =
+    activity && trip
+      ? DateTime.fromMillis(activity.timestampEnd)
+          .setZone(trip.timeZone)
+          // since 1 activity must be in same day, so might as well just show the time for end
+          .toFormat('HH:mm')
+      : undefined;
+  const currentUser = useDeepBoundStore((state) => state.currentUser);
 
   const descriptions = useParseTextIntoNodes(activity?.description);
 
@@ -145,12 +149,12 @@ export function ActivityDialogContentView({
             Comments
           </Heading>
           <CommentGroupWithForm
-            tripId={activity?.trip?.id}
+            tripId={activity?.tripId}
             objectId={activity?.id}
             objectType={COMMENT_GROUP_OBJECT_TYPE.ACTIVITY}
             user={currentUser}
-            commentGroup={activity?.commentGroup}
             onFormFocus={setDialogUnclosable}
+            commentGroupId={activity?.commentGroupId}
           />
         </Flex>
       </Flex>
