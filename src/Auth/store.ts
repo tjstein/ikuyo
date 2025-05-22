@@ -38,7 +38,6 @@ export const createUserSlice: StateCreator<
           // User is logged in
           set(() => ({
             authUser: authResult.user,
-            authUserLoading: false,
             authUserError: null,
           }));
 
@@ -54,11 +53,6 @@ export const createUserSlice: StateCreator<
             },
           });
           const user = userData.user[0] as DbUser | undefined;
-          set(() => {
-            return {
-              currentUser: user,
-            };
-          });
 
           const state = get();
           if (userData.user.length === 0 || !userData.user[0].activated) {
@@ -68,6 +62,12 @@ export const createUserSlice: StateCreator<
               handle: defaultHandle,
               email: userEmail,
               activated: true,
+            });
+            set(() => {
+              return {
+                currentUser: user,
+                authUserLoading: false,
+              };
             });
             state.publishToast({
               root: { duration: Number.POSITIVE_INFINITY },
@@ -79,6 +79,12 @@ export const createUserSlice: StateCreator<
             });
           } else if (userData.user.length > 0) {
             const userHandle = userData.user[0].handle;
+            set(() => {
+              return {
+                currentUser: user,
+                authUserLoading: false,
+              };
+            });
             state.publishToast({
               root: {},
               title: { children: `Welcome back ${userHandle}!` },
