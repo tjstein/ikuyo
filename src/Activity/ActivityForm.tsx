@@ -151,6 +151,7 @@ export function ActivityForm({
             limit: 5,
             country: [tripRegion.toLowerCase()],
             types: ['poi'],
+            apiKey: process.env.MAPTILER_API_KEY,
           };
 
           if (!location) {
