@@ -63,7 +63,7 @@ export function deriveNewAccommodationState(
     const commentGroup = trip.commentGroup?.find((cg) => {
       return (
         cg.object?.type === COMMENT_GROUP_OBJECT_TYPE.ACCOMMODATION &&
-        cg.object?.id === accommodation.id
+        cg.object?.accommodation?.[0]?.id === accommodation.id
       );
     });
     newAccommodationState[accommodation.id] = {
