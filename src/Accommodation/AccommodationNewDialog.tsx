@@ -46,19 +46,23 @@ export function AccommodationNewDialog({ trip }: { trip: TripSliceTrip }) {
         <Dialog.Description size="2">
           Fill in the new accommodation details for this trip...
         </Dialog.Description>
-        <Box height="16px" />
+        <Box height="16px" />{' '}
         <AccommodationForm
           mode={AccommodationFormMode.New}
           tripId={trip.id}
           tripTimeZone={trip.timeZone}
           tripStartStr={tripStartStr}
           tripEndStr={tripEndStr}
+          tripRegion={trip.region}
           accommodationName=""
           accommodationAddress=""
           accommodationCheckInStr={accommodationCheckInStr}
           accommodationCheckOutStr={accommodationCheckOutStr}
           accommodationPhoneNumber=""
           accommodationNotes=""
+          accommodationLocationLat={undefined}
+          accommodationLocationLng={undefined}
+          accommodationLocationZoom={undefined}
           onFormCancel={popDialog}
           onFormSuccess={popDialog}
         />

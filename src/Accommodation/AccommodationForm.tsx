@@ -1,13 +1,74 @@
-import { Button, Flex, Text, TextArea, TextField } from '@radix-ui/themes';
-import { useCallback, useId, useState } from 'react';
+import { type GeocodingOptions, geocoding } from '@maptiler/sdk';
+import {
+  Button,
+  Flex,
+  Switch,
+  Text,
+  TextArea,
+  TextField,
+} from '@radix-ui/themes';
+import { useCallback, useId, useReducer, useState } from 'react';
+import { REGIONS_MAP } from '../data/intl/regions';
 import { useBoundStore } from '../data/store';
 import { dangerToken } from '../ui';
+import { AccommodationMap } from './AccommodationDialogMap';
 import {
   AccommodationFormMode,
   type AccommodationFormModeType,
 } from './AccommodationFormMode';
 import { dbAddAccommodation, dbUpdateAccommodation } from './db';
 import { getDateTimeFromDatetimeLocalInput } from './time';
+
+interface LocationCoordinateState {
+  enabled: boolean;
+  lat: number | undefined;
+  lng: number | undefined;
+  zoom: number | undefined;
+}
+
+function coordinateStateReducer(
+  state: LocationCoordinateState,
+  action:
+    | { type: 'setMapZoom'; zoom: number }
+    | { type: 'setMarkerCoordinate'; lat: number; lng: number }
+    | {
+        type: 'setEnabled';
+        lat: number | undefined;
+        lng: number | undefined;
+        zoom: number | undefined;
+      }
+    | {
+        type: 'setDisabled';
+      },
+): LocationCoordinateState {
+  switch (action.type) {
+    case 'setEnabled':
+      return {
+        ...state,
+        lat: action.lat,
+        lng: action.lng,
+        enabled: true,
+      };
+    case 'setDisabled':
+      return {
+        ...state,
+        enabled: false,
+      };
+    case 'setMapZoom':
+      return {
+        ...state,
+        zoom: action.zoom,
+      };
+    case 'setMarkerCoordinate':
+      return {
+        ...state,
+        lat: action.lat,
+        lng: action.lng,
+      };
+    default:
+      return state;
+  }
+}
 
 export function AccommodationForm({
   mode,
@@ -17,6 +78,7 @@ export function AccommodationForm({
   tripTimeZone,
   tripStartStr,
   tripEndStr,
+  tripRegion,
 
   accommodationName,
   accommodationAddress,
@@ -24,6 +86,9 @@ export function AccommodationForm({
   accommodationCheckOutStr,
   accommodationPhoneNumber,
   accommodationNotes,
+  accommodationLocationLat,
+  accommodationLocationLng,
+  accommodationLocationZoom,
   onFormSuccess,
   onFormCancel,
 }: {
@@ -35,6 +100,7 @@ export function AccommodationForm({
   tripTimeZone: string;
   tripStartStr: string;
   tripEndStr: string;
+  tripRegion: string;
 
   accommodationName: string;
   accommodationAddress: string;
@@ -42,6 +108,9 @@ export function AccommodationForm({
   accommodationCheckOutStr: string;
   accommodationPhoneNumber: string;
   accommodationNotes: string;
+  accommodationLocationLat: number | undefined;
+  accommodationLocationLng: number | undefined;
+  accommodationLocationZoom: number | undefined;
 
   onFormSuccess: () => void;
   onFormCancel: () => void;
@@ -52,9 +121,109 @@ export function AccommodationForm({
   const idAddress = useId();
   const idPhoneNumber = useId();
   const idNotes = useId();
+  const idCoordinates = useId();
   const publishToast = useBoundStore((state) => state.publishToast);
 
   const [errorMessage, setErrorMessage] = useState('');
+
+  const [coordinateState, dispatchCoordinateState] = useReducer(
+    coordinateStateReducer,
+    {
+      enabled:
+        accommodationLocationLat !== undefined &&
+        accommodationLocationLng !== undefined,
+      lat: accommodationLocationLat,
+      lng: accommodationLocationLng,
+      zoom: accommodationLocationZoom ?? 9,
+    },
+  );
+
+  const setCoordinateEnabled = useCallback(
+    async (enabled: boolean) => {
+      if (enabled) {
+        if (coordinateState.lat && coordinateState.lng) {
+          dispatchCoordinateState({
+            type: 'setEnabled',
+            lat: coordinateState.lat,
+            lng: coordinateState.lng,
+            zoom: coordinateState.zoom,
+          });
+        } else {
+          // if coordinates are not set, use geocoding from address to get the coordinates
+          const elAddress = document.getElementById(
+            idAddress,
+          ) as HTMLInputElement;
+          let address = elAddress.value;
+          const geocodingOptions: GeocodingOptions = {
+            language: 'en',
+            limit: 5,
+            country: [tripRegion.toLowerCase()],
+            types: ['poi'],
+
+            apiKey: process.env.MAPTILER_API_KEY,
+          };
+
+          if (!address) {
+            // if address is not yet set, set address as the trip region
+            const region = REGIONS_MAP[tripRegion];
+            if (region) {
+              address = region;
+              geocodingOptions.types = ['country'];
+            } else {
+              // shouldn't happen, but just in case
+              address = 'Tokyo Disneyland';
+            }
+          }
+
+          let lat: number | undefined;
+          let lng: number | undefined;
+          console.log('geocoding: request', address, geocodingOptions);
+          if (address) {
+            const res = await geocoding.forward(address, geocodingOptions);
+            console.log('geocoding: response', res);
+            [lng, lat] = res?.features[0]?.center ?? [];
+          }
+          dispatchCoordinateState({
+            type: 'setEnabled',
+            lat: lat,
+            lng: lng,
+            zoom: coordinateState.zoom,
+          });
+        }
+      } else {
+        dispatchCoordinateState({
+          type: 'setDisabled',
+        });
+      }
+    },
+    [
+      idAddress,
+      tripRegion,
+      coordinateState.lat,
+      coordinateState.lng,
+      coordinateState.zoom,
+    ],
+  );
+
+  const setMarkerCoordinate = useCallback(
+    async (coordinate: { lng: number; lat: number }) => {
+      dispatchCoordinateState({
+        type: 'setMarkerCoordinate',
+        lat: coordinate.lat,
+        lng: coordinate.lng,
+      });
+    },
+    [],
+  );
+
+  const setMapZoom = useCallback(async (zoom: number) => {
+    dispatchCoordinateState({
+      type: 'setMapZoom',
+      zoom: zoom,
+    });
+  }, []);
+
+  console.log('coordinateState', coordinateState);
 
   const handleSubmit = useCallback(() => {
     return async (elForm: HTMLFormElement) => {
@@ -94,6 +263,7 @@ export function AccommodationForm({
         timeCheckOutString,
         timeCheckInDate,
         timeCheckOutDate,
+        coordinateState,
       });
       if (!name || !timeCheckInString || !timeCheckOutString) {
         return;
@@ -111,6 +281,15 @@ export function AccommodationForm({
           timestampCheckOut: timeCheckOutDate.toMillis(),
           phoneNumber,
           notes,
+          locationLat: coordinateState.enabled
+            ? coordinateState.lat
+            : undefined,
+          locationLng: coordinateState.enabled
+            ? coordinateState.lng
+            : undefined,
+          locationZoom: coordinateState.enabled
+            ? coordinateState.zoom
+            : undefined,
         });
         publishToast({
           root: {},
@@ -126,6 +305,15 @@ export function AccommodationForm({
             timestampCheckOut: timeCheckOutDate.toMillis(),
             phoneNumber,
             notes,
+            locationLat: coordinateState.enabled
+              ? coordinateState.lat
+              : undefined,
+            locationLng: coordinateState.enabled
+              ? coordinateState.lng
+              : undefined,
+            locationZoom: coordinateState.enabled
+              ? coordinateState.zoom
+              : undefined,
           },
           {
             tripId: tripId,
@@ -149,6 +337,7 @@ export function AccommodationForm({
     onFormSuccess,
     tripId,
     tripTimeZone,
+    coordinateState,
   ]);
 
   return (
@@ -190,6 +379,35 @@ export function AccommodationForm({
           id={idAddress}
           style={{ minHeight: 80 }}
         />
+        <Text as="label" htmlFor={idCoordinates}>
+          Set location coordinates
+        </Text>
+        <Switch
+          name="coordinatesEnabled"
+          id={idCoordinates}
+          checked={coordinateState.enabled}
+          onCheckedChange={setCoordinateEnabled}
+        />
+        {coordinateState.enabled ? (
+          <AccommodationMap
+            mapOptions={{
+              lng: coordinateState.lng ?? 0,
+              lat: coordinateState.lat ?? 0,
+              zoom: coordinateState.zoom ?? 9,
+              region: tripRegion,
+            }}
+            marker={
+              coordinateState.lng && coordinateState.lat
+                ? {
+                    lng: coordinateState.lng,
+                    lat: coordinateState.lat,
+                  }
+                : undefined
+            }
+            setMarkerCoordinate={setMarkerCoordinate}
+            setMapZoom={setMapZoom}
+          />
+        ) : null}
         <Text as="label" htmlFor={idTimeCheckIn}>
           Check in time{' '}
           <Text weight="light" size="1">

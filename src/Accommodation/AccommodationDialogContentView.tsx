@@ -16,6 +16,7 @@ import { CommonCommentDialogMaxWidth } from '../Dialog/ui';
 import { useDeepBoundStore } from '../data/store';
 import { useTrip } from '../Trip/hooks';
 import type { TripSliceAccommodation } from '../Trip/store/types';
+import { AccommodationMap } from './AccommodationDialogMap';
 import { AccommodationDialogMode } from './AccommodationDialogMode';
 
 export function AccommodationDialogContentView({
@@ -133,6 +134,20 @@ export function AccommodationDialogContentView({
           ) : (
             <></>
           )}
+
+          {accommodation?.locationLat && accommodation?.locationLng ? (
+            <AccommodationMap
+              mapOptions={{
+                lng: accommodation.locationLng,
+                lat: accommodation.locationLat,
+                zoom: accommodation.locationZoom ?? 9,
+              }}
+              marker={{
+                lng: accommodation.locationLng,
+                lat: accommodation.locationLat,
+              }}
+            />
+          ) : null}
         </Flex>
         <Flex
           direction="column"
