@@ -164,15 +164,10 @@ export function AccommodationForm({
           };
 
           if (!address) {
-            // if address is not yet set, set address as the trip region
-            const region = REGIONS_MAP[tripRegion];
-            if (region) {
-              address = region;
-              geocodingOptions.types = ['country'];
-            } else {
-              // shouldn't happen, but just in case
-              address = 'Tokyo Disneyland';
-            }
+            // if location is not yet set, set location as the trip region
+            const region = REGIONS_MAP[tripRegion] ?? 'Japan';
+            address = region;
+            geocodingOptions.types = ['country'];
           }
 
           let lat: number | undefined;
@@ -181,6 +176,14 @@ export function AccommodationForm({
           if (address) {
             const res = await geocoding.forward(address, geocodingOptions);
             console.log('geocoding: response', res);
+            [lng, lat] = res?.features[0]?.center ?? [];
+          }
+          if (lng === undefined || lat === undefined) {
+            // if location coordinate couldn't be found, set location as the trip region
+            const region = REGIONS_MAP[tripRegion] ?? 'Japan';
+            geocodingOptions.types = ['country'];
+            const res = await geocoding.forward(region, geocodingOptions);
+            console.log('geocoding: response 2', res);
             [lng, lat] = res?.features[0]?.center ?? [];
           }
           dispatchCoordinateState({

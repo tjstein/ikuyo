@@ -156,14 +156,9 @@ export function ActivityForm({
 
           if (!location) {
             // if location is not yet set, set location as the trip region
-            const region = REGIONS_MAP[tripRegion];
-            if (region) {
-              location = region;
-              geocodingOptions.types = ['country'];
-            } else {
-              // shouldn't happen, but just in case
-              location = 'Tokyo Disneyland';
-            }
+            const region = REGIONS_MAP[tripRegion] ?? 'Japan';
+            location = region;
+            geocodingOptions.types = ['country'];
           }
 
           let lat: number | undefined;
@@ -174,6 +169,15 @@ export function ActivityForm({
             console.log('geocoding: response', res);
             [lng, lat] = res?.features[0]?.center ?? [];
           }
+          if (lng === undefined || lat === undefined) {
+            // if location coordinate couldn't be found, set location as the trip region
+            const region = REGIONS_MAP[tripRegion] ?? 'Japan';
+            geocodingOptions.types = ['country'];
+            const res = await geocoding.forward(region, geocodingOptions);
+            console.log('geocoding: response 2', res);
+            [lng, lat] = res?.features[0]?.center ?? [];
+          }
+
           dispatchCoordinateState({
             type: 'setEnabled',
             lat: lat,
