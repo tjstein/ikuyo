@@ -70,6 +70,9 @@ export function deriveNewAccommodationState(
       ...accommodation,
       tripId: trip.id,
       commentGroupId: commentGroup?.id ?? undefined,
+      locationLat: accommodation.locationLat,
+      locationLng: accommodation.locationLng,
+      locationZoom: accommodation.locationZoom,
     } satisfies TripSliceAccommodation;
   }
   return newAccommodationState;

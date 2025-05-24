@@ -61,6 +61,9 @@ describe('Trip', () => {
       phoneNumber: '',
       tripId: baseTrip.id,
       commentGroupId: undefined,
+      locationLat: undefined,
+      locationLng: undefined,
+      locationZoom: undefined,
       ...accommodation,
     };
   }
