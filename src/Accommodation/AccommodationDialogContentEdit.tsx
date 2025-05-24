@@ -2,7 +2,7 @@ import { Box, Dialog, Spinner } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useCallback } from 'react';
 import type { DialogContentProps } from '../Dialog/DialogRoute';
-import { useTrip } from '../Trip/hooks';
+import { useTrip } from '../Trip/store/hooks';
 import type { TripSliceAccommodation } from '../Trip/store/types';
 import { AccommodationDialogMode } from './AccommodationDialogMode';
 import { AccommodationForm } from './AccommodationForm';
@@ -15,7 +15,7 @@ export function AccommodationDialogContentEdit({
   dialogContentProps,
   DialogTitleSection,
 }: DialogContentProps<TripSliceAccommodation>) {
-  const trip = useTrip(accommodation?.tripId);
+  const { trip } = useTrip(accommodation?.tripId);
 
   const tripStartStr = trip
     ? formatToDatetimeLocalInput(

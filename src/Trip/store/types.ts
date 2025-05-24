@@ -20,6 +20,10 @@ export type TripSliceTrip = Omit<
 
   currentUserRole: TripUserRole;
 };
+export type TripSliceTripMeta = {
+  loading: boolean;
+  error: string | undefined;
+};
 export type TripSliceActivity = Omit<DbActivity, 'trip' | 'commentGroup'> & {
   tripId: string;
   commentGroupId: string | undefined;
@@ -214,6 +218,9 @@ export interface TripSlice {
   trip: {
     [id: string]: TripSliceTrip;
   };
+  tripMeta: {
+    [id: string]: TripSliceTripMeta;
+  };
   activity: {
     [id: string]: TripSliceActivity;
   };
@@ -239,15 +246,14 @@ export interface TripSlice {
     [userId: string]: TripSliceCommentUser;
   };
   currentTripId: string | undefined;
-  currentTripLoading: boolean;
-  currentTripError: string | undefined;
   setCurrentTripId: (tripId: string | undefined) => void;
   getCurrentTrip: () => TripSliceTrip | undefined;
-
+  getCurrentTripMeta: () => TripSliceTripMeta | undefined;
   /** return: unsubscribe function */
   subscribeTrip: (id: string) => () => void;
 
   getTrip: (id: string | undefined) => TripSliceTrip | undefined;
+  getTripMeta: (id: string | undefined) => TripSliceTripMeta | undefined;
   getActivity: (id: string) => TripSliceActivity | undefined;
   getActivities: (ids: string[]) => TripSliceActivity[];
   getAccommodation: (id: string) => TripSliceAccommodation | undefined;

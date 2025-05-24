@@ -1,15 +1,16 @@
-import { useDeepBoundStore } from '../data/store';
-import type { TripSliceAccommodation, TripSliceMacroplan } from './store/types';
+import { useDeepBoundStore } from '../../data/store';
+import type { TripSliceAccommodation, TripSliceMacroplan } from './types';
 
 export function useTrip(tripId: string | undefined) {
   const trip = useDeepBoundStore((state) => state.getTrip(tripId));
-  return trip;
+  const tripMeta = useDeepBoundStore((state) => state.getTripMeta(tripId));
+  return { trip, loading: tripMeta?.loading, error: tripMeta?.error };
 }
 export function useCurrentTrip() {
   const trip = useDeepBoundStore((state) => state.getCurrentTrip());
-  return trip;
+  const tripMeta = useDeepBoundStore((state) => state.getCurrentTripMeta());
+  return { trip, loading: tripMeta?.loading, error: tripMeta?.error };
 }
-
 export function useTripActivity(activityId: string) {
   const activity = useDeepBoundStore((state) => state.getActivity(activityId));
   return activity;

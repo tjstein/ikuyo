@@ -22,6 +22,7 @@ import type {
   TripSliceExpense,
   TripSliceMacroplan,
   TripSliceTrip,
+  TripSliceTripMeta,
   TripSliceTripUser,
 } from './types';
 
@@ -33,8 +34,7 @@ export const createTripSlice: StateCreator<
 > = (set, get) => {
   return {
     currentTripId: undefined,
-    currentTripLoading: true,
-    currentTripError: undefined,
+    tripMeta: {},
     trip: {},
     accommodation: {},
     activity: {},
@@ -45,6 +45,16 @@ export const createTripSlice: StateCreator<
     tripUser: {},
     expense: {},
     subscribeTrip: (tripId: string) => {
+      set((state) => ({
+        tripMeta: {
+          ...state.tripMeta,
+          [tripId]: {
+            loading: true,
+            error: undefined,
+          },
+        },
+      }));
+      console.log('subscribing to trip', tripId);
       return db.subscribeQuery(
         {
           trip: {
@@ -83,11 +93,21 @@ export const createTripSlice: StateCreator<
           },
         },
         ({ data, error }) => {
+          console.log('subscribing to trip, callback', tripId, data, error);
           const trip = data?.trip?.[0] satisfies
             | DbTripQueryReturnType
             | undefined;
 
           if (!trip) {
+            set((state) => ({
+              tripMeta: {
+                ...state.tripMeta,
+                [tripId]: {
+                  loading: false,
+                  error: error?.message,
+                },
+              },
+            }));
             return;
           }
           set((state) => {
@@ -117,14 +137,13 @@ export const createTripSlice: StateCreator<
               tripUser: newTripUserState,
               comment: newCommentState,
               commentUser: newCommentUserState,
-              ...(tripId === state.currentTripId
-                ? error
-                  ? {
-                      currentTripLoading: false,
-                      currentTripError: error.message,
-                    }
-                  : { currentTripLoading: false, currentTripError: undefined }
-                : {}),
+              tripMeta: {
+                ...state.tripMeta,
+                [tripId]: {
+                  loading: false,
+                  error: error?.message,
+                },
+              },
             } satisfies Partial<TripSlice>;
           });
         },
@@ -133,7 +152,6 @@ export const createTripSlice: StateCreator<
     setCurrentTripId: (tripId: string | undefined) => {
       set(() => ({
         currentTripId: tripId,
-        currentTripLoading: true,
       }));
     },
     getCurrentTrip: () => {
@@ -144,6 +162,14 @@ export const createTripSlice: StateCreator<
       }
       return state.getTrip(tripId);
     },
+    getCurrentTripMeta: () => {
+      const state = get();
+      const tripId = state.currentTripId;
+      if (!tripId) {
+        return { loading: false, error: undefined } satisfies TripSliceTripMeta;
+      }
+      return state.getTripMeta(tripId);
+    },
     getTrip: (id: string | undefined): TripSliceTrip | undefined => {
       if (!id) {
         return undefined;
@@ -153,6 +179,16 @@ export const createTripSlice: StateCreator<
         return undefined;
       }
       return trip;
+    },
+    getTripMeta: (id: string | undefined): TripSliceTripMeta | undefined => {
+      if (!id) {
+        return undefined;
+      }
+      const tripMeta = get().tripMeta[id];
+      if (!tripMeta) {
+        return undefined;
+      }
+      return tripMeta;
     },
     getActivity: (id: string): TripSliceActivity | undefined => {
       if (!id) {

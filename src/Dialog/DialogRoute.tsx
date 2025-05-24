@@ -30,6 +30,9 @@ type DialogActionType =
 
 export type DialogContentProps<DataType> = {
   data: DataType | undefined;
+  loading: boolean;
+  error: string | undefined;
+
   setMode: (mode: DialogModeType) => void;
   dialogContentProps: Dialog.ContentProps;
   setDialogClosable: (closable: boolean) => void;
@@ -40,8 +43,13 @@ export function createDialogRoute<DataType>({
   DialogContentEdit,
   DialogContentDelete,
   getData,
+  getDataMeta,
 }: {
   getData: (id: string) => DataType | undefined;
+  getDataMeta: (id: string) => {
+    loading: boolean;
+    error: string | undefined;
+  };
   DialogContentView: React.ComponentType<DialogContentProps<DataType>>;
   DialogContentEdit: React.ComponentType<DialogContentProps<DataType>>;
   DialogContentDelete: React.ComponentType<DialogContentProps<DataType>>;
@@ -95,6 +103,7 @@ export function createDialogRoute<DataType>({
     }, [state.open, setLocation]);
 
     const data = getData(params.id);
+    const { loading, error } = getDataMeta(params.id);
 
     const dialogContentProps = useMemo(() => {
       return {
@@ -118,6 +127,8 @@ export function createDialogRoute<DataType>({
         {mode === DialogMode.View ? (
           <DialogContentView
             data={data}
+            loading={loading}
+            error={error}
             setMode={setMode}
             dialogContentProps={dialogContentProps}
             setDialogClosable={setDialogClosable}
@@ -126,6 +137,8 @@ export function createDialogRoute<DataType>({
         ) : mode === DialogMode.Edit ? (
           <DialogContentEdit
             data={data}
+            loading={loading}
+            error={error}
             setMode={setMode}
             dialogContentProps={dialogContentProps}
             setDialogClosable={setDialogClosable}
@@ -134,6 +147,8 @@ export function createDialogRoute<DataType>({
         ) : mode === DialogMode.Delete ? (
           <DialogContentDelete
             data={data}
+            loading={loading}
+            error={error}
             setMode={setMode}
             dialogContentProps={dialogContentProps}
             setDialogClosable={setDialogClosable}

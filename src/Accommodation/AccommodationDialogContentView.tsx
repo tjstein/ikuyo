@@ -13,7 +13,7 @@ import { COMMENT_GROUP_OBJECT_TYPE } from '../Comment/db';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import type { DialogContentProps } from '../Dialog/DialogRoute';
 import { useDeepBoundStore } from '../data/store';
-import { useTrip } from '../Trip/hooks';
+import { useTrip } from '../Trip/store/hooks';
 import type { TripSliceAccommodation } from '../Trip/store/types';
 import { AccommodationMap } from './AccommodationDialogMap';
 import { AccommodationDialogMode } from './AccommodationDialogMode';
@@ -24,8 +24,9 @@ export function AccommodationDialogContentView({
   dialogContentProps,
   setDialogClosable,
   DialogTitleSection,
+  loading,
 }: DialogContentProps<TripSliceAccommodation>) {
-  const trip = useTrip(accommodation?.tripId);
+  const { trip } = useTrip(accommodation?.tripId);
   const accommodationCheckInStr =
     accommodation && trip
       ? DateTime.fromMillis(accommodation.timestampCheckIn)
@@ -168,6 +169,7 @@ export function AccommodationDialogContentView({
             user={currentUser}
             onFormFocus={setDialogUnclosable}
             commentGroupId={accommodation?.commentGroupId}
+            isLoading={loading}
           />
         </Flex>
       </Flex>

@@ -30,7 +30,7 @@ import {
   useTripAccommodations,
   useTripActivities,
   useTripMacroplans,
-} from '../Trip/hooks';
+} from '../Trip/store/hooks';
 import { TripViewMode } from '../Trip/TripViewMode';
 import {
   generateAccommodationGridTemplateColumns,
@@ -54,7 +54,7 @@ const TimetableTime = memo(TimetableTimeInner, (prevProps, nextProps) => {
 const times = new Array(24).fill(0);
 
 export function Timetable() {
-  const trip = useCurrentTrip();
+  const { trip } = useCurrentTrip();
   const activities = useTripActivities(trip?.activityIds ?? []);
   const tripAccommodations = useTripAccommodations(
     trip?.accommodationIds ?? [],

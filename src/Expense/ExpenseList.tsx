@@ -1,14 +1,14 @@
 import { PlusIcon, QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { Button, Section, Table, Tooltip } from '@radix-ui/themes';
 import { useState } from 'react';
-import { useCurrentTrip, useTripExpenses } from '../Trip/hooks';
+import { useCurrentTrip, useTripExpenses } from '../Trip/store/hooks';
 import { ExpenseInlineForm } from './ExpenseInlineForm';
 import s from './ExpenseList.module.css';
 import { ExpenseMode } from './ExpenseMode';
 import { ExpenseRow } from './ExpenseRow';
 
 export function ExpenseList() {
-  const trip = useCurrentTrip();
+  const { trip } = useCurrentTrip();
   const expenseIds = trip?.expenseIds ?? [];
   const expenses = useTripExpenses(expenseIds);
   const [expenseMode, setExpenseMode] = useState(ExpenseMode.View);

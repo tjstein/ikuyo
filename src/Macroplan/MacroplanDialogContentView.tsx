@@ -13,7 +13,7 @@ import { COMMENT_GROUP_OBJECT_TYPE } from '../Comment/db';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import type { DialogContentProps } from '../Dialog/DialogRoute';
 import { useDeepBoundStore } from '../data/store';
-import { useTrip } from '../Trip/hooks';
+import { useTrip } from '../Trip/store/hooks';
 import type { TripSliceMacroplan } from '../Trip/store/types';
 import s from './Macroplan.module.css';
 import { MacroplanDialogMode } from './MacroplanDialogMode';
@@ -25,7 +25,7 @@ export function MacroplanDialogContentView({
   setDialogClosable,
   DialogTitleSection,
 }: DialogContentProps<TripSliceMacroplan>) {
-  const trip = useTrip(macroplan?.tripId);
+  const { trip } = useTrip(macroplan?.tripId);
 
   const macroplanDateStartStr =
     macroplan && trip

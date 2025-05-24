@@ -3,7 +3,7 @@ import { Button, Flex, Popover, Table, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useState } from 'react';
 import { useBoundStore } from '../data/store';
-import { useTrip } from '../Trip/hooks';
+import { useTrip } from '../Trip/store/hooks';
 import type { TripSliceExpense } from '../Trip/store/types';
 import { dangerToken } from '../ui';
 import { dbDeleteExpense } from './db';
@@ -32,7 +32,7 @@ function ExpenseRowEdit({
   expense: TripSliceExpense;
   setExpenseMode: (mode: ExpenseMode) => void;
 }) {
-  const trip = useTrip(expense.tripId);
+  const { trip } = useTrip(expense.tripId);
   return trip ? (
     <ExpenseInlineForm
       expense={expense}
@@ -51,7 +51,7 @@ function ExpenseRowView({
   setExpenseMode: (mode: ExpenseMode) => void;
 }) {
   const publishToast = useBoundStore((state) => state.publishToast);
-  const trip = useTrip(expense.tripId);
+  const { trip } = useTrip(expense.tripId);
   return (
     <>
       <Table.RowHeaderCell>

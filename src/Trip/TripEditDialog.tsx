@@ -2,7 +2,7 @@ import { Box, Dialog } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { CommonLargeDialogMaxWidth } from '../Dialog/ui';
 import { useBoundStore } from '../data/store';
-import { useTripActivities } from './hooks';
+import { useTripActivities } from './store/hooks';
 import type { TripSliceTrip } from './store/types';
 import { TripForm } from './TripForm';
 import { TripFormMode } from './TripFormMode';

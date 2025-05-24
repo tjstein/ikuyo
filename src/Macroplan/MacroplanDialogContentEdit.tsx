@@ -2,7 +2,7 @@ import { Box, Dialog, Spinner } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useCallback } from 'react';
 import type { DialogContentProps } from '../Dialog/DialogRoute';
-import { useTrip } from '../Trip/hooks';
+import { useTrip } from '../Trip/store/hooks';
 import type { TripSliceMacroplan } from '../Trip/store/types';
 import { MacroplanDialogMode } from './MacroplanDialogMode';
 import { MacroplanForm } from './MacroplanForm';
@@ -15,7 +15,7 @@ export function MacroplanDialogContentEdit({
   dialogContentProps,
   DialogTitleSection,
 }: DialogContentProps<TripSliceMacroplan>) {
-  const trip = useTrip(macroplan?.tripId);
+  const { trip } = useTrip(macroplan?.tripId);
 
   const tripStartStr =
     macroplan && trip

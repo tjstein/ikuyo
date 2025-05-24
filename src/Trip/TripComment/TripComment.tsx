@@ -1,12 +1,12 @@
 import { Container, Flex, Heading, Text } from '@radix-ui/themes';
 import { Comment } from '../../Comment/Comment';
-import { useCurrentTrip, useTripAllComments } from '../hooks';
+import { useCurrentTrip, useTripAllComments } from '../store/hooks';
 
 const containerPx = { initial: '1', md: '0' };
 const containerPb = { initial: '9', sm: '5' };
 
 export function TripComment() {
-  const trip = useCurrentTrip();
+  const { trip } = useCurrentTrip();
   const allComments = useTripAllComments(trip?.id);
 
   return (

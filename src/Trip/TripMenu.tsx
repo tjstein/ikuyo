@@ -9,7 +9,7 @@ import { db } from '../data/db';
 import { useBoundStore } from '../data/store';
 import { MacroplanNewDialog } from '../Macroplan/MacroplanNewDialog';
 import { RouteAccount, RouteLogin, RouteTrips } from '../Routes/routes';
-import { useCurrentTrip } from './hooks';
+import { useCurrentTrip } from './store/hooks';
 import { TripDeleteDialog } from './TripDeleteDialog';
 import { TripEditDialog } from './TripEditDialog';
 import s from './TripMenu.module.css';
@@ -17,7 +17,7 @@ import { TripSharingDialog } from './TripSharingDialog';
 
 export function TripMenu({ showTripSharing }: { showTripSharing: boolean }) {
   const [, setLocation] = useLocation();
-  const trip = useCurrentTrip();
+  const { trip } = useCurrentTrip();
   const user = useCurrentUser();
   const pushDialog = useBoundStore((state) => state.pushDialog);
   return (

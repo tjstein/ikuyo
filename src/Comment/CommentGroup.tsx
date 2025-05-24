@@ -1,5 +1,5 @@
 import { Flex } from '@radix-ui/themes';
-import { useTripComments } from '../Trip/hooks';
+import { useTripComments } from '../Trip/store/hooks';
 import type { TripSliceCommentGroup } from '../Trip/store/types';
 import { Comment } from './Comment';
 

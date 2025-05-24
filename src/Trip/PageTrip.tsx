@@ -61,7 +61,7 @@ import {
   RouteTripMap,
   RouteTripTimetableView,
 } from '../Routes/routes';
-import { useTrip } from './hooks';
+import { useTrip } from './store/hooks';
 import type { TripSliceTrip } from './store/types';
 import { TripMenuFloating } from './TripMenuFloating';
 
@@ -79,7 +79,7 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
   useEffect(() => {
     return subscribeTrip(tripId);
   }, [tripId, subscribeTrip]);
-  const trip = useTrip(tripId);
+  const { trip } = useTrip(tripId);
 
   return <PageTripInner trip={trip} />;
 }

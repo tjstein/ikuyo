@@ -1,13 +1,13 @@
 import { Container, DataList, Heading, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { REGIONS_MAP } from '../data/intl/regions';
-import { useCurrentTrip } from './hooks';
+import { useCurrentTrip } from './store/hooks';
 import { formatTimestampToReadableDate } from './time';
 
 const containerPx = { initial: '1', md: '0' };
 const containerPb = { initial: '9', sm: '5' };
 export function TripHome() {
-  const trip = useCurrentTrip();
+  const { trip } = useCurrentTrip();
 
   const tripStartDateTime = trip
     ? DateTime.fromMillis(trip.timestampStart).setZone(trip.timeZone)

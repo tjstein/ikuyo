@@ -22,13 +22,13 @@ import {
   useTripAccommodations,
   useTripActivities,
   useTripMacroplans,
-} from '../Trip/hooks';
+} from '../Trip/store/hooks';
 import { TripViewMode } from '../Trip/TripViewMode';
 import { TripMap } from '../TripMap/TripMap';
 import s from './ActivityList.module.css';
 
 export function ActivityList() {
-  const trip = useCurrentTrip();
+  const { trip } = useCurrentTrip();
   const activities = useTripActivities(trip?.activityIds ?? []);
   const tripAccommodations = useTripAccommodations(
     trip?.accommodationIds ?? [],

@@ -13,7 +13,6 @@ import { Container, Heading, Spinner, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { createPortal } from 'react-dom';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
-import { useDeepBoundStore } from '../data/store';
 import {
   useCurrentTrip,
   useTrip,
@@ -21,18 +20,16 @@ import {
   useTripAccommodations,
   useTripActivities,
   useTripActivity,
-} from '../Trip/hooks';
+} from '../Trip/store/hooks';
 import { ThemeAppearance } from '../theme/constants';
 import { useTheme } from '../theme/hooks';
 export function TripMap() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<MapTilerMap>(null);
-  const trip = useCurrentTrip();
+  const { trip, loading: currentTripLoading } = useCurrentTrip();
   const activities = useTripActivities(trip?.activityIds ?? []);
   const accommodations = useTripAccommodations(trip?.accommodationIds ?? []);
-  const currentTripLoading = useDeepBoundStore(
-    (state) => state.currentTripLoading,
-  );
+
   const activitiesWithLocation = useMemo(
     () =>
       activities.filter(
@@ -211,7 +208,7 @@ export function TripMap() {
 
 function AccommodationPopup({ accommodationId }: { accommodationId: string }) {
   const accommodation = useTripAccommodation(accommodationId);
-  const trip = useTrip(accommodation?.tripId);
+  const { trip } = useTrip(accommodation?.tripId);
 
   const accommodationCheckInStr =
     accommodation && trip
@@ -252,7 +249,7 @@ function AccommodationPopup({ accommodationId }: { accommodationId: string }) {
 }
 function ActivityPopup({ activityId }: { activityId: string }) {
   const activity = useTripActivity(activityId);
-  const trip = useTrip(activity?.tripId);
+  const { trip } = useTrip(activity?.tripId);
   const activityStartStr = activity
     ? DateTime.fromMillis(activity.timestampStart)
         .setZone(trip?.timeZone)
