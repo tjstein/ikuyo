@@ -8,17 +8,28 @@ import {
   InfoCircledIcon,
   SewingPinIcon,
 } from '@radix-ui/react-icons';
-import { Container, Heading, Text } from '@radix-ui/themes';
+import { Container, Heading, Spinner, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { createPortal } from 'react-dom';
-import { useCurrentTrip, useTripActivities } from '../Trip/hooks';
-import type { TripSliceActivity } from '../Trip/store/types';
+import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
+import { useDeepBoundStore } from '../data/store';
+import {
+  useCurrentTrip,
+  useTrip,
+  useTripAccommodation,
+  useTripAccommodations,
+  useTripActivities,
+  useTripActivity,
+} from '../Trip/hooks';
 export function TripMap() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<MapTilerMap>(null);
   const trip = useCurrentTrip();
   const activities = useTripActivities(trip?.activityIds ?? []);
-
+  const accommodations = useTripAccommodations(trip?.accommodationIds ?? []);
+  const currentTripLoading = useDeepBoundStore(
+    (state) => state.currentTripLoading,
+  );
   const activitiesWithLocation = useMemo(
     () =>
       activities.filter(
@@ -27,23 +38,49 @@ export function TripMap() {
       ),
     [activities],
   );
+  const accommodationsWithLocation = useMemo(
+    () =>
+      accommodations.filter(
+        (accommodation) =>
+          accommodation.locationLat != null &&
+          accommodation.locationLng != null,
+      ),
+    [accommodations],
+  );
+  const allLocations = useMemo(() => {
+    const locations = [];
+    for (const activity of activitiesWithLocation) {
+      if (activity.locationLat && activity.locationLng) {
+        locations.push({
+          type: 'activity' as const,
+          id: activity.id,
+          lat: activity.locationLat,
+          lng: activity.locationLng,
+        });
+      }
+    }
+    for (const accommodation of accommodationsWithLocation) {
+      if (accommodation.locationLat && accommodation.locationLng) {
+        locations.push({
+          type: 'accommodation' as const,
+          id: accommodation.id,
+          lat: accommodation.locationLat,
+          lng: accommodation.locationLng,
+        });
+      }
+    }
+    return locations;
+  }, [activitiesWithLocation, accommodationsWithLocation]);
 
   const mapOptions = useMemo(() => {
-    if (activitiesWithLocation.length === 0) {
+    if (allLocations.length === 0) {
       return undefined;
     }
-    const latMin = Math.min(
-      ...activitiesWithLocation.map((activity) => activity.locationLat!),
-    );
-    const latMax = Math.max(
-      ...activitiesWithLocation.map((activity) => activity.locationLat!),
-    );
-    const lngMin = Math.min(
-      ...activitiesWithLocation.map((activity) => activity.locationLng!),
-    );
-    const lngMax = Math.max(
-      ...activitiesWithLocation.map((activity) => activity.locationLng!),
-    );
+
+    const latMin = Math.min(...allLocations.map((point) => point.lat));
+    const latMax = Math.max(...allLocations.map((point) => point.lat));
+    const lngMin = Math.min(...allLocations.map((point) => point.lng));
+    const lngMax = Math.max(...allLocations.map((point) => point.lng));
     const latDiff = latMax - latMin;
     const lngDiff = lngMax - lngMin;
     const latBuffer = latDiff * 0.1;
@@ -62,15 +99,27 @@ export function TripMap() {
       center: [lngCenter, latCenter] as [number, number],
       zoom,
     };
-  }, [activitiesWithLocation]);
+  }, [allLocations]);
 
   const [popupPortals, setPopupPortals] = useState<
-    { activity: TripSliceActivity; popup: HTMLDivElement }[]
+    Array<
+      | {
+          type: 'activity';
+          activityId: string;
+          popup: HTMLDivElement;
+        }
+      | {
+          type: 'accommodation';
+          accommodationId: string;
+          popup: HTMLDivElement;
+        }
+    >
   >([]);
 
   useEffect(() => {
     if (map.current) return;
     if (!mapContainer.current) return;
+    if (currentTripLoading) return;
 
     map.current = new MapTilerMap({
       container: mapContainer.current,
@@ -81,9 +130,7 @@ export function TripMap() {
     });
 
     const newPopupPortals: typeof popupPortals = [];
-    for (const activity of activitiesWithLocation) {
-      if (!activity.locationLat || !activity.locationLng) continue;
-
+    for (const location of allLocations) {
       const popupContent = document.createElement('div');
       const popup = new Popup({
         closeButton: false,
@@ -91,61 +138,139 @@ export function TripMap() {
         offset: 25,
         className: s.popup,
       }).setDOMContent(popupContent);
-      newPopupPortals.push({
-        activity,
-        popup: popupContent,
-      });
+
+      if (location.type === 'accommodation') {
+        newPopupPortals.push({
+          type: 'accommodation',
+          accommodationId: location.id,
+          popup: popupContent,
+        });
+      } else if (location.type === 'activity') {
+        newPopupPortals.push({
+          type: 'activity',
+          activityId: location.id,
+          popup: popupContent,
+        });
+      }
 
       // Create and add marker with popup
       new Marker({
         color: 'var(--accent-indicator)',
         draggable: false,
       })
-        .setLngLat([activity.locationLng, activity.locationLat])
+        .setLngLat([location.lng, location.lat])
         .setPopup(popup) // Attach the popup to the marker
         .addTo(map.current);
     }
 
     setPopupPortals(newPopupPortals);
-  }, [activitiesWithLocation, mapOptions]);
+  }, [allLocations, mapOptions, currentTripLoading]);
 
   return (
     <div className={s.mapWrapper}>
+      {currentTripLoading ? <Spinner size="3" m="3" /> : null}
       <div ref={mapContainer} className={s.map} />
-      {popupPortals.map(({ activity, popup }) => {
-        const activityStartStr = DateTime.fromMillis(activity.timestampStart)
-          .setZone(trip?.timeZone)
-          .toFormat('dd LLLL yyyy HH:mm');
-        const activityEndStr = DateTime.fromMillis(activity.timestampEnd)
-          .setZone(trip?.timeZone)
-          // since 1 activity must be in same day, so might as well just show the time for end
-          .toFormat('HH:mm');
-
-        return createPortal(
-          <Container>
-            <Heading as="h3" size="2">
-              {activity.title}
-            </Heading>
-            <Text as="p" size="1">
-              <ClockIcon style={{ verticalAlign: '-2px' }} /> {activityStartStr}{' '}
-              to {activityEndStr}
-            </Text>
-            {activity.location ? (
-              <Text as="p" size="1">
-                <SewingPinIcon style={{ verticalAlign: '-2px' }} />{' '}
-                {activity.location}
-              </Text>
-            ) : null}
-            {activity.description ? (
-              <Text as="p" size="1" className={s.activityDescription}>
-                <InfoCircledIcon style={{ verticalAlign: '-2px' }} />{' '}
-                {activity.description}
-              </Text>
-            ) : null}
-          </Container>,
-          popup,
-        );
+      {popupPortals.map((popupPortal) => {
+        switch (popupPortal.type) {
+          case 'accommodation':
+            return createPortal(
+              <AccommodationPopup
+                key={popupPortal.accommodationId}
+                accommodationId={popupPortal.accommodationId}
+              />,
+              popupPortal.popup,
+            );
+          case 'activity':
+            return createPortal(
+              <ActivityPopup
+                key={popupPortal.activityId}
+                activityId={popupPortal.activityId}
+              />,
+              popupPortal.popup,
+            );
+        }
       })}
     </div>
+  );
+}
+
+function AccommodationPopup({ accommodationId }: { accommodationId: string }) {
+  const accommodation = useTripAccommodation(accommodationId);
+  const trip = useTrip(accommodation?.tripId);
+
+  const accommodationCheckInStr =
+    accommodation && trip
+      ? DateTime.fromMillis(accommodation.timestampCheckIn)
+          .setZone(trip.timeZone)
+          .toFormat('dd LLLL yyyy HH:mm')
+      : '';
+  const accommodationCheckOutStr =
+    accommodation && trip
+      ? DateTime.fromMillis(accommodation.timestampCheckOut)
+          .setZone(trip.timeZone)
+          .toFormat('dd LLLL yyyy HH:mm')
+      : '';
+  const notes = useParseTextIntoNodes(accommodation?.notes);
+
+  return (
+    <Container>
+      <Heading as="h3" size="2">
+        {accommodation?.name}
+      </Heading>
+      <Text as="p" size="1">
+        <ClockIcon style={{ verticalAlign: '-2px' }} />{' '}
+        {accommodationCheckInStr} to {accommodationCheckOutStr}
+      </Text>
+      {accommodation?.address ? (
+        <Text as="p" size="1">
+          <SewingPinIcon style={{ verticalAlign: '-2px' }} />{' '}
+          {accommodation.address}
+        </Text>
+      ) : null}
+      {notes.length > 0 ? (
+        <Text as="p" size="1" className={s.description}>
+          <InfoCircledIcon style={{ verticalAlign: '-2px' }} /> {notes}
+        </Text>
+      ) : null}
+    </Container>
+  );
+}
+function ActivityPopup({ activityId }: { activityId: string }) {
+  const activity = useTripActivity(activityId);
+  const trip = useTrip(activity?.tripId);
+  const activityStartStr = activity
+    ? DateTime.fromMillis(activity.timestampStart)
+        .setZone(trip?.timeZone)
+        .toFormat('dd LLLL yyyy HH:mm')
+    : '';
+  const activityEndStr = activity
+    ? DateTime.fromMillis(activity.timestampEnd)
+        .setZone(trip?.timeZone)
+        // since 1 activity must be in same day, so might as well just show the time for end
+        .toFormat('HH:mm')
+    : '';
+  const description = useParseTextIntoNodes(activity?.description);
+
+  return (
+    <Container>
+      <Heading as="h3" size="2">
+        {activity?.title}
+      </Heading>
+      <Text as="p" size="1">
+        <ClockIcon style={{ verticalAlign: '-2px' }} /> {activityStartStr} to{' '}
+        {activityEndStr}
+      </Text>
+      {activity?.location ? (
+        <Text as="p" size="1">
+          <SewingPinIcon style={{ verticalAlign: '-2px' }} />{' '}
+          {activity.location}
+        </Text>
+      ) : null}
+      {description.length > 0 ? (
+        <Text as="p" size="1" className={s.description}>
+          <InfoCircledIcon style={{ verticalAlign: '-2px' }} /> {description}
+        </Text>
+      ) : null}
+    </Container>
   );
 }

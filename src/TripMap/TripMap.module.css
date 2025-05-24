@@ -29,6 +29,6 @@
   background: var(--color-panel-solid);
 }
 
-.activityDescription {
+.description {
   white-space: pre-wrap;
 }
