@@ -1,9 +1,12 @@
-import { MapStyle, Map as MapTilerMap, Marker } from '@maptiler/sdk';
+import { Map as MapTilerMap, Marker } from '@maptiler/sdk';
 import { useEffect, useRef } from 'react';
 import s from '../Activity/ActivityDialogMap.module.css';
+import { MapStyle } from '../maptiler/style';
 import '@maptiler/sdk/style.css';
 import { GeocodingControl } from '@maptiler/geocoding-control/maptilersdk';
 import '@maptiler/geocoding-control/style.css';
+import { ThemeAppearance } from '../theme/constants';
+import { useTheme } from '../theme/hooks';
 
 export function AccommodationMap({
   mapOptions,
@@ -18,6 +21,7 @@ export function AccommodationMap({
 }) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<MapTilerMap>(null);
+  const theme = useTheme();
 
   useEffect(() => {
     if (map.current) return;
@@ -25,7 +29,10 @@ export function AccommodationMap({
 
     map.current = new MapTilerMap({
       container: mapContainer.current,
-      style: MapStyle.OPENSTREETMAP,
+      style:
+        theme === ThemeAppearance.Dark
+          ? MapStyle.OPENSTREETMAP_DARK
+          : MapStyle.OPENSTREETMAP,
       center: [mapOptions.lng, mapOptions.lat],
       zoom: mapOptions.zoom,
       apiKey: process.env.MAPTILER_API_KEY,
@@ -79,7 +86,15 @@ export function AccommodationMap({
       });
       map.current.addControl(gc);
     }
-  }, [mapOptions, marker, setMarkerCoordinate, setMapZoom]);
+  }, [mapOptions, marker, setMarkerCoordinate, setMapZoom, theme]);
+  useEffect(() => {
+    if (!map.current) return;
+    if (theme === ThemeAppearance.Dark) {
+      map.current.setStyle(MapStyle.OPENSTREETMAP_DARK);
+    } else if (theme === ThemeAppearance.Light) {
+      map.current.setStyle(MapStyle.OPENSTREETMAP);
+    }
+  }, [theme]);
 
   useEffect(() => {
     if (!map.current) return;

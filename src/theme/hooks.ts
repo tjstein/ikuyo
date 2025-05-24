@@ -1,18 +1,15 @@
-import { useEffect, useState } from 'react';
-
-export const ThemeAppearance = {
-  Light: 'light',
-  Dark: 'dark',
-} as const;
-export type ThemeAppearanceType =
-  (typeof ThemeAppearance)[keyof typeof ThemeAppearance];
+import { useEffect } from 'react';
+import { useBoundStore, useDeepBoundStore } from '../data/store';
+import { ThemeAppearance, type ThemeAppearanceType } from './constants';
 
 // https://stackoverflow.com/questions/59621784/how-to-detect-prefers-color-scheme-change-in-javascript
 // https://stackoverflow.com/questions/77024306/radix-ui-theme-dark-mode-not-being-applied
-export const useTheme = () => {
-  const [theme, setTheme] = useState<ThemeAppearanceType>(
-    ThemeAppearance.Light,
-  );
+export function useTheme(): ThemeAppearanceType {
+  const theme = useDeepBoundStore((state) => state.currentTheme);
+  return theme;
+}
+export function useSubscribeTheme() {
+  const setTheme = useBoundStore((state) => state.setTheme);
   useEffect(() => {
     const darkThemeListener = (ev: MediaQueryListEvent) => {
       if (ev.matches) {
@@ -45,6 +42,5 @@ export const useTheme = () => {
       darkMatchMedia.removeEventListener('change', darkThemeListener);
       lightMatchMedia.removeEventListener('change', lightThemeListener);
     };
-  }, []);
-  return theme;
-};
+  }, [setTheme]);
+}

@@ -20,7 +20,8 @@ import {
   RouteTrips,
 } from './Routes/routes';
 import { ImperativeToastRoot } from './Toast/ImperativeToast';
-import { ThemeAppearance, useTheme } from './theme';
+import { ThemeAppearance } from './theme/constants';
+import { useSubscribeTheme, useTheme } from './theme/hooks';
 
 const PageTerms = withLoading()(React.lazy(() => import('./Docs/Terms')));
 const PagePrivacy = withLoading()(React.lazy(() => import('./Docs/Privacy')));
@@ -32,6 +33,7 @@ const PageAccount = withLoading()(
 );
 
 function App() {
+  useSubscribeTheme();
   const theme = useTheme();
   useSubscribeUser();
   useRedirectUnauthenticatedRoutes();

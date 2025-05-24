@@ -1,5 +1,6 @@
-import { MapStyle, Map as MapTilerMap, Marker, Popup } from '@maptiler/sdk';
+import { Map as MapTilerMap, Marker, Popup } from '@maptiler/sdk';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { MapStyle } from '../maptiler/style';
 import s from './TripMap.module.css';
 
 import '@maptiler/sdk/style.css';
@@ -21,6 +22,8 @@ import {
   useTripActivities,
   useTripActivity,
 } from '../Trip/hooks';
+import { ThemeAppearance } from '../theme/constants';
+import { useTheme } from '../theme/hooks';
 export function TripMap() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<MapTilerMap>(null);
@@ -115,6 +118,7 @@ export function TripMap() {
         }
     >
   >([]);
+  const theme = useTheme();
 
   useEffect(() => {
     if (map.current) return;
@@ -123,7 +127,10 @@ export function TripMap() {
 
     map.current = new MapTilerMap({
       container: mapContainer.current,
-      style: MapStyle.OPENSTREETMAP,
+      style:
+        theme === ThemeAppearance.Dark
+          ? MapStyle.OPENSTREETMAP_DARK
+          : MapStyle.OPENSTREETMAP,
       zoom: mapOptions?.zoom,
       center: mapOptions ? mapOptions.center : undefined,
       apiKey: process.env.MAPTILER_API_KEY,
@@ -164,7 +171,15 @@ export function TripMap() {
     }
 
     setPopupPortals(newPopupPortals);
-  }, [allLocations, mapOptions, currentTripLoading]);
+  }, [allLocations, mapOptions, currentTripLoading, theme]);
+  useEffect(() => {
+    if (!map.current) return;
+    if (theme === ThemeAppearance.Dark) {
+      map.current.setStyle(MapStyle.OPENSTREETMAP_DARK);
+    } else if (theme === ThemeAppearance.Light) {
+      map.current.setStyle(MapStyle.OPENSTREETMAP);
+    }
+  }, [theme]);
 
   return (
     <div className={s.mapWrapper}>
