@@ -65,7 +65,7 @@ export function AccommodationMap({
         });
     }
 
-    if (marker && setMarkerCoordinate) {
+    if (setMarkerCoordinate) {
       const gc = new GeocodingControl({
         limit: 5,
         country: mapOptions?.region?.toLowerCase(),

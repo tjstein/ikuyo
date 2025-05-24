@@ -64,7 +64,7 @@ export function ActivityMap({
         });
     }
 
-    if (marker && setMarkerCoordinate) {
+    if (setMarkerCoordinate) {
       const gc = new GeocodingControl({
         limit: 5,
         country: mapOptions?.region?.toLowerCase(),
