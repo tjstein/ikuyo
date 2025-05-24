@@ -17,6 +17,7 @@ import {
   groupActivitiesByDays,
 } from '../Activity/eventGrouping';
 import { useBoundStore } from '../data/store';
+import { TripUserRole } from '../data/TripUserRole';
 import { Macroplan } from '../Macroplan/Macroplan';
 import { MacroplanDialog } from '../Macroplan/MacroplanDialog';
 import { MacroplanNewDialog } from '../Macroplan/MacroplanNewDialog';
@@ -103,6 +104,13 @@ export function Timetable() {
   const publishToast = useBoundStore((state) => state.publishToast);
   const pushDialog = useBoundStore((state) => state.pushDialog);
 
+  const userCanModifyTrip = useMemo(() => {
+    return (
+      trip?.currentUserRole === TripUserRole.Owner ||
+      trip?.currentUserRole === TripUserRole.Editor
+    );
+  }, [trip?.currentUserRole]);
+
   // Handle dropping activities on the timetable
   const handleDrop = useCallback(
     async (e: React.DragEvent<HTMLDivElement>) => {
@@ -110,6 +118,17 @@ export function Timetable() {
       setDragging(false);
       if (!trip) {
         console.warn('No trip found for dropping activity');
+        return;
+      }
+      if (!userCanModifyTrip) {
+        console.warn(
+          'User does not have permission to edit or delete activities',
+        );
+        publishToast({
+          root: {},
+          title: { children: 'You do not have permission to move activities' },
+          close: {},
+        });
         return;
       }
 
@@ -215,7 +234,7 @@ export function Timetable() {
         });
       }
     },
-    [trip, activities, publishToast],
+    [trip, activities, publishToast, userCanModifyTrip],
   );
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
@@ -280,6 +299,7 @@ export function Timetable() {
                       gridColumnEnd={`d${String(columnIndex.end)}-ce${String(
                         columnIndex.endColumn,
                       )}`}
+                      userCanEditOrDelete={userCanModifyTrip}
                     />
                   );
                 })}
@@ -305,6 +325,7 @@ export function Timetable() {
                         columnIndex.endColumn,
                       )}`}
                       timeZone={trip.timeZone}
+                      userCanEditOrDelete={userCanModifyTrip}
                     />
                   );
                 })}
@@ -336,6 +357,7 @@ export function Timetable() {
                     tripViewMode={TripViewMode.Timetable}
                     tripTimeZone={trip?.timeZone ?? ''}
                     tripTimestampStart={trip?.timestampStart ?? 0}
+                    userCanEditOrDelete={userCanModifyTrip}
                   />
                 );
               });
@@ -345,15 +367,24 @@ export function Timetable() {
 
         <ContextMenu.Content>
           <ContextMenu.Label>{trip?.title}</ContextMenu.Label>
-          <ContextMenu.Item onClick={openActivityNewDialog}>
+          <ContextMenu.Item
+            onClick={openActivityNewDialog}
+            disabled={!userCanModifyTrip}
+          >
             New activity
           </ContextMenu.Item>
 
-          <ContextMenu.Item onClick={openAccommodationNewDialog}>
+          <ContextMenu.Item
+            onClick={openAccommodationNewDialog}
+            disabled={!userCanModifyTrip}
+          >
             New acommodation
           </ContextMenu.Item>
 
-          <ContextMenu.Item onClick={openMacroplanNewDialog}>
+          <ContextMenu.Item
+            onClick={openMacroplanNewDialog}
+            disabled={!userCanModifyTrip}
+          >
             New day plan
           </ContextMenu.Item>
         </ContextMenu.Content>

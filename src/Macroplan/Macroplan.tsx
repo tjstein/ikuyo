@@ -15,12 +15,14 @@ function MacroplanInner({
   gridColumnStart,
   gridColumnEnd,
   tripViewMode,
+  userCanEditOrDelete,
 }: {
   className?: string;
   macroplan: TripSliceMacroplan;
   gridColumnStart?: string;
   gridColumnEnd?: string;
   tripViewMode: TripViewModeType;
+  userCanEditOrDelete: boolean;
 }) {
   const {
     openMacroplanDeleteDialog,
@@ -58,13 +60,17 @@ function MacroplanInner({
           <ContextMenu.Item onClick={openMacroplanViewDialog}>
             View
           </ContextMenu.Item>
-          <ContextMenu.Item onClick={openMacroplanEditDialog}>
+          <ContextMenu.Item
+            onClick={openMacroplanEditDialog}
+            disabled={!userCanEditOrDelete}
+          >
             Edit
           </ContextMenu.Item>
           <ContextMenu.Separator />
           <ContextMenu.Item
             color={dangerToken}
             onClick={openMacroplanDeleteDialog}
+            disabled={!userCanEditOrDelete}
           >
             Delete
           </ContextMenu.Item>
@@ -79,6 +85,7 @@ export const Macroplan = memo(MacroplanInner, (prevProps, nextProps) => {
     prevProps.macroplan.name === nextProps.macroplan.name &&
     prevProps.className === nextProps.className &&
     prevProps.gridColumnStart === nextProps.gridColumnStart &&
-    prevProps.gridColumnEnd === nextProps.gridColumnEnd
+    prevProps.gridColumnEnd === nextProps.gridColumnEnd &&
+    prevProps.userCanEditOrDelete === nextProps.userCanEditOrDelete
   );
 });

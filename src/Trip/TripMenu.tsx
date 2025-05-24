@@ -1,5 +1,6 @@
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import { Button, DropdownMenu } from '@radix-ui/themes';
+import { useMemo } from 'react';
 import { Link, useLocation } from 'wouter';
 import { AccommodationNewDialog } from '../Accommodation/AccommodationNewDialog';
 import { ActivityNewDialog } from '../Activity/ActivityNewDialog';
@@ -7,6 +8,7 @@ import { useCurrentUser } from '../Auth/hooks';
 import { UserAvatarMenu } from '../Auth/UserAvatarMenu';
 import { db } from '../data/db';
 import { useBoundStore } from '../data/store';
+import { TripUserRole } from '../data/TripUserRole';
 import { MacroplanNewDialog } from '../Macroplan/MacroplanNewDialog';
 import { RouteAccount, RouteLogin, RouteTrips } from '../Routes/routes';
 import { useCurrentTrip } from './store/hooks';
@@ -15,10 +17,19 @@ import { TripEditDialog } from './TripEditDialog';
 import s from './TripMenu.module.css';
 import { TripSharingDialog } from './TripSharingDialog';
 
-export function TripMenu({ showTripSharing }: { showTripSharing: boolean }) {
+export function TripMenu() {
   const [, setLocation] = useLocation();
   const { trip } = useCurrentTrip();
   const user = useCurrentUser();
+  const userIsOwner = useMemo(() => {
+    return trip?.currentUserRole === TripUserRole.Owner;
+  }, [trip?.currentUserRole]);
+  const userCanModifyTrip = useMemo(() => {
+    return (
+      trip?.currentUserRole === TripUserRole.Owner ||
+      trip?.currentUserRole === TripUserRole.Editor
+    );
+  }, [trip?.currentUserRole]);
   const pushDialog = useBoundStore((state) => state.pushDialog);
   return (
     <>
@@ -33,6 +44,7 @@ export function TripMenu({ showTripSharing }: { showTripSharing: boolean }) {
         <DropdownMenu.Content>
           <DropdownMenu.Label>Activity</DropdownMenu.Label>
           <DropdownMenu.Item
+            disabled={!userCanModifyTrip}
             onClick={() => {
               if (trip) {
                 pushDialog(ActivityNewDialog, { trip });
@@ -46,6 +58,7 @@ export function TripMenu({ showTripSharing }: { showTripSharing: boolean }) {
           <DropdownMenu.Label>Trip</DropdownMenu.Label>
 
           <DropdownMenu.Item
+            disabled={!userCanModifyTrip}
             onClick={() => {
               if (trip) {
                 pushDialog(TripEditDialog, { trip });
@@ -56,6 +69,7 @@ export function TripMenu({ showTripSharing }: { showTripSharing: boolean }) {
           </DropdownMenu.Item>
 
           <DropdownMenu.Item
+            disabled={!userCanModifyTrip}
             onClick={() => {
               if (trip) {
                 pushDialog(AccommodationNewDialog, { trip });
@@ -66,6 +80,7 @@ export function TripMenu({ showTripSharing }: { showTripSharing: boolean }) {
           </DropdownMenu.Item>
 
           <DropdownMenu.Item
+            disabled={!userCanModifyTrip}
             onClick={() => {
               if (trip) {
                 pushDialog(MacroplanNewDialog, { trip });
@@ -75,19 +90,19 @@ export function TripMenu({ showTripSharing }: { showTripSharing: boolean }) {
             Add day plan
           </DropdownMenu.Item>
 
-          {showTripSharing ? (
-            <DropdownMenu.Item
-              onClick={() => {
-                if (trip && user) {
-                  pushDialog(TripSharingDialog, { tripId: trip.id });
-                }
-              }}
-            >
-              Share trip
-            </DropdownMenu.Item>
-          ) : null}
+          <DropdownMenu.Item
+            disabled={!userIsOwner}
+            onClick={() => {
+              if (trip && user) {
+                pushDialog(TripSharingDialog, { tripId: trip.id });
+              }
+            }}
+          >
+            Share trip
+          </DropdownMenu.Item>
 
           <DropdownMenu.Item
+            disabled={!userCanModifyTrip}
             onClick={() => {
               if (trip) {
                 pushDialog(TripDeleteDialog, { trip });

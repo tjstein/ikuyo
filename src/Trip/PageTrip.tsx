@@ -1,5 +1,5 @@
 import { Heading, Skeleton } from '@radix-ui/themes';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { Redirect, Route, type RouteComponentProps, Switch } from 'wouter';
 import { withLoading } from '../Loading/withLoading';
 import { DocTitle } from '../Nav/DocTitle';
@@ -52,7 +52,6 @@ const TripComment = withLoading()(
 
 import { DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import { useBoundStore } from '../data/store';
-import { TripUserRole } from '../data/TripUserRole';
 import {
   RouteTripComment,
   RouteTripExpenses,
@@ -85,9 +84,6 @@ export function PageTrip({ params }: RouteComponentProps<{ id: string }>) {
 }
 
 function PageTripInner({ trip }: { trip: TripSliceTrip | undefined }) {
-  const currentUserIsOwner = useMemo(() => {
-    return trip?.currentUserRole === TripUserRole.Owner;
-  }, [trip?.currentUserRole]);
   return (
     <>
       <DocTitle title={trip?.title ?? 'Trip'} />
@@ -128,9 +124,7 @@ function PageTripInner({ trip }: { trip: TripSliceTrip | undefined }) {
             }
           </Heading>,
         ]}
-        rightItems={[
-          <TripMenu key="menu" showTripSharing={currentUserIsOwner} />,
-        ]}
+        rightItems={[<TripMenu key="menu" />]}
       />
       <Switch>
         <Route

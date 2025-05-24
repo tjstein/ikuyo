@@ -7,12 +7,13 @@ import {
   Text,
 } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { CommentGroupWithForm } from '../Comment/CommentGroupWithForm';
 import { COMMENT_GROUP_OBJECT_TYPE } from '../Comment/db';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import type { DialogContentProps } from '../Dialog/DialogRoute';
 import { useDeepBoundStore } from '../data/store';
+import { TripUserRole } from '../data/TripUserRole';
 import { useTrip } from '../Trip/store/hooks';
 import type { TripSliceActivity } from '../Trip/store/types';
 import s from './Activity.module.css';
@@ -28,6 +29,12 @@ export function ActivityDialogContentView({
   loading,
 }: DialogContentProps<TripSliceActivity>) {
   const { trip } = useTrip(activity?.tripId);
+  const userCanEditOrDelete = useMemo(() => {
+    return (
+      trip?.currentUserRole === TripUserRole.Owner ||
+      trip?.currentUserRole === TripUserRole.Editor
+    );
+  }, [trip?.currentUserRole]);
 
   const activityStartStr =
     activity && trip
@@ -83,6 +90,7 @@ export function ActivityDialogContentView({
               variant="soft"
               color="gray"
               onClick={goToEditMode}
+              disabled={!userCanEditOrDelete}
             >
               Edit
             </Button>
@@ -92,6 +100,7 @@ export function ActivityDialogContentView({
               variant="soft"
               color="gray"
               onClick={goToDeleteMode}
+              disabled={!userCanEditOrDelete}
             >
               Delete
             </Button>

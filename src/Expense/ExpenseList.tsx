@@ -1,6 +1,7 @@
 import { PlusIcon, QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { Button, Section, Table, Tooltip } from '@radix-ui/themes';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { TripUserRole } from '../data/TripUserRole';
 import { useCurrentTrip, useTripExpenses } from '../Trip/store/hooks';
 import { ExpenseInlineForm } from './ExpenseInlineForm';
 import s from './ExpenseList.module.css';
@@ -12,6 +13,12 @@ export function ExpenseList() {
   const expenseIds = trip?.expenseIds ?? [];
   const expenses = useTripExpenses(expenseIds);
   const [expenseMode, setExpenseMode] = useState(ExpenseMode.View);
+  const userCanModifyExpense = useMemo(() => {
+    return (
+      trip?.currentUserRole === TripUserRole.Owner ||
+      trip?.currentUserRole === TripUserRole.Editor
+    );
+  }, [trip?.currentUserRole]);
 
   return (
     <Section py="0">
@@ -56,32 +63,34 @@ export function ExpenseList() {
             <ExpenseRow key={expense.id} expense={expense} />
           ))}
 
-          {expenseMode === ExpenseMode.View ? (
-            <Table.Row key={'add'}>
-              <Table.Cell colSpan={8} align="center">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setExpenseMode(ExpenseMode.Add);
-                  }}
-                >
-                  <PlusIcon />
-                  Add Expense
-                </Button>
-              </Table.Cell>
-            </Table.Row>
-          ) : (
-            <Table.Row key={'add'}>
-              {trip ? (
-                <ExpenseInlineForm
-                  trip={trip}
-                  expenseMode={ExpenseMode.Add}
-                  expense={undefined}
-                  setExpenseMode={setExpenseMode}
-                />
-              ) : null}
-            </Table.Row>
-          )}
+          {userCanModifyExpense ? (
+            expenseMode === ExpenseMode.View ? (
+              <Table.Row key={'add'}>
+                <Table.Cell colSpan={8} align="center">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setExpenseMode(ExpenseMode.Add);
+                    }}
+                  >
+                    <PlusIcon />
+                    Add Expense
+                  </Button>
+                </Table.Cell>
+              </Table.Row>
+            ) : (
+              <Table.Row key={'add'}>
+                {trip ? (
+                  <ExpenseInlineForm
+                    trip={trip}
+                    expenseMode={ExpenseMode.Add}
+                    expense={undefined}
+                    setExpenseMode={setExpenseMode}
+                  />
+                ) : null}
+              </Table.Row>
+            )
+          ) : null}
         </Table.Body>
       </Table.Root>
     </Section>

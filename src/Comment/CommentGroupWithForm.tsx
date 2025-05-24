@@ -1,6 +1,8 @@
 import { Spinner, Text } from '@radix-ui/themes';
+import { useMemo } from 'react';
+import { TripUserRole } from '../data/TripUserRole';
 import type { DbUser } from '../data/types';
-import { useTripCommentGroup } from '../Trip/store/hooks';
+import { useTrip, useTripCommentGroup } from '../Trip/store/hooks';
 import { CommentForm } from './CommentForm';
 import { CommentGroup } from './CommentGroup';
 import { CommentMode } from './CommentMode';
@@ -27,10 +29,17 @@ export function CommentGroupWithForm({
   onFormFocus: () => void;
 }) {
   const commentGroup = useTripCommentGroup(commentGroupId);
+  const { trip } = useTrip(tripId);
+  const userCanComment = useMemo(() => {
+    return (
+      trip?.currentUserRole === TripUserRole.Owner ||
+      trip?.currentUserRole === TripUserRole.Editor
+    );
+  }, [trip?.currentUserRole]);
 
   return (
     <>
-      {tripId && objectId ? (
+      {tripId && objectId && userCanComment ? (
         <CommentForm
           mode={CommentMode.Add}
           tripId={tripId}

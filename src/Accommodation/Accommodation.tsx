@@ -18,6 +18,7 @@ function AccommodationInner({
   gridColumnStart,
   gridColumnEnd,
   timeZone,
+  userCanEditOrDelete,
 }: {
   className?: string;
   accommodation: TripSliceAccommodation;
@@ -26,6 +27,7 @@ function AccommodationInner({
   gridColumnStart?: string;
   gridColumnEnd?: string;
   timeZone: string;
+  userCanEditOrDelete: boolean;
 }) {
   const responsiveTextSize = { initial: '1' as const };
   const {
@@ -78,13 +80,17 @@ function AccommodationInner({
           <ContextMenu.Item onClick={openAccommodationViewDialog}>
             View
           </ContextMenu.Item>
-          <ContextMenu.Item onClick={openAccommodationEditDialog}>
+          <ContextMenu.Item
+            onClick={openAccommodationEditDialog}
+            disabled={!userCanEditOrDelete}
+          >
             Edit
           </ContextMenu.Item>
           <ContextMenu.Separator />
           <ContextMenu.Item
             color={dangerToken}
             onClick={openAccommodationDeleteDialog}
+            disabled={!userCanEditOrDelete}
           >
             Delete
           </ContextMenu.Item>
@@ -103,7 +109,8 @@ export const Accommodation = memo(
       prevProps.displayTimeMode === nextProps.displayTimeMode &&
       prevProps.gridColumnStart === nextProps.gridColumnStart &&
       prevProps.gridColumnEnd === nextProps.gridColumnEnd &&
-      prevProps.timeZone === nextProps.timeZone
+      prevProps.timeZone === nextProps.timeZone &&
+      prevProps.userCanEditOrDelete === nextProps.userCanEditOrDelete
     );
   },
 );

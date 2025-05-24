@@ -9,6 +9,7 @@ import { ActivityDialog } from '../Activity/ActivityDialog';
 import { ActivityNewDialog } from '../Activity/ActivityNewDialog';
 import { groupActivitiesByDays } from '../Activity/eventGrouping';
 import { useBoundStore } from '../data/store';
+import { TripUserRole } from '../data/TripUserRole';
 import { Macroplan } from '../Macroplan/Macroplan';
 import { MacroplanDialog } from '../Macroplan/MacroplanDialog';
 import { MacroplanNewDialog } from '../Macroplan/MacroplanNewDialog';
@@ -34,6 +35,12 @@ export function ActivityList() {
     trip?.accommodationIds ?? [],
   );
   const tripMacroplans = useTripMacroplans(trip?.macroplanIds ?? []);
+  const userCanEditOrDelete = useMemo(() => {
+    return (
+      trip?.currentUserRole === TripUserRole.Owner ||
+      trip?.currentUserRole === TripUserRole.Editor
+    );
+  }, [trip?.currentUserRole]);
 
   const dayGroups = useMemo(() => {
     if (!trip || !activities || !tripAccommodations || !tripMacroplans)
@@ -91,6 +98,7 @@ export function ActivityList() {
                         macroplan={macroplan}
                         className={s.listItem}
                         tripViewMode={TripViewMode.List}
+                        userCanEditOrDelete={userCanEditOrDelete}
                       />
                     );
                   }),
@@ -106,6 +114,7 @@ export function ActivityList() {
                           tripViewMode={TripViewMode.List}
                           className={s.listItem}
                           timeZone={trip?.timeZone ?? ''}
+                          userCanEditOrDelete={userCanEditOrDelete}
                           {...props}
                         />
                       );
@@ -125,6 +134,7 @@ export function ActivityList() {
                         tripViewMode={TripViewMode.List}
                         tripTimeZone={trip?.timeZone ?? ''}
                         tripTimestampStart={trip?.timestampStart ?? 0}
+                        userCanEditOrDelete={userCanEditOrDelete}
                       />
                     );
                   }),

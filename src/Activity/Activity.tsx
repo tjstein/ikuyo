@@ -22,6 +22,7 @@ function ActivityInner({
   tripViewMode,
   tripTimeZone,
   tripTimestampStart,
+  userCanEditOrDelete,
 }: {
   activity: TripSliceActivity;
   className?: string;
@@ -31,6 +32,7 @@ function ActivityInner({
 
   tripTimeZone: string;
   tripTimestampStart: number;
+  userCanEditOrDelete: boolean;
 }) {
   const timeStart = formatTime(activity.timestampStart, tripTimeZone);
   const timeEnd = formatTime(activity.timestampEnd, tripTimeZone);
@@ -112,7 +114,9 @@ function ActivityInner({
               className,
             )}
             onClick={openActivityViewDialog}
-            draggable={tripViewMode === TripViewMode.Timetable}
+            draggable={
+              tripViewMode === TripViewMode.Timetable && userCanEditOrDelete
+            }
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             style={{
@@ -161,13 +165,17 @@ function ActivityInner({
           <ContextMenu.Item onClick={openActivityViewDialog}>
             View
           </ContextMenu.Item>
-          <ContextMenu.Item onClick={openActivityEditDialog}>
+          <ContextMenu.Item
+            onClick={openActivityEditDialog}
+            disabled={!userCanEditOrDelete}
+          >
             Edit
           </ContextMenu.Item>
           <ContextMenu.Separator />
           <ContextMenu.Item
             color={dangerToken}
             onClick={openActivityDeleteDialog}
+            disabled={!userCanEditOrDelete}
           >
             Delete
           </ContextMenu.Item>
@@ -206,6 +214,7 @@ export const Activity = memo(ActivityInner, (prevProps, nextProps) => {
     prevProps.columnEndIndex === nextProps.columnEndIndex &&
     prevProps.tripViewMode === nextProps.tripViewMode &&
     prevProps.tripTimeZone === nextProps.tripTimeZone &&
-    prevProps.tripTimestampStart === nextProps.tripTimestampStart
+    prevProps.tripTimestampStart === nextProps.tripTimestampStart &&
+    prevProps.userCanEditOrDelete === nextProps.userCanEditOrDelete
   );
 });

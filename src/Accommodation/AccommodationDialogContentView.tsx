@@ -7,12 +7,13 @@ import {
   Text,
 } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { CommentGroupWithForm } from '../Comment/CommentGroupWithForm';
 import { COMMENT_GROUP_OBJECT_TYPE } from '../Comment/db';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import type { DialogContentProps } from '../Dialog/DialogRoute';
 import { useDeepBoundStore } from '../data/store';
+import { TripUserRole } from '../data/TripUserRole';
 import { useTrip } from '../Trip/store/hooks';
 import type { TripSliceAccommodation } from '../Trip/store/types';
 import { AccommodationMap } from './AccommodationDialogMap';
@@ -41,6 +42,12 @@ export function AccommodationDialogContentView({
       : '';
   const notes = useParseTextIntoNodes(accommodation?.notes);
   const currentUser = useDeepBoundStore((state) => state.currentUser);
+  const userCanEditOrDelete = useMemo(() => {
+    return (
+      trip?.currentUserRole === TripUserRole.Owner ||
+      trip?.currentUserRole === TripUserRole.Editor
+    );
+  }, [trip?.currentUserRole]);
 
   const goToEditMode = useCallback(() => {
     setMode(AccommodationDialogMode.Edit);
@@ -79,6 +86,7 @@ export function AccommodationDialogContentView({
               variant="soft"
               color="gray"
               onClick={goToEditMode}
+              disabled={!userCanEditOrDelete}
             >
               Edit
             </Button>
@@ -88,6 +96,7 @@ export function AccommodationDialogContentView({
               variant="soft"
               color="gray"
               onClick={goToDeleteMode}
+              disabled={!userCanEditOrDelete}
             >
               Delete
             </Button>
