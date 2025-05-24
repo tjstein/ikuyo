@@ -54,7 +54,11 @@ export function MacroplanDialogContentView({
   }, [setDialogClosable]);
   return (
     <Dialog.Content {...dialogContentProps}>
-      <DialogTitleSection title={`Day Plan: ${macroplan?.name}`} />
+      <DialogTitleSection
+        title={
+          <>Day Plan: {macroplan?.name ?? <Skeleton>Day plan</Skeleton>}</>
+        }
+      />
       <Flex
         gap="5"
         justify="between"

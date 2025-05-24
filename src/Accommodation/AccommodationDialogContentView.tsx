@@ -52,7 +52,14 @@ export function AccommodationDialogContentView({
   }, [setDialogClosable]);
   return (
     <Dialog.Content {...dialogContentProps}>
-      <DialogTitleSection title={`Accommodation: ${accommodation?.name}`} />
+      <DialogTitleSection
+        title={
+          <>
+            Accommodation:{' '}
+            {accommodation?.name ?? <Skeleton>Hotel ABC</Skeleton>}
+          </>
+        }
+      />
       <Flex
         gap="5"
         justify="between"

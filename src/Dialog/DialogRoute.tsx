@@ -1,5 +1,6 @@
 import { Cross1Icon } from '@radix-ui/react-icons';
 import { Box, Button, Dialog, Flex } from '@radix-ui/themes';
+import type React from 'react';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { type RouteComponentProps, useLocation } from 'wouter';
 import { CommonDialogMaxWidth, CommonLargeDialogMaxWidth } from './ui';
@@ -32,7 +33,7 @@ export type DialogContentProps<DataType> = {
   setMode: (mode: DialogModeType) => void;
   dialogContentProps: Dialog.ContentProps;
   setDialogClosable: (closable: boolean) => void;
-  DialogTitleSection: React.ComponentType<{ title: string }>;
+  DialogTitleSection: React.ComponentType<{ title: React.ReactNode }>;
 };
 export function createDialogRoute<DataType>({
   DialogContentView,
@@ -145,7 +146,7 @@ export function createDialogRoute<DataType>({
   return DialogRoute;
 }
 
-function DialogTitleSection({ title }: { title: string }) {
+function DialogTitleSection({ title }: { title: React.ReactNode }) {
   const [, setLocation] = useLocation();
   const closeDialog = useCallback(() => {
     setLocation('');

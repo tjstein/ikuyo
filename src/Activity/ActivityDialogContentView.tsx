@@ -56,7 +56,13 @@ export function ActivityDialogContentView({
 
   return (
     <Dialog.Content {...dialogContentProps}>
-      <DialogTitleSection title={`Activity: ${activity?.title}`} />
+      <DialogTitleSection
+        title={
+          <>
+            Activity: {activity?.title ?? <Skeleton>Activity Title</Skeleton>}
+          </>
+        }
+      />
       <Flex
         gap="5"
         justify="between"
