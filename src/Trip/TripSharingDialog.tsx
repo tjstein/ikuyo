@@ -11,7 +11,7 @@ import {
 } from '@radix-ui/themes';
 import { type SyntheticEvent, useCallback, useMemo, useState } from 'react';
 import { useCurrentUser } from '../Auth/hooks';
-import { CommonDialogMaxWidth } from '../Dialog/ui';
+import { CommonLargeDialogMaxWidth } from '../Dialog/ui';
 import { useBoundStore } from '../data/store';
 import { TripUserRole } from '../data/TripUserRole';
 import { dangerToken } from '../ui';
@@ -108,7 +108,7 @@ export function TripSharingDialog({ tripId }: { tripId: string }) {
         }
       }}
     >
-      <Dialog.Content maxWidth={CommonDialogMaxWidth}>
+      <Dialog.Content maxWidth={CommonLargeDialogMaxWidth}>
         <Dialog.Title>Share Trip</Dialog.Title>
         <Dialog.Description size="2">
           Share this trip with other people!

@@ -2,7 +2,7 @@ import { Cross1Icon } from '@radix-ui/react-icons';
 import { Box, Button, Dialog, Flex } from '@radix-ui/themes';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { type RouteComponentProps, useLocation } from 'wouter';
-import { CommonDialogMaxWidth } from './ui';
+import { CommonDialogMaxWidth, CommonLargeDialogMaxWidth } from './ui';
 
 export const DialogMode = {
   View: 'view',
@@ -105,9 +105,12 @@ export function createDialogRoute<DataType>({
           dispatch({ type: 'requestDismissDialog' });
           e.preventDefault();
         },
-        maxWidth: CommonDialogMaxWidth,
+        maxWidth:
+          mode === DialogMode.Delete
+            ? CommonDialogMaxWidth
+            : CommonLargeDialogMaxWidth,
       } satisfies Dialog.ContentProps;
-    }, []);
+    }, [mode]);
 
     return (
       <Dialog.Root open={state.open}>

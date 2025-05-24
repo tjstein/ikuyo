@@ -1,5 +1,5 @@
 import { Box, Dialog } from '@radix-ui/themes';
-import { CommonDialogMaxWidth } from '../Dialog/ui';
+import { CommonLargeDialogMaxWidth } from '../Dialog/ui';
 import { useBoundStore } from '../data/store';
 import type { DbUser } from '../data/types';
 import { TripForm } from './TripForm';
@@ -11,7 +11,7 @@ export function TripNewDialog({ user }: { user: DbUser }) {
 
   return (
     <Dialog.Root open>
-      <Dialog.Content maxWidth={CommonDialogMaxWidth}>
+      <Dialog.Content maxWidth={CommonLargeDialogMaxWidth}>
         <Dialog.Title>New Trip</Dialog.Title>
         <Dialog.Description size="2">
           Fill in your new trip details...

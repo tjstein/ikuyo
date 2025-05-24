@@ -12,7 +12,6 @@ import { CommentGroupWithForm } from '../Comment/CommentGroupWithForm';
 import { COMMENT_GROUP_OBJECT_TYPE } from '../Comment/db';
 import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import type { DialogContentProps } from '../Dialog/DialogRoute';
-import { CommonCommentDialogMaxWidth } from '../Dialog/ui';
 import { useDeepBoundStore } from '../data/store';
 import { useTrip } from '../Trip/hooks';
 import type { TripSliceMacroplan } from '../Trip/store/types';
@@ -54,10 +53,7 @@ export function MacroplanDialogContentView({
     setDialogClosable(false);
   }, [setDialogClosable]);
   return (
-    <Dialog.Content
-      {...dialogContentProps}
-      maxWidth={CommonCommentDialogMaxWidth}
-    >
+    <Dialog.Content {...dialogContentProps}>
       <DialogTitleSection title={`Day Plan: ${macroplan?.name}`} />
       <Flex
         gap="5"

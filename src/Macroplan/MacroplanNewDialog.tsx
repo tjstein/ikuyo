@@ -1,7 +1,7 @@
 import { Dialog, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useMemo } from 'react';
-import { CommonDialogMaxWidth } from '../Dialog/ui';
+import { CommonLargeDialogMaxWidth } from '../Dialog/ui';
 import { useBoundStore } from '../data/store';
 import type { TripSliceTrip } from '../Trip/store/types';
 import { MacroplanForm } from './MacroplanForm';
@@ -41,7 +41,7 @@ export function MacroplanNewDialog({ trip }: { trip: TripSliceTrip }) {
 
   return (
     <Dialog.Root open>
-      <Dialog.Content maxWidth={CommonDialogMaxWidth}>
+      <Dialog.Content maxWidth={CommonLargeDialogMaxWidth}>
         <Dialog.Title>New Day Plan</Dialog.Title>
         <Dialog.Description size="2">
           <Text as="p">

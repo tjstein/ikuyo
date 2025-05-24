@@ -1,7 +1,7 @@
 import { Box, Dialog } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
 import { useMemo } from 'react';
-import { CommonDialogMaxWidth } from '../Dialog/ui';
+import { CommonLargeDialogMaxWidth } from '../Dialog/ui';
 import { useBoundStore } from '../data/store';
 import type { TripSliceTrip } from '../Trip/store/types';
 import { AccommodationForm } from './AccommodationForm';
@@ -41,7 +41,7 @@ export function AccommodationNewDialog({ trip }: { trip: TripSliceTrip }) {
 
   return (
     <Dialog.Root open>
-      <Dialog.Content maxWidth={CommonDialogMaxWidth}>
+      <Dialog.Content maxWidth={CommonLargeDialogMaxWidth}>
         <Dialog.Title>New Accommodation</Dialog.Title>
         <Dialog.Description size="2">
           Fill in the new accommodation details for this trip...
