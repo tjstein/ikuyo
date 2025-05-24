@@ -239,6 +239,8 @@ export interface TripSlice {
     [userId: string]: TripSliceCommentUser;
   };
   currentTripId: string | undefined;
+  currentTripLoading: boolean;
+  currentTripError: string | undefined;
   setCurrentTripId: (tripId: string | undefined) => void;
   getCurrentTrip: () => TripSliceTrip | undefined;
 

@@ -33,6 +33,8 @@ export const createTripSlice: StateCreator<
 > = (set, get) => {
   return {
     currentTripId: undefined,
+    currentTripLoading: true,
+    currentTripError: undefined,
     trip: {},
     accommodation: {},
     activity: {},
@@ -80,7 +82,7 @@ export const createTripSlice: StateCreator<
             },
           },
         },
-        ({ data }) => {
+        ({ data, error }) => {
           const trip = data?.trip?.[0] satisfies
             | DbTripQueryReturnType
             | undefined;
@@ -115,6 +117,14 @@ export const createTripSlice: StateCreator<
               tripUser: newTripUserState,
               comment: newCommentState,
               commentUser: newCommentUserState,
+              ...(tripId === state.currentTripId
+                ? error
+                  ? {
+                      currentTripLoading: false,
+                      currentTripError: error.message,
+                    }
+                  : { currentTripLoading: false, currentTripError: undefined }
+                : {}),
             } satisfies Partial<TripSlice>;
           });
         },
@@ -123,6 +133,7 @@ export const createTripSlice: StateCreator<
     setCurrentTripId: (tripId: string | undefined) => {
       set(() => ({
         currentTripId: tripId,
+        currentTripLoading: true,
       }));
     },
     getCurrentTrip: () => {
