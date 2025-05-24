@@ -56,7 +56,7 @@ export function AccommodationDialogContentView({
       {...dialogContentProps}
       maxWidth={CommonCommentDialogMaxWidth}
     >
-      <DialogTitleSection title="View Accommodation" />
+      <DialogTitleSection title={`Accommodation: ${accommodation?.name}`} />
       <Flex
         gap="5"
         justify="between"

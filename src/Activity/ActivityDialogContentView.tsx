@@ -60,7 +60,7 @@ export function ActivityDialogContentView({
       {...dialogContentProps}
       maxWidth={CommonCommentDialogMaxWidth}
     >
-      <DialogTitleSection title="View Activity" />
+      <DialogTitleSection title={`Activity: ${activity?.title}`} />
       <Flex
         gap="5"
         justify="between"

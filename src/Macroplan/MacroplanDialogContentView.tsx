@@ -58,7 +58,7 @@ export function MacroplanDialogContentView({
       {...dialogContentProps}
       maxWidth={CommonCommentDialogMaxWidth}
     >
-      <DialogTitleSection title="View Day Plan" />
+      <DialogTitleSection title={`Day Plan: ${macroplan?.name}`} />
       <Flex
         gap="5"
         justify="between"
