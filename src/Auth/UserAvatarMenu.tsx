@@ -14,22 +14,40 @@ export function UserAvatarMenu({ user }: { user: DbUser | null | undefined }) {
           <UserAvatar user={user} />
         </Button>
       </DropdownMenu.Trigger>
-      <DropdownMenu.Content>
-        <DropdownMenu.Label>Account</DropdownMenu.Label>
-        <DropdownMenu.Item asChild>
-          <Link to={RouteAccount.asRootRoute()}>Edit account</Link>
-        </DropdownMenu.Item>
-        <DropdownMenu.Separator />
-        <DropdownMenu.Item
-          onClick={() => {
-            void db.auth.signOut().then(() => {
+
+      {user ? (
+        <DropdownMenu.Content>
+          <DropdownMenu.Label>Account</DropdownMenu.Label>
+          <DropdownMenu.Item asChild>
+            <Link to={RouteAccount.asRootRoute()}>Edit account</Link>
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item
+            onClick={() => {
+              if (!user) {
+                setLocation(RouteLogin.asRootRoute());
+                return;
+              }
+              void db.auth.signOut().then(() => {
+                setLocation(RouteLogin.asRootRoute());
+              });
+            }}
+          >
+            Log out
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      ) : (
+        <DropdownMenu.Content>
+          <DropdownMenu.Label>Account</DropdownMenu.Label>
+          <DropdownMenu.Item
+            onClick={() => {
               setLocation(RouteLogin.asRootRoute());
-            });
-          }}
-        >
-          Log out
-        </DropdownMenu.Item>
-      </DropdownMenu.Content>
+            }}
+          >
+            Log in
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      )}
     </DropdownMenu.Root>
   );
 }
