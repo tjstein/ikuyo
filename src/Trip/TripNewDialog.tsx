@@ -4,6 +4,7 @@ import { useBoundStore } from '../data/store';
 import type { DbUser } from '../data/types';
 import { TripForm } from './TripForm';
 import { TripFormMode } from './TripFormMode';
+import { TripSharingLevel } from './tripSharingLevel';
 
 export function TripNewDialog({ user }: { user: DbUser }) {
   const currentTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -26,6 +27,7 @@ export function TripNewDialog({ user }: { user: DbUser }) {
           tripCurrency=""
           tripOriginCurrency=""
           tripRegion=""
+          tripSharingLevel={TripSharingLevel.Private}
           userId={user.id}
           onFormCancel={popDialog}
           onFormSuccess={popDialog}

@@ -9,6 +9,10 @@ import { dbAddTrip, dbUpdateTrip } from './db';
 import type { TripSliceActivity } from './store/types';
 import { TripFormMode } from './TripFormMode';
 import { getDateTimeFromDateInput } from './time';
+import {
+  TripSharingLevel,
+  type TripSharingLevelType,
+} from './tripSharingLevel';
 
 export function TripForm({
   mode,
@@ -20,6 +24,7 @@ export function TripForm({
   tripRegion,
   tripCurrency,
   tripOriginCurrency,
+  tripSharingLevel,
   userId,
   activities,
   onFormSuccess,
@@ -34,6 +39,7 @@ export function TripForm({
   tripRegion: string;
   tripCurrency: string;
   tripOriginCurrency: string;
+  tripSharingLevel: TripSharingLevelType;
   userId?: string;
   activities?: TripSliceActivity[];
   onFormSuccess: () => void;
@@ -116,6 +122,7 @@ export function TripForm({
             region,
             currency,
             originCurrency,
+            sharingLevel: tripSharingLevel,
           },
           {
             activities,
@@ -139,6 +146,7 @@ export function TripForm({
             region,
             currency,
             originCurrency,
+            sharingLevel: TripSharingLevel.Private,
           },
           {
             userId,
@@ -170,6 +178,7 @@ export function TripForm({
     setLocation,
     activities,
     tripTimeZone,
+    tripSharingLevel,
   ]);
 
   const fieldSelectCurrency = useMemo(() => {

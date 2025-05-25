@@ -6,6 +6,7 @@ import type {
   TripSliceActivity,
   TripSliceTrip,
 } from '../Trip/store/types';
+import { TripSharingLevel } from '../Trip/tripSharingLevel';
 import { groupActivitiesByDays } from './eventGrouping';
 
 describe('Trip', () => {
@@ -25,6 +26,7 @@ describe('Trip', () => {
     tripUserIds: [],
     expenseIds: [],
     currentUserRole: TripUserRole.Owner,
+    sharingLevel: TripSharingLevel.Private,
   } satisfies TripSliceTrip;
   function createActivity(
     activity: Partial<TripSliceActivity>,

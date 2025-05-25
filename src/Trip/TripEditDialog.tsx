@@ -38,6 +38,7 @@ export function TripEditDialog({ trip }: { trip: TripSliceTrip }) {
           tripCurrency={trip.currency}
           tripOriginCurrency={trip.originCurrency}
           tripRegion={trip.region}
+          tripSharingLevel={trip.sharingLevel}
           activities={activities}
           onFormCancel={popDialog}
           onFormSuccess={popDialog}
