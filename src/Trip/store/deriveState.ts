@@ -4,6 +4,7 @@ import {
 } from '../../Comment/db';
 import type { BoundStoreType } from '../../data/store';
 import { TripUserRole } from '../../data/TripUserRole';
+import type { TripSharingLevelType } from '../tripSharingLevel';
 import type {
   DbTripQueryReturnType,
   TripSliceAccommodation,
@@ -45,6 +46,7 @@ export function deriveNewTripState(
       tripUserIds: trip.tripUser.map((a) => a.id),
       commentGroupIds: trip.commentGroup.map((a) => a.id),
       expenseIds: trip.expense.map((a) => a.id),
+      sharingLevel: trip.sharingLevel as TripSharingLevelType,
       currentUserRole:
         (currentUserTripUser?.role as TripUserRole | undefined) ??
         TripUserRole.Viewer,

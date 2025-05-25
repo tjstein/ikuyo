@@ -170,6 +170,19 @@ export async function dbUpdateTrip(
 
   return db.transact(transactions);
 }
+export async function dbUpdateTripSharingLevel(
+  tripId: string,
+  sharingLevel: TripSharingLevelType,
+) {
+  const transactionTimestamp = Date.now();
+  return db.transact([
+    db.tx.trip[tripId].merge({
+      sharingLevel,
+      lastUpdatedAt: transactionTimestamp,
+    }),
+  ]);
+}
+
 export async function dbDeleteTrip(trip: TripSliceTrip) {
   const tripData = await db.queryOnce({
     trip: {

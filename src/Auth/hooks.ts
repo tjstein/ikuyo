@@ -35,6 +35,8 @@ export function useRedirectUnauthenticatedRoutes() {
         })
       ) {
         // nothing
+      } else if (location.startsWith('/trip/')) {
+        // nothing, some trips are public
       } else {
         setLocation(RouteLogin.asRootRoute());
       }

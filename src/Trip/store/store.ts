@@ -45,6 +45,7 @@ export const createTripSlice: StateCreator<
     tripUser: {},
     expense: {},
     subscribeTrip: (tripId: string) => {
+      console.log('subscribeTrip', { tripId });
       set((state) => ({
         tripMeta: {
           ...state.tripMeta,
@@ -54,7 +55,6 @@ export const createTripSlice: StateCreator<
           },
         },
       }));
-      console.log('subscribing to trip', tripId);
       return db.subscribeQuery(
         {
           trip: {
@@ -93,7 +93,7 @@ export const createTripSlice: StateCreator<
           },
         },
         ({ data, error }) => {
-          console.log('subscribing to trip, callback', tripId, data, error);
+          console.log('subscribeTrip callback', { tripId, data, error });
           const trip = data?.trip?.[0] satisfies
             | DbTripQueryReturnType
             | undefined;

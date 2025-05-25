@@ -95,6 +95,7 @@ export type DbTripQueryReturnType = {
   region: string;
   originCurrency: string;
   timeZone: string;
+  sharingLevel: number;
   accommodation: {
     id: string;
     createdAt: number;
