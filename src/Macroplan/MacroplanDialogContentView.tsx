@@ -105,12 +105,13 @@ export function MacroplanDialogContentView({
           </Heading>
           <Text>{macroplan?.name ?? <Skeleton>Day plan</Skeleton>}</Text>
           <Heading as="h2" size="4">
-            Start
+            Date
           </Heading>
-          <Text>{macroplanDateStartStr}</Text>
-          <Heading as="h2" size="4">
-            End
-          </Heading>
+          <Text>
+            {macroplanDateStartStr ?? <Skeleton>1 January 2025</Skeleton>}
+            &ndash;
+            {macroplanDateEndStr ?? <Skeleton>15 January 2025</Skeleton>}
+          </Text>
           <Text>{macroplanDateEndStr}</Text>
           {macroplan?.notes ? (
             <>

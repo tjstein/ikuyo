@@ -114,7 +114,8 @@ export function ActivityDialogContentView({
             Time
           </Heading>
           <Text>
-            {activityStartStr} to {activityEndStr}
+            {activityStartStr ?? <Skeleton>1 January 2025 15:00</Skeleton>}
+            &ndash;{activityEndStr ?? <Skeleton>18:00</Skeleton>}
           </Text>
 
           {activity?.location ? (
