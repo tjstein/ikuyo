@@ -4,7 +4,8 @@
   overflow: auto;
   justify-items: stretch;
   align-items: stretch;
-  max-height: calc(100vh - var(--space-8));
+  /* Reduce for Navbar (height); then TripMenuFloating (height + border) */
+  max-height: calc(100vh - var(--space-8) - var(--space-7) - 1px);
   overscroll-behavior-y: contain;
 }
 .listSubheader {
@@ -22,4 +23,10 @@
   flex: 0 0 auto;
   margin-left: var(--space-2);
   margin-right: var(--space-2);
+}
+@media (min-width: 520px) {
+  .list {
+    /* Reduce for Navbar (height) */
+    max-height: calc(100vh - var(--space-8));
+  }
 }
