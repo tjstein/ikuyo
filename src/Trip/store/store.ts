@@ -162,13 +162,13 @@ export const createTripSlice: StateCreator<
       }
       return state.getTrip(tripId);
     },
-    getCurrentTripMeta: () => {
+    getCurrentTripMeta: (): TripSliceTripMeta => {
       const state = get();
       const tripId = state.currentTripId;
       if (!tripId) {
-        return { loading: true, error: undefined } satisfies TripSliceTripMeta;
+        return { loading: true, error: undefined };
       }
-      return state.getTripMeta(tripId);
+      return state.getTripMeta(tripId) ?? { loading: false, error: undefined };
     },
     getTrip: (id: string | undefined): TripSliceTrip | undefined => {
       if (!id) {
