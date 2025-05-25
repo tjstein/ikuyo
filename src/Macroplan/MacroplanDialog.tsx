@@ -9,13 +9,14 @@ export const MacroplanDialog = createDialogRoute<TripSliceMacroplan>({
   DialogContentView: MacroplanDialogContentView,
   DialogContentEdit: MacroplanDialogContentEdit,
   DialogContentDelete: MacroplanDialogContentDelete,
-  // TODO: See AccommodationDialog.tsx on loading state issue
   getData: (id) => useDeepBoundStore((state) => state.getMacroplan(id)),
-  getDataMeta: (id) => {
-    const macroplan = useDeepBoundStore((state) => state.getMacroplan(id));
+  getDataMeta: () => {
+    const { loading, error } = useDeepBoundStore((state) =>
+      state.getCurrentTripMeta(),
+    );
     return {
-      loading: macroplan === undefined,
-      error: undefined,
+      loading: !!loading,
+      error: error,
     };
   },
 });

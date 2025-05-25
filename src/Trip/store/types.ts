@@ -248,7 +248,7 @@ export interface TripSlice {
   currentTripId: string | undefined;
   setCurrentTripId: (tripId: string | undefined) => void;
   getCurrentTrip: () => TripSliceTrip | undefined;
-  getCurrentTripMeta: () => TripSliceTripMeta | undefined;
+  getCurrentTripMeta: () => TripSliceTripMeta;
   /** return: unsubscribe function */
   subscribeTrip: (id: string) => () => void;
 
