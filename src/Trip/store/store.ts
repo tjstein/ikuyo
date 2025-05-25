@@ -166,7 +166,7 @@ export const createTripSlice: StateCreator<
       const state = get();
       const tripId = state.currentTripId;
       if (!tripId) {
-        return { loading: false, error: undefined } satisfies TripSliceTripMeta;
+        return { loading: true, error: undefined } satisfies TripSliceTripMeta;
       }
       return state.getTripMeta(tripId);
     },

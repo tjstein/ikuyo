@@ -93,11 +93,13 @@ export function TripMap() {
     const lngDiffBuffer = lngMaxBuffer - lngMinBuffer;
     const latCenter = latMinBuffer + latDiffBuffer / 2;
     const lngCenter = lngMinBuffer + lngDiffBuffer / 2;
-    const zoom = Math.max(7, Math.min(15, Math.log2(360 / lngDiffBuffer) + 1));
 
     return {
       center: [lngCenter, latCenter] as [number, number],
-      zoom,
+      bounds: [
+        [lngMinBuffer, latMinBuffer],
+        [lngMaxBuffer, latMaxBuffer],
+      ] as [[number, number], [number, number]],
     };
   }, [allLocations]);
 
@@ -121,6 +123,7 @@ export function TripMap() {
     if (map.current) return;
     if (!mapContainer.current) return;
     if (currentTripLoading) return;
+    console.log('TripMap init', { mapOptions });
 
     map.current = new MapTilerMap({
       container: mapContainer.current,
@@ -128,7 +131,7 @@ export function TripMap() {
         theme === ThemeAppearance.Dark
           ? MapStyle.OPENSTREETMAP_DARK
           : MapStyle.OPENSTREETMAP,
-      zoom: mapOptions?.zoom,
+      bounds: mapOptions ? mapOptions.bounds : undefined,
       center: mapOptions ? mapOptions.center : undefined,
       apiKey: process.env.MAPTILER_API_KEY,
     });

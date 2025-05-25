@@ -1,7 +1,14 @@
 .mapWrapper {
   position: relative;
-  height: calc(100vh - var(--space-8));
+  /* Reduce for Navbar (height); then TripMenuFloating (height + border) */
+  height: calc(100vh - var(--space-8) - var(--space-7) - 1px);
   width: 100%;
+}
+@media (min-width: 520px) {
+  .list {
+    /* Reduce for Navbar (height) */
+    height: calc(100vh - var(--space-8));
+  }
 }
 
 .map {
