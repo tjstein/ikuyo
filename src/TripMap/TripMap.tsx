@@ -134,6 +134,7 @@ export function TripMap() {
       bounds: mapOptions ? mapOptions.bounds : undefined,
       center: mapOptions ? mapOptions.center : undefined,
       apiKey: process.env.MAPTILER_API_KEY,
+      logoPosition: 'bottom-right',
     });
 
     const newPopupPortals: typeof popupPortals = [];

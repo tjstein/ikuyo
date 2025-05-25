@@ -35,6 +35,7 @@ export function ActivityMap({
       center: [mapOptions.lng, mapOptions.lat],
       zoom: mapOptions.zoom,
       apiKey: process.env.MAPTILER_API_KEY,
+      logoPosition: 'bottom-right',
     });
 
     map.current.on('zoomend', () => {
