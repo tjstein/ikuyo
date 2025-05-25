@@ -21,7 +21,7 @@ export function ExpenseList() {
   }, [trip?.currentUserRole]);
 
   return (
-    <Section py="0">
+    <Section py="0" pb={{ initial: '8', xs: '0' }}>
       <Table.Root>
         <colgroup>
           <col className={s.tableCellDateIncurred} />

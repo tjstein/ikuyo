@@ -9,6 +9,7 @@ import { dangerToken } from '../ui';
 import { dbDeleteExpense } from './db';
 import { ExpenseInlineForm } from './ExpenseInlineForm';
 import { ExpenseMode } from './ExpenseMode';
+import s from './ExpenseRow.module.css';
 import { formatTimestampToReadableDate } from './time';
 
 export function ExpenseRow({ expense }: { expense: TripSliceExpense }) {
@@ -54,7 +55,7 @@ function ExpenseRowView({
   const { trip } = useTrip(expense.tripId);
   return (
     <>
-      <Table.RowHeaderCell>
+      <Table.RowHeaderCell className={s.timestampIncurred}>
         {trip
           ? formatTimestampToReadableDate(
               DateTime.fromMillis(expense.timestampIncurred, {
@@ -63,28 +64,32 @@ function ExpenseRowView({
             )
           : ''}
       </Table.RowHeaderCell>
-      <Table.Cell>{expense.title}</Table.Cell>
-      <Table.Cell>{expense.description}</Table.Cell>
-      <Table.Cell>{expense.currency}</Table.Cell>
-      <Table.Cell>{expense.amount}</Table.Cell>
-      <Table.Cell>{expense.currencyConversionFactor}</Table.Cell>
-      <Table.Cell>{expense.amountInOriginCurrency}</Table.Cell>
-      <Table.Cell>
+      <Table.Cell className={s.title}>{expense.title}</Table.Cell>
+      <Table.Cell className={s.description}>{expense.description}</Table.Cell>
+      <Table.Cell className={s.currency}>{expense.currency}</Table.Cell>
+      <Table.Cell className={s.amount}>{expense.amount}</Table.Cell>
+      <Table.Cell className={s.currencyConversionFactor}>
+        {expense.currencyConversionFactor}
+      </Table.Cell>
+      <Table.Cell className={s.amountInOriginCurrency}>
+        {expense.amountInOriginCurrency}
+      </Table.Cell>
+      <Table.Cell className={s.actions}>
         <Button
           variant="outline"
           aria-label="Edit expense"
           mr="2"
           mb="2"
+          size="2"
           onClick={() => {
             setExpenseMode(ExpenseMode.Edit);
           }}
         >
           <Pencil1Icon />
         </Button>
-        {/* TODO: implement Edit, make it inline edit? */}
         <Popover.Root>
           <Popover.Trigger>
-            <Button variant="outline">
+            <Button variant="outline" size="2">
               <TrashIcon />
             </Button>
           </Popover.Trigger>

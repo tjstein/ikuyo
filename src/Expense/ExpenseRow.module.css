@@ -1,0 +1,10 @@
+.timestampIncurred,
+.title,
+.description,
+.currency,
+.amount,
+.currencyConversionFactor,
+.amountInOriginCurrency,
+.actions {
+  white-space: nowrap;
+}
