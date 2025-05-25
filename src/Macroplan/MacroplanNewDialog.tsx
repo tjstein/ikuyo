@@ -8,7 +8,15 @@ import { MacroplanForm } from './MacroplanForm';
 import { MacroplanFormMode } from './MacroplanFormMode';
 import { formatToDateInput } from './time';
 
-export function MacroplanNewDialog({ trip }: { trip: TripSliceTrip }) {
+export function MacroplanNewDialog({
+  trip,
+  prefillData,
+}: {
+  trip: TripSliceTrip;
+  prefillData?: {
+    dayOfTrip: number;
+  };
+}) {
   const popDialog = useBoundStore((state) => state.popDialog);
   const tripStartStr = formatToDateInput(
     DateTime.fromMillis(trip.timestampStart).setZone(trip.timeZone),
@@ -20,6 +28,24 @@ export function MacroplanNewDialog({ trip }: { trip: TripSliceTrip }) {
   );
 
   const [macroplanCheckInStr, macroplanCheckOutStr] = useMemo(() => {
+    if (prefillData) {
+      // Calculate the start of the selected day
+      const tripStart = DateTime.fromMillis(trip.timestampStart).setZone(
+        trip.timeZone,
+      );
+      const selectedDay = tripStart
+        .plus({ days: prefillData.dayOfTrip - 1 })
+        .startOf('day');
+
+      // Set start date to the selected day
+      const startDate = selectedDay;
+      // Set end date to the same day (single day plan by default)
+      const endDate = selectedDay;
+
+      return [formatToDateInput(startDate), formatToDateInput(endDate)];
+    }
+
+    // Default behavior when no prefillData
     return [
       formatToDateInput(
         DateTime.fromMillis(trip.timestampStart)
@@ -37,7 +63,7 @@ export function MacroplanNewDialog({ trip }: { trip: TripSliceTrip }) {
           .plus({ hour: 11 }),
       ),
     ];
-  }, [trip]);
+  }, [trip, prefillData]);
 
   return (
     <Dialog.Root open>

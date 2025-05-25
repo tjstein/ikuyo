@@ -1,15 +1,13 @@
 import { ClockIcon, HomeIcon, StackIcon } from '@radix-ui/react-icons';
-import { ContextMenu, Section, Text } from '@radix-ui/themes';
+import { Section, Text } from '@radix-ui/themes';
 import clsx from 'clsx';
 import type * as React from 'react';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { Route, Switch } from 'wouter';
 import { Accommodation } from '../Accommodation/Accommodation';
 import { AccommodationDialog } from '../Accommodation/AccommodationDialog';
-import { AccommodationNewDialog } from '../Accommodation/AccommodationNewDialog';
 import { Activity } from '../Activity/Activity';
 import { ActivityDialog } from '../Activity/ActivityDialog';
-import { ActivityNewDialog } from '../Activity/ActivityNewDialog';
 import { dbUpdateActivityTime } from '../Activity/db';
 import { calculateNewTimestamps } from '../Activity/dragUtils';
 import {
@@ -20,7 +18,6 @@ import { useBoundStore } from '../data/store';
 import { TripUserRole } from '../data/TripUserRole';
 import { Macroplan } from '../Macroplan/Macroplan';
 import { MacroplanDialog } from '../Macroplan/MacroplanDialog';
-import { MacroplanNewDialog } from '../Macroplan/MacroplanNewDialog';
 import {
   RouteTripTimetableViewAccommodation,
   RouteTripTimetableViewActivity,
@@ -102,7 +99,6 @@ export function Timetable() {
   }, [dayGroups]);
   const timetableRef = useRef<HTMLDivElement>(null);
   const publishToast = useBoundStore((state) => state.publishToast);
-  const pushDialog = useBoundStore((state) => state.pushDialog);
 
   const userCanModifyTrip = useMemo(() => {
     return (
@@ -243,152 +239,111 @@ export function Timetable() {
     setDragging(true);
   }, []);
 
-  const openActivityNewDialog = useCallback(() => {
-    if (!trip) return;
-    pushDialog(ActivityNewDialog, { trip });
-  }, [pushDialog, trip]);
-  const openAccommodationNewDialog = useCallback(() => {
-    if (!trip) return;
-    pushDialog(AccommodationNewDialog, { trip });
-  }, [pushDialog, trip]);
-  const openMacroplanNewDialog = useCallback(() => {
-    if (!trip) return;
-    pushDialog(MacroplanNewDialog, { trip });
-  }, [pushDialog, trip]);
   return (
     <Section py="0">
-      <ContextMenu.Root>
-        <ContextMenu.Trigger>
-          {/** biome-ignore lint/a11y/noStaticElementInteractions: Only drag-and-drop */}
-          <div
-            className={clsx(s.timetable, isDragging && s.dragging)}
-            style={timetableStyle}
-            ref={timetableRef}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-          >
-            <TimetableGrid days={dayGroups.length} />
+      {/** biome-ignore lint/a11y/noStaticElementInteractions: Only drag-and-drop */}
+      <div
+        className={clsx(s.timetable, isDragging && s.dragging)}
+        style={timetableStyle}
+        ref={timetableRef}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+      >
+        <TimetableGrid days={dayGroups.length} />
 
-            <TimetableTimeHeader />
+        <TimetableTimeHeader />
 
-            {dayGroups.map((dayGroup, i) => {
+        {dayGroups.map((dayGroup, i) => {
+          return (
+            <TimetableDayHeader
+              dateString={dayGroup.startDateTime.toFormat('ccc, dd LLL yyyy')}
+              key={dayGroup.startDateTime.toISODate()}
+              gridColumnStart={`d${String(i + 1)}`}
+              gridColumnEnd={`de${String(i + 1)}`}
+            />
+          );
+        })}
+
+        {macroplans.length > 0 ? <TimetableMacroplanHeader /> : null}
+        {macroplans.length > 0 ? (
+          <div className={s.macroplanGrid} style={timetableMacroplanStyle}>
+            {macroplans.map(({ macroplan, day: columnIndex }) => {
               return (
-                <TimetableDayHeader
-                  dateString={dayGroup.startDateTime.toFormat(
-                    'ccc, dd LLL yyyy',
-                  )}
-                  key={dayGroup.startDateTime.toISODate()}
-                  gridColumnStart={`d${String(i + 1)}`}
-                  gridColumnEnd={`de${String(i + 1)}`}
+                <Macroplan
+                  key={macroplan.id}
+                  macroplan={macroplan}
+                  tripViewMode={TripViewMode.List}
+                  gridColumnStart={`d${String(
+                    columnIndex.start,
+                  )}-c${String(columnIndex.startColumn)}`}
+                  gridColumnEnd={`d${String(columnIndex.end)}-ce${String(
+                    columnIndex.endColumn,
+                  )}`}
+                  userCanEditOrDelete={userCanModifyTrip}
                 />
               );
-            })}
-
-            {macroplans.length > 0 ? <TimetableMacroplanHeader /> : null}
-            {macroplans.length > 0 ? (
-              <div className={s.macroplanGrid} style={timetableMacroplanStyle}>
-                {macroplans.map(({ macroplan, day: columnIndex }) => {
-                  return (
-                    <Macroplan
-                      key={macroplan.id}
-                      macroplan={macroplan}
-                      tripViewMode={TripViewMode.List}
-                      gridColumnStart={`d${String(
-                        columnIndex.start,
-                      )}-c${String(columnIndex.startColumn)}`}
-                      gridColumnEnd={`d${String(columnIndex.end)}-ce${String(
-                        columnIndex.endColumn,
-                      )}`}
-                      userCanEditOrDelete={userCanModifyTrip}
-                    />
-                  );
-                })}
-              </div>
-            ) : null}
-
-            {acommodations.length > 0 ? <TimetableAccommodationHeader /> : null}
-            {trip && acommodations.length > 0 ? (
-              <div
-                className={s.accommodationGrid}
-                style={timetableAccommodationStyle}
-              >
-                {acommodations.map(({ accommodation, day: columnIndex }) => {
-                  return (
-                    <Accommodation
-                      key={accommodation.id}
-                      accommodation={accommodation}
-                      tripViewMode={TripViewMode.Timetable}
-                      gridColumnStart={`d${String(
-                        columnIndex.start,
-                      )}-c${String(columnIndex.startColumn)}`}
-                      gridColumnEnd={`d${String(columnIndex.end)}-ce${String(
-                        columnIndex.endColumn,
-                      )}`}
-                      timeZone={trip.timeZone}
-                      userCanEditOrDelete={userCanModifyTrip}
-                    />
-                  );
-                })}
-              </div>
-            ) : null}
-
-            {times.map((_, i) => {
-              return (
-                <TimetableTime
-                  timeStart={`${pad2(i)}:00`}
-                  key={`${pad2(i)}:00`}
-                  gridRowStart={`t${pad2(i)}00`}
-                />
-              );
-            })}
-
-            {dayGroups.map((dayGroup) => {
-              return Object.values(dayGroup.activities).map((activity) => {
-                const columnIndex = dayGroup.activityColumnIndexMap.get(
-                  activity.id,
-                );
-                return (
-                  <Activity
-                    key={activity.id}
-                    className={s.timetableItem}
-                    activity={activity}
-                    columnIndex={columnIndex?.start ?? 1}
-                    columnEndIndex={columnIndex?.end ?? 1}
-                    tripViewMode={TripViewMode.Timetable}
-                    tripTimeZone={trip?.timeZone ?? ''}
-                    tripTimestampStart={trip?.timestampStart ?? 0}
-                    userCanEditOrDelete={userCanModifyTrip}
-                  />
-                );
-              });
             })}
           </div>
-        </ContextMenu.Trigger>
+        ) : null}
 
-        <ContextMenu.Content>
-          <ContextMenu.Label>{trip?.title}</ContextMenu.Label>
-          <ContextMenu.Item
-            onClick={openActivityNewDialog}
-            disabled={!userCanModifyTrip}
+        {acommodations.length > 0 ? <TimetableAccommodationHeader /> : null}
+        {trip && acommodations.length > 0 ? (
+          <div
+            className={s.accommodationGrid}
+            style={timetableAccommodationStyle}
           >
-            New activity
-          </ContextMenu.Item>
+            {acommodations.map(({ accommodation, day: columnIndex }) => {
+              return (
+                <Accommodation
+                  key={accommodation.id}
+                  accommodation={accommodation}
+                  tripViewMode={TripViewMode.Timetable}
+                  gridColumnStart={`d${String(
+                    columnIndex.start,
+                  )}-c${String(columnIndex.startColumn)}`}
+                  gridColumnEnd={`d${String(columnIndex.end)}-ce${String(
+                    columnIndex.endColumn,
+                  )}`}
+                  timeZone={trip.timeZone}
+                  userCanEditOrDelete={userCanModifyTrip}
+                />
+              );
+            })}
+          </div>
+        ) : null}
 
-          <ContextMenu.Item
-            onClick={openAccommodationNewDialog}
-            disabled={!userCanModifyTrip}
-          >
-            New acommodation
-          </ContextMenu.Item>
+        {times.map((_, i) => {
+          return (
+            <TimetableTime
+              timeStart={`${pad2(i)}:00`}
+              key={`${pad2(i)}:00`}
+              gridRowStart={`t${pad2(i)}00`}
+            />
+          );
+        })}
 
-          <ContextMenu.Item
-            onClick={openMacroplanNewDialog}
-            disabled={!userCanModifyTrip}
-          >
-            New day plan
-          </ContextMenu.Item>
-        </ContextMenu.Content>
-      </ContextMenu.Root>
+        {dayGroups.map((dayGroup) => {
+          return Object.values(dayGroup.activities).map((activity) => {
+            const columnIndex = dayGroup.activityColumnIndexMap.get(
+              activity.id,
+            );
+            return (
+              <Activity
+                key={activity.id}
+                className={s.timetableItem}
+                activity={activity}
+                columnIndex={columnIndex?.start ?? 1}
+                columnEndIndex={columnIndex?.end ?? 1}
+                tripViewMode={TripViewMode.Timetable}
+                tripTimeZone={trip?.timeZone ?? ''}
+                tripTimestampStart={trip?.timestampStart ?? 0}
+                userCanEditOrDelete={userCanModifyTrip}
+              />
+            );
+          });
+        })}
+      </div>
+
       <Switch>
         <Route
           path={RouteTripTimetableViewActivity.routePath}

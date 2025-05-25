@@ -9,7 +9,16 @@ import { ActivityFormMode } from './ActivityFormMode';
 import { getNewActivityTimestamp } from './activityStorage';
 import { formatToDatetimeLocalInput } from './time';
 
-export function ActivityNewDialog({ trip }: { trip: TripSliceTrip }) {
+export function ActivityNewDialog({
+  trip,
+  prefillData,
+}: {
+  trip: TripSliceTrip;
+  prefillData?: {
+    dayOfTrip: number;
+    timeStart: string;
+  };
+}) {
   const popDialog = useBoundStore((state) => state.popDialog);
   const tripStartStr = formatToDatetimeLocalInput(
     DateTime.fromMillis(trip.timestampStart).setZone(trip.timeZone),
@@ -20,6 +29,33 @@ export function ActivityNewDialog({ trip }: { trip: TripSliceTrip }) {
       .minus({ minute: 1 }),
   );
   const [activityStartStr, activityEndStr] = useMemo(() => {
+    if (prefillData) {
+      // Convert timeStart (HHMM format) to DateTime
+      const hours = parseInt(prefillData.timeStart.substring(0, 2), 10);
+      const minutes = parseInt(prefillData.timeStart.substring(2, 4), 10);
+
+      // Calculate the start of the selected day
+      const tripStart = DateTime.fromMillis(trip.timestampStart).setZone(
+        trip.timeZone,
+      );
+      const activityDay = tripStart
+        .plus({ days: prefillData.dayOfTrip - 1 })
+        .startOf('day');
+
+      // Set the specific time on that day
+      const activityStartTime = activityDay.set({
+        hour: hours,
+        minute: minutes,
+      });
+      const activityEndTime = activityStartTime.plus({ hours: 1 });
+
+      return [
+        formatToDatetimeLocalInput(activityStartTime),
+        formatToDatetimeLocalInput(activityEndTime),
+      ];
+    }
+
+    // Default behavior when no prefillData
     const activityStartTimestamp = getNewActivityTimestamp(trip);
 
     return [
@@ -34,7 +70,7 @@ export function ActivityNewDialog({ trip }: { trip: TripSliceTrip }) {
           }),
       ),
     ];
-  }, [trip]);
+  }, [trip, prefillData]);
 
   return (
     <Dialog.Root open>

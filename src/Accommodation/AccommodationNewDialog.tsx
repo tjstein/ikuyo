@@ -8,7 +8,15 @@ import { AccommodationForm } from './AccommodationForm';
 import { AccommodationFormMode } from './AccommodationFormMode';
 import { formatToDatetimeLocalInput } from './time';
 
-export function AccommodationNewDialog({ trip }: { trip: TripSliceTrip }) {
+export function AccommodationNewDialog({
+  trip,
+  prefillData,
+}: {
+  trip: TripSliceTrip;
+  prefillData?: {
+    dayOfTrip: number;
+  };
+}) {
   const popDialog = useBoundStore((state) => state.popDialog);
   const tripStartStr = formatToDatetimeLocalInput(
     DateTime.fromMillis(trip.timestampStart).setZone(trip.timeZone),
@@ -20,6 +28,27 @@ export function AccommodationNewDialog({ trip }: { trip: TripSliceTrip }) {
   );
 
   const [accommodationCheckInStr, accommodationCheckOutStr] = useMemo(() => {
+    if (prefillData) {
+      // Calculate the start of the selected day
+      const tripStart = DateTime.fromMillis(trip.timestampStart).setZone(
+        trip.timeZone,
+      );
+      const selectedDay = tripStart
+        .plus({ days: prefillData.dayOfTrip - 1 })
+        .startOf('day');
+
+      // Set check-in to 3pm on the selected day
+      const checkInTime = selectedDay.set({ hour: 15 });
+      // Set check-out to 11am the next day
+      const checkOutTime = selectedDay.plus({ days: 1 }).set({ hour: 11 });
+
+      return [
+        formatToDatetimeLocalInput(checkInTime),
+        formatToDatetimeLocalInput(checkOutTime),
+      ];
+    }
+
+    // Default behavior when no prefillData
     return [
       formatToDatetimeLocalInput(
         DateTime.fromMillis(trip.timestampStart)
@@ -37,7 +66,7 @@ export function AccommodationNewDialog({ trip }: { trip: TripSliceTrip }) {
           .plus({ hour: 11 }),
       ),
     ];
-  }, [trip]);
+  }, [trip, prefillData]);
 
   return (
     <Dialog.Root open>
