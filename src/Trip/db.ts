@@ -12,6 +12,7 @@ import { TripUserRole } from '../data/TripUserRole';
 import type { DbUser } from '../data/types';
 import type { DbMacroplan, DbMacroplanWithTrip } from '../Macroplan/db';
 import type { TripSliceActivity, TripSliceTrip } from './store/types';
+import type { TripSharingLevelType } from './tripSharingLevel';
 
 export type DbTripFull = Omit<
   DbTrip,
@@ -48,6 +49,9 @@ export type DbTrip = {
   currency: string;
   /** origin's default currency */
   originCurrency: string;
+
+  /** 0: private; 1: group; 2: public */
+  sharingLevel: TripSharingLevelType;
 
   activity: DbActivity[] | undefined;
   accommodation: DbAccommodation[] | undefined;

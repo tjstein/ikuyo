@@ -8,6 +8,8 @@ export default {
   },
   trip: {
     bind: [
+      'isTripPublic',
+      'data.sharingLevel == 2',
       'isTripEditor',
       "'editor' in data.ref('tripUser.role') && auth.email in data.ref('tripUser.user.email')",
       'isTripOwner',
@@ -16,7 +18,7 @@ export default {
       "'viewer' in data.ref('tripUser.role') && auth.email in data.ref('tripUser.user.email')",
     ],
     allow: {
-      view: 'isTripViewer || isTripEditor || isTripOwner',
+      view: 'isTripPublic || isTripViewer || isTripEditor || isTripOwner',
       create: 'isTripOwner',
       delete: 'isTripOwner',
       update: 'isTripEditor || isTripOwner',
@@ -43,6 +45,8 @@ export default {
   },
   activity: {
     bind: [
+      'isTripPublic',
+      "2 in data.ref('trip.sharingLevel')",
       'isTripEditor',
       "'editor' in data.ref('trip.tripUser.role') && auth.email in data.ref('trip.tripUser.user.email')",
       'isTripOwner',
@@ -51,7 +55,7 @@ export default {
       "'viewer' in data.ref('trip.tripUser.role') && auth.email in data.ref('trip.tripUser.user.email')",
     ],
     allow: {
-      view: 'isTripViewer || isTripEditor || isTripOwner',
+      view: 'isTripPublic || isTripViewer || isTripEditor || isTripOwner',
       create: 'isTripEditor || isTripOwner',
       delete: 'isTripEditor || isTripOwner',
       update: 'isTripEditor || isTripOwner',
@@ -59,6 +63,8 @@ export default {
   },
   macroplan: {
     bind: [
+      'isTripPublic',
+      "2 in data.ref('trip.sharingLevel')",
       'isTripEditor',
       "'editor' in data.ref('trip.tripUser.role') && auth.email in data.ref('trip.tripUser.user.email')",
       'isTripOwner',
@@ -67,7 +73,7 @@ export default {
       "'viewer' in data.ref('trip.tripUser.role') && auth.email in data.ref('trip.tripUser.user.email')",
     ],
     allow: {
-      view: 'isTripViewer || isTripEditor || isTripOwner',
+      view: 'isTripPublic || isTripViewer || isTripEditor || isTripOwner',
       create: 'isTripEditor || isTripOwner',
       delete: 'isTripEditor || isTripOwner',
       update: 'isTripEditor || isTripOwner',
@@ -75,6 +81,8 @@ export default {
   },
   accommodation: {
     bind: [
+      'isTripPublic',
+      " 2 in data.ref('trip.sharingLevel')",
       'isTripEditor',
       "'editor' in data.ref('trip.tripUser.role') && auth.email in data.ref('trip.tripUser.user.email')",
       'isTripOwner',
@@ -83,7 +91,7 @@ export default {
       "'viewer' in data.ref('trip.tripUser.role') && auth.email in data.ref('trip.tripUser.user.email')",
     ],
     allow: {
-      view: 'isTripViewer || isTripEditor || isTripOwner',
+      view: 'isTripPublic || isTripViewer || isTripEditor || isTripOwner',
       create: 'isTripEditor || isTripOwner',
       delete: 'isTripEditor || isTripOwner',
       update: 'isTripEditor || isTripOwner',
@@ -91,6 +99,8 @@ export default {
   },
   expense: {
     bind: [
+      'isTripPublic',
+      "2 in data.ref('trip.sharingLevel')",
       'isTripEditor',
       "'editor' in data.ref('trip.tripUser.role') && auth.email in data.ref('trip.tripUser.user.email')",
       'isTripOwner',
@@ -107,6 +117,8 @@ export default {
   },
   commentGroup: {
     bind: [
+      'isTripPublic',
+      "2 in data.ref('trip.sharingLevel')",
       'isTripEditor',
       "'editor' in data.ref('trip.tripUser.role') && auth.email in data.ref('trip.tripUser.user.email')",
       'isTripOwner',
@@ -123,6 +135,8 @@ export default {
   },
   comment: {
     bind: [
+      'isTripPublic',
+      "2 in data.ref('group.trip.sharingLevel')",
       'isTripEditor',
       "'editor' in data.ref('group.trip.tripUser.role') && auth.email in data.ref('group.trip.tripUser.user.email')",
       'isTripOwner',
@@ -139,6 +153,8 @@ export default {
   },
   tripUser: {
     bind: [
+      'isTripPublic',
+      "2 in data.ref('trip.sharingLevel')",
       'isTripEditor',
       "'editor' in data.ref('trip.tripUser.role') && auth.email in data.ref('trip.tripUser.user.email')",
       'isTripOwner',

@@ -66,6 +66,7 @@ const _schema = i.schema({
       timestampStart: i.number(),
       timeZone: i.string(),
       title: i.string(),
+      sharingLevel: i.number(),
     }),
     tripUser: i.entity({
       createdAt: i.number(),
