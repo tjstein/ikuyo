@@ -56,6 +56,8 @@ export function createDialogRoute<DataType>({
 }) {
   function DialogRoute({ params }: RouteComponentProps<{ id: string }>) {
     const [, setLocation] = useLocation();
+    const modeFromState = history.state?.mode;
+    const initialMode = modeFromState ?? DialogMode.View;
     const [state, dispatch] = useReducer(
       (state: DialogStateType, action: DialogActionType) => {
         switch (action.type) {
@@ -84,9 +86,9 @@ export function createDialogRoute<DataType>({
         }
       },
       {
-        mode: history.state?.mode ?? DialogMode.View,
+        mode: initialMode,
         open: true,
-        closable: (history.state?.mode ?? DialogMode.View) === DialogMode.View,
+        closable: initialMode === DialogMode.View,
       },
     );
     const setMode = useCallback((mode: DialogModeType) => {
@@ -108,10 +110,12 @@ export function createDialogRoute<DataType>({
     const dialogContentProps = useMemo(() => {
       return {
         onEscapeKeyDown: (e) => {
+          if (e.defaultPrevented) return;
           dispatch({ type: 'requestDismissDialog' });
           e.preventDefault();
         },
         onInteractOutside: (e) => {
+          if (e.defaultPrevented) return;
           dispatch({ type: 'requestDismissDialog' });
           e.preventDefault();
         },

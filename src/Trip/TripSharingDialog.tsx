@@ -138,13 +138,18 @@ export function TripSharingDialog({ tripId }: { tripId: string }) {
       <Dialog.Content
         maxWidth={CommonLargeDialogMaxWidth}
         onEscapeKeyDown={(e) => {
+          if (e.defaultPrevented) return;
           e.preventDefault();
           if (dialogClosable) {
             popDialog();
           }
         }}
         onInteractOutside={(e) => {
+          if (e.defaultPrevented) return;
           e.preventDefault();
+          if (dialogClosable) {
+            popDialog();
+          }
         }}
       >
         <Dialog.Title>Share Trip</Dialog.Title>
