@@ -109,7 +109,7 @@ export default {
       "'viewer' in data.ref('trip.tripUser.role') && auth.email in data.ref('trip.tripUser.user.email')",
     ],
     allow: {
-      view: 'isTripEditor || isTripOwner',
+      view: 'isTripPublic || isTripViewer || isTripEditor || isTripOwner',
       create: 'isTripEditor || isTripOwner',
       delete: 'isTripEditor || isTripOwner',
       update: 'isTripEditor || isTripOwner',
@@ -127,7 +127,7 @@ export default {
       "'viewer' in data.ref('trip.tripUser.role') && auth.email in data.ref('trip.tripUser.user.email')",
     ],
     allow: {
-      view: 'isTripEditor || isTripOwner',
+      view: 'isTripPublic || isTripViewer || isTripEditor || isTripOwner',
       create: 'isTripEditor || isTripOwner',
       delete: 'isTripEditor || isTripOwner',
       update: 'isTripEditor || isTripOwner',
@@ -145,7 +145,7 @@ export default {
       "'viewer' in data.ref('group.trip.tripUser.role') && auth.email in data.ref('group.trip.tripUser.user.email')",
     ],
     allow: {
-      view: 'isTripEditor || isTripOwner',
+      view: 'isTripPublic || isTripViewer || isTripEditor || isTripOwner',
       create: 'isTripEditor || isTripOwner',
       delete: 'isTripEditor || isTripOwner',
       update: 'isTripEditor || isTripOwner',
@@ -163,7 +163,7 @@ export default {
       "'viewer' in data.ref('trip.tripUser.role') && auth.email in data.ref('trip.tripUser.user.email')",
     ],
     allow: {
-      view: 'isTripEditor || isTripOwner',
+      view: 'isTripPublic || isTripViewer || isTripEditor || isTripOwner',
       create: 'isTripOwner',
       delete: 'isTripOwner',
       update: 'isTripOwner',
