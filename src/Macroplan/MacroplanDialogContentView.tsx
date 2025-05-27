@@ -112,7 +112,6 @@ export function MacroplanDialogContentView({
             &ndash;
             {macroplanDateEndStr ?? <Skeleton>15 January 2025</Skeleton>}
           </Text>
-          <Text>{macroplanDateEndStr}</Text>
           {macroplan?.notes ? (
             <>
               <Heading as="h2" size="4">
