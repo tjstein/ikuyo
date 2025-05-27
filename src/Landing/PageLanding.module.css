@@ -1,0 +1,119 @@
+.logo {
+  width: 60px;
+  height: 60px;
+  vertical-align: -6px;
+  margin-right: 3px;
+}
+.logoText {
+  display: inline-block;
+  transform: rotate(-6deg) translateY(2px);
+  transform-origin: bottom left;
+  color: var(--accent-9);
+}
+.logoTextExclamation {
+  color: var(--accent-9);
+  display: inline-block;
+  transform: rotate(6deg);
+  transform-origin: bottom left;
+}
+.heroSection {
+  background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent-5) 100%);
+}
+.heroHeading {
+  max-width: 600px;
+  line-height: 1.3;
+}
+
+.heroHeadingSubtitle {
+  max-width: 500px;
+  line-height: 1.5;
+}
+
+.iconBox {
+  color: var(--accent-9);
+}
+.stepBox {
+  background: var(--accent-9);
+  color: white;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.ctaSection {
+  background: var(--accent-10);
+}
+
+.ctaTitle {
+  color: white;
+}
+
+.ctaSubtitle {
+  color: var(--accent-2);
+  max-width: 600px;
+  text-align: center;
+}
+
+.featuresHeading {
+  text-align: center;
+}
+
+.howItWorksSection {
+  background: var(--gray-2);
+}
+
+.howItWorksHeading {
+  text-align: center;
+}
+
+.stepContainer {
+  text-align: center;
+}
+
+.benefitsCard {
+  background: var(--accent-2);
+  border: 2px solid var(--accent-6);
+}
+
+.benefitsCardIcon {
+  color: var(--accent-9);
+}
+
+.benefitsCardQuote {
+  font-style: italic;
+  color: var(--accent-11);
+}
+
+.checkIcon {
+  color: var(--accent-9);
+}
+
+.footer {
+  background: var(--gray-3);
+  border-top: 1px solid var(--gray-6);
+}
+
+.footerLogo {
+  height: 24px;
+  width: 24px;
+}
+
+.footerLink {
+  color: var(--gray-11);
+  text-decoration: none;
+}
+
+.ctaTitle {
+  text-align: center;
+  color: white;
+}
+.ctaSubtitle {
+  max-width: 500px;
+  text-align: center;
+  color: white;
+}

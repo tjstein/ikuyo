@@ -13,6 +13,7 @@ import { DialogRoot } from './Dialog/DialogRoot';
 import { withLoading } from './Loading/withLoading';
 import {
   RouteAccount,
+  RouteLanding,
   RouteLogin,
   RoutePrivacy,
   RouteTerms,
@@ -23,6 +24,9 @@ import { ImperativeToastRoot } from './Toast/ImperativeToast';
 import { ThemeAppearance } from './theme/constants';
 import { useSubscribeTheme, useTheme } from './theme/hooks';
 
+const PageLanding = withLoading()(
+  React.lazy(() => import('./Landing/PageLanding')),
+);
 const PageTerms = withLoading()(React.lazy(() => import('./Docs/Terms')));
 const PagePrivacy = withLoading()(React.lazy(() => import('./Docs/Privacy')));
 const PageLogin = withLoading()(React.lazy(() => import('./Auth/Auth')));
@@ -48,8 +52,9 @@ function App() {
           <Route path={RouteAccount.routePath} component={PageAccount} />
           <Route path={RoutePrivacy.routePath} component={PagePrivacy} />
           <Route path={RouteTerms.routePath} component={PageTerms} />
+          <Route path={RouteLanding.routePath} component={PageLanding} />
           <Route>
-            <Redirect to={RouteLogin.routePath} />
+            <Redirect to={RouteLanding.routePath} />
           </Route>
         </Switch>
         <DialogRoot />

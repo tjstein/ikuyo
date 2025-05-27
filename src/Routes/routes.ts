@@ -6,8 +6,14 @@ export const RouteTrip = createRouteParam('/trip/:id', replaceId);
 export const RouteAccount = createRouteParam('/account/edit', identity);
 export const RoutePrivacy = createRouteParam('/privacy', identity);
 export const RouteTerms = createRouteParam('/terms', identity);
+export const RouteLanding = createRouteParam('/landing', identity);
 
-export const UnauthenticatedRoutes = [RouteLogin, RoutePrivacy, RouteTerms];
+export const UnauthenticatedRoutes = [
+  RouteLogin,
+  RoutePrivacy,
+  RouteTerms,
+  RouteLanding,
+];
 
 // #region Trip
 export const RouteTripHome = createRouteParam('/home', identity, RouteTrip);
