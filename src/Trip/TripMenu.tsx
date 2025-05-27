@@ -45,11 +45,15 @@ export function TripMenu() {
           <DropdownMenu.Label>Activity</DropdownMenu.Label>
           <DropdownMenu.Item
             disabled={!userCanModifyTrip}
-            onClick={() => {
-              if (trip) {
-                pushDialog(ActivityNewDialog, { trip });
-              }
-            }}
+            onClick={
+              userCanModifyTrip
+                ? () => {
+                    if (trip) {
+                      pushDialog(ActivityNewDialog, { trip });
+                    }
+                  }
+                : undefined
+            }
           >
             New activity
           </DropdownMenu.Item>
@@ -59,55 +63,75 @@ export function TripMenu() {
 
           <DropdownMenu.Item
             disabled={!userCanModifyTrip}
-            onClick={() => {
-              if (trip) {
-                pushDialog(TripEditDialog, { trip });
-              }
-            }}
+            onClick={
+              userCanModifyTrip
+                ? () => {
+                    if (trip) {
+                      pushDialog(TripEditDialog, { trip });
+                    }
+                  }
+                : undefined
+            }
           >
             Edit trip
           </DropdownMenu.Item>
 
           <DropdownMenu.Item
             disabled={!userCanModifyTrip}
-            onClick={() => {
-              if (trip) {
-                pushDialog(AccommodationNewDialog, { trip });
-              }
-            }}
+            onClick={
+              userCanModifyTrip
+                ? () => {
+                    if (trip) {
+                      pushDialog(AccommodationNewDialog, { trip });
+                    }
+                  }
+                : undefined
+            }
           >
             Add accommodation
           </DropdownMenu.Item>
 
           <DropdownMenu.Item
             disabled={!userCanModifyTrip}
-            onClick={() => {
-              if (trip) {
-                pushDialog(MacroplanNewDialog, { trip });
-              }
-            }}
+            onClick={
+              userCanModifyTrip
+                ? () => {
+                    if (trip) {
+                      pushDialog(MacroplanNewDialog, { trip });
+                    }
+                  }
+                : undefined
+            }
           >
             Add day plan
           </DropdownMenu.Item>
 
           <DropdownMenu.Item
             disabled={!userIsOwner}
-            onClick={() => {
-              if (trip && user) {
-                pushDialog(TripSharingDialog, { tripId: trip.id });
-              }
-            }}
+            onClick={
+              userIsOwner
+                ? () => {
+                    if (trip && user) {
+                      pushDialog(TripSharingDialog, { tripId: trip.id });
+                    }
+                  }
+                : undefined
+            }
           >
             Share trip
           </DropdownMenu.Item>
 
           <DropdownMenu.Item
             disabled={!userCanModifyTrip}
-            onClick={() => {
-              if (trip) {
-                pushDialog(TripDeleteDialog, { trip });
-              }
-            }}
+            onClick={
+              userCanModifyTrip
+                ? () => {
+                    if (trip) {
+                      pushDialog(TripDeleteDialog, { trip });
+                    }
+                  }
+                : undefined
+            }
           >
             Delete trip
           </DropdownMenu.Item>

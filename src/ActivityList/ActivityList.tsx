@@ -144,15 +144,26 @@ export function ActivityList() {
           </ContextMenu.Trigger>
           <ContextMenu.Content>
             <ContextMenu.Label>{trip?.title}</ContextMenu.Label>
-            <ContextMenu.Item onClick={openActivityNewDialog}>
+            <ContextMenu.Item
+              disabled={!userCanEditOrDelete}
+              onClick={userCanEditOrDelete ? openActivityNewDialog : undefined}
+            >
               New activity
             </ContextMenu.Item>
 
-            <ContextMenu.Item onClick={openAccommodationNewDialog}>
+            <ContextMenu.Item
+              disabled={!userCanEditOrDelete}
+              onClick={
+                userCanEditOrDelete ? openAccommodationNewDialog : undefined
+              }
+            >
               New acommodation
             </ContextMenu.Item>
 
-            <ContextMenu.Item onClick={openMacroplanNewDialog}>
+            <ContextMenu.Item
+              disabled={!userCanEditOrDelete}
+              onClick={userCanEditOrDelete ? openMacroplanNewDialog : undefined}
+            >
               New day plan
             </ContextMenu.Item>
           </ContextMenu.Content>

@@ -83,7 +83,7 @@ export function MacroplanDialogContentView({
               size="2"
               variant="soft"
               color="gray"
-              onClick={goToEditMode}
+              onClick={userCanEditOrDelete ? goToEditMode : undefined}
               disabled={!userCanEditOrDelete}
             >
               Edit
@@ -93,7 +93,7 @@ export function MacroplanDialogContentView({
               size="2"
               variant="soft"
               color="gray"
-              onClick={goToDeleteMode}
+              onClick={userCanEditOrDelete ? goToDeleteMode : undefined}
               disabled={!userCanEditOrDelete}
             >
               Delete

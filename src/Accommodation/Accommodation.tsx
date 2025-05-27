@@ -81,7 +81,9 @@ function AccommodationInner({
             View
           </ContextMenu.Item>
           <ContextMenu.Item
-            onClick={openAccommodationEditDialog}
+            onClick={
+              userCanEditOrDelete ? openAccommodationEditDialog : undefined
+            }
             disabled={!userCanEditOrDelete}
           >
             Edit
@@ -89,7 +91,9 @@ function AccommodationInner({
           <ContextMenu.Separator />
           <ContextMenu.Item
             color={dangerToken}
-            onClick={openAccommodationDeleteDialog}
+            onClick={
+              userCanEditOrDelete ? openAccommodationDeleteDialog : undefined
+            }
             disabled={!userCanEditOrDelete}
           >
             Delete

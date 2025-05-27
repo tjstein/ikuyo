@@ -166,7 +166,7 @@ function ActivityInner({
             View
           </ContextMenu.Item>
           <ContextMenu.Item
-            onClick={openActivityEditDialog}
+            onClick={userCanEditOrDelete ? openActivityEditDialog : undefined}
             disabled={!userCanEditOrDelete}
           >
             Edit
@@ -174,7 +174,7 @@ function ActivityInner({
           <ContextMenu.Separator />
           <ContextMenu.Item
             color={dangerToken}
-            onClick={openActivityDeleteDialog}
+            onClick={userCanEditOrDelete ? openActivityDeleteDialog : undefined}
             disabled={!userCanEditOrDelete}
           >
             Delete

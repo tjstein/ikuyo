@@ -115,7 +115,9 @@ function TimetableGridInner({ days }: TimetableGridProps) {
                     <ContextMenu.Content>
                       <ContextMenu.Label>{trip?.title}</ContextMenu.Label>
                       <ContextMenu.Item
-                        onClick={openActivityNewDialog}
+                        onClick={
+                          userCanModifyTrip ? openActivityNewDialog : undefined
+                        }
                         disabled={!userCanModifyTrip}
                         data-time-start={timeStr}
                         data-day={day}
@@ -124,7 +126,11 @@ function TimetableGridInner({ days }: TimetableGridProps) {
                       </ContextMenu.Item>
 
                       <ContextMenu.Item
-                        onClick={openAccommodationNewDialog}
+                        onClick={
+                          userCanModifyTrip
+                            ? openAccommodationNewDialog
+                            : undefined
+                        }
                         disabled={!userCanModifyTrip}
                         data-day={day}
                       >
@@ -132,7 +138,9 @@ function TimetableGridInner({ days }: TimetableGridProps) {
                       </ContextMenu.Item>
 
                       <ContextMenu.Item
-                        onClick={openMacroplanNewDialog}
+                        onClick={
+                          userCanModifyTrip ? openMacroplanNewDialog : undefined
+                        }
                         disabled={!userCanModifyTrip}
                         data-day={day}
                       >

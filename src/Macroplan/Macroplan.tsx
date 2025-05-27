@@ -61,7 +61,7 @@ function MacroplanInner({
             View
           </ContextMenu.Item>
           <ContextMenu.Item
-            onClick={openMacroplanEditDialog}
+            onClick={userCanEditOrDelete ? openMacroplanEditDialog : undefined}
             disabled={!userCanEditOrDelete}
           >
             Edit
@@ -69,7 +69,9 @@ function MacroplanInner({
           <ContextMenu.Separator />
           <ContextMenu.Item
             color={dangerToken}
-            onClick={openMacroplanDeleteDialog}
+            onClick={
+              userCanEditOrDelete ? openMacroplanDeleteDialog : undefined
+            }
             disabled={!userCanEditOrDelete}
           >
             Delete
