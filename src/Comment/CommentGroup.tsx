@@ -1,4 +1,4 @@
-import { Flex } from '@radix-ui/themes';
+import { Flex, Text } from '@radix-ui/themes';
 import { useTripComments } from '../Trip/store/hooks';
 import type { TripSliceCommentGroup } from '../Trip/store/types';
 import { Comment } from './Comment';
@@ -16,7 +16,9 @@ export function CommentGroup({
 }) {
   const comments = useTripComments(commentGroup?.commentIds ?? []);
 
-  return (
+  return comments.length === 0 ? (
+    <Text size="1">No comments yet</Text>
+  ) : (
     <Flex direction="column" gap="3">
       {comments.map((comment) => (
         <Comment
