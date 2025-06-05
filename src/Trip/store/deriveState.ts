@@ -100,6 +100,10 @@ export function deriveNewActivityState(
       locationLat: activity.locationLat,
       locationLng: activity.locationLng,
       locationZoom: activity.locationZoom,
+      locationDestination: activity.locationDestination,
+      locationDestinationLat: activity.locationDestinationLat,
+      locationDestinationLng: activity.locationDestinationLng,
+      locationDestinationZoom: activity.locationDestinationZoom,
     } satisfies TripSliceActivity;
   }
   return newActivityState;
