@@ -27,11 +27,14 @@
   width: 100%;
   height: 100%;
 }
-
-.popup:global(.maplibregl-popup-anchor-bottom) :global(.maplibregl-popup-tip) {
+.popup:global(.maplibregl-popup-anchor-bottom) :global(.maplibregl-popup-tip),
+.popup:global(.maplibregl-popup-anchor-bottom-right) :global(.maplibregl-popup-tip),
+.popup:global(.maplibregl-popup-anchor-bottom-left) :global(.maplibregl-popup-tip) {
   border-top-color: var(--color-panel-solid);
 }
-.popup:global(.maplibregl-popup-anchor-top) :global(.maplibregl-popup-tip) {
+.popup:global(.maplibregl-popup-anchor-top) :global(.maplibregl-popup-tip),
+.popup:global(.maplibregl-popup-anchor-top-right) :global(.maplibregl-popup-tip),
+.popup:global(.maplibregl-popup-anchor-top-left) :global(.maplibregl-popup-tip) {
   border-bottom-color: var(--color-panel-solid);
 }
 .popup:global(.maplibregl-popup-anchor-right) :global(.maplibregl-popup-tip) {
