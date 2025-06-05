@@ -263,6 +263,10 @@ export interface TripSlice {
     id: string | undefined,
   ) => TripSliceCommentGroup | undefined;
   getAllComments: (tripId: string | undefined) => TripSliceCommentWithUser[];
+  getAllCommentsWithLimit: (
+    tripId: string | undefined,
+    limit: number,
+  ) => TripSliceCommentWithUser[];
   getComments: (
     ids: string[],
   ) => Array<TripSliceComment & { user: TripSliceCommentUser }>;

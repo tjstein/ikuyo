@@ -34,10 +34,10 @@ const ExpenseList = withLoading()(
     }),
   ),
 );
-const TripMap = withLoading()(
+const PageTripMap = withLoading()(
   React.lazy(() =>
-    import('../TripMap/TripMap').then((module) => {
-      return { default: module.TripMap };
+    import('../TripMap/PageTripMap').then((module) => {
+      return { default: module.PageTripMap };
     }),
   ),
 );
@@ -175,7 +175,7 @@ function PageTripInner({
             component={ActivityList}
             nest
           />
-          <Route path={RouteTripMap.routePath} component={TripMap} />
+          <Route path={RouteTripMap.routePath} component={PageTripMap} />
           <Route path={RouteTripExpenses.routePath} component={ExpenseList} />
           <Route path={RouteTripComment.routePath} component={TripComment} />
           <Route path={RouteTripHome.routePath} component={TripHome} />

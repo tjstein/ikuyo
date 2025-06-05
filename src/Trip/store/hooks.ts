@@ -38,6 +38,15 @@ export function useTripAllComments(tripId: string | undefined) {
   const comments = useDeepBoundStore((state) => state.getAllComments(tripId));
   return comments;
 }
+export function useTripAllCommentsWithLimit(
+  tripId: string | undefined,
+  limit: number,
+) {
+  const comments = useDeepBoundStore((state) =>
+    state.getAllCommentsWithLimit(tripId, limit),
+  );
+  return comments;
+}
 export function useTripCommentGroup(commentGroupId: string | undefined) {
   const commentGroup = useDeepBoundStore((state) =>
     state.getCommentGroup(commentGroupId),

@@ -287,6 +287,12 @@ export const createTripSlice: StateCreator<
       });
       return comments;
     },
+    getAllCommentsWithLimit: (
+      tripId: string | undefined,
+      limit: number,
+    ): TripSliceCommentWithUser[] => {
+      return get().getAllComments(tripId).slice(0, limit);
+    },
     getComments: (ids: string[]): TripSliceCommentWithUser[] => {
       const state = get();
       const comments = ids
