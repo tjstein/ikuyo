@@ -47,6 +47,8 @@ export function ActivityDialogContentEdit({
     setMode(ActivityDialogMode.View);
   }, [setMode]);
 
+  console.debug('ActivityDialogContentEdit', { activity, trip });
+
   return (
     <Dialog.Content {...dialogContentProps}>
       <DialogTitleSection title="Edit Activity" />
@@ -70,6 +72,10 @@ export function ActivityDialogContentEdit({
           activityLocationZoom={activity.locationZoom}
           activityLocation={activity.location}
           activityDescription={activity.description}
+          activityLocationDestination={activity.locationDestination}
+          activityLocationDestinationLat={activity.locationDestinationLat}
+          activityLocationDestinationLng={activity.locationDestinationLng}
+          activityLocationDestinationZoom={activity.locationDestinationZoom}
           onFormCancel={backToViewMode}
           onFormSuccess={backToViewMode}
         />

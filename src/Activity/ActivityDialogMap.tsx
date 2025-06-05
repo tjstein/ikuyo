@@ -10,11 +10,13 @@ import { useTheme } from '../theme/hooks';
 export function ActivityMap({
   mapOptions,
   marker,
+  markerDestination,
   setMarkerCoordinate,
   setMapZoom,
 }: {
   mapOptions: { lng: number; lat: number; zoom?: number; region?: string };
   marker?: { lng: number; lat: number };
+  markerDestination?: { lng: number; lat: number };
   setMarkerCoordinate?: (coordinate: { lng: number; lat: number }) => void;
   setMapZoom?: (zoom: number) => void;
 }) {
@@ -32,6 +34,7 @@ export function ActivityMap({
         theme === ThemeAppearance.Dark
           ? MapStyle.OPENSTREETMAP_DARK
           : MapStyle.OPENSTREETMAP,
+      // TODO: set 'bound' to be both marker locations
       center: [mapOptions.lng, mapOptions.lat],
       zoom: mapOptions.zoom,
       apiKey: process.env.MAPTILER_API_KEY,
@@ -47,6 +50,7 @@ export function ActivityMap({
     });
 
     let mapMarker: null | Marker = null;
+    let mapMarkerDestination: null | Marker = null;
 
     if (marker) {
       mapMarker = new Marker({
@@ -63,6 +67,16 @@ export function ActivityMap({
             setMarkerCoordinate({ lng, lat });
           }
         });
+    }
+
+    if (markerDestination) {
+      mapMarkerDestination = new Marker({
+        color: 'var(--accent-indicator)',
+      });
+      mapMarkerDestination
+        .setLngLat([markerDestination.lng, markerDestination.lat])
+        .addTo(map.current);
+      // TODO: Add a 'line' layer to the map to connect origin and destination
     }
 
     if (setMarkerCoordinate) {
@@ -86,7 +100,14 @@ export function ActivityMap({
       });
       map.current.addControl(gc);
     }
-  }, [mapOptions, marker, setMarkerCoordinate, setMapZoom, theme]);
+  }, [
+    mapOptions,
+    marker,
+    markerDestination,
+    setMarkerCoordinate,
+    setMapZoom,
+    theme,
+  ]);
 
   useEffect(() => {
     if (!map.current) return;

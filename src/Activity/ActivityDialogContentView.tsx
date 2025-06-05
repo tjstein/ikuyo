@@ -121,13 +121,25 @@ export function ActivityDialogContentView({
           {activity?.location ? (
             <>
               <Heading as="h2" size="4">
-                Location
+                {activity?.locationDestination ? 'Origin' : 'Location'}
               </Heading>
               <Text>{activity.location}</Text>
             </>
           ) : (
             <></>
           )}
+
+          {activity?.locationDestination ? (
+            <>
+              <Heading as="h2" size="4">
+                Destination
+              </Heading>
+              <Text>{activity.locationDestination}</Text>
+            </>
+          ) : (
+            <></>
+          )}
+
           {activity?.description ? (
             <>
               <Heading as="h2" size="4">
@@ -139,7 +151,8 @@ export function ActivityDialogContentView({
             <></>
           )}
 
-          {activity?.locationLat && activity?.locationLng ? (
+          {activity?.locationLat !== undefined &&
+          activity?.locationLng !== undefined ? (
             <ActivityMap
               mapOptions={{
                 lng: activity.locationLng,
@@ -150,6 +163,15 @@ export function ActivityDialogContentView({
                 lng: activity.locationLng,
                 lat: activity.locationLat,
               }}
+              markerDestination={
+                activity.locationDestinationLng !== undefined &&
+                activity.locationDestinationLat !== undefined
+                  ? {
+                      lng: activity.locationDestinationLng,
+                      lat: activity.locationDestinationLat,
+                    }
+                  : undefined
+              }
             />
           ) : null}
         </Flex>

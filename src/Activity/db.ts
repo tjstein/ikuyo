@@ -18,6 +18,15 @@ export type DbActivity = {
   /** Default zoom of the map, if undefined will be default to 9 */
   locationZoom: undefined | number;
 
+  /** Some activity is about going from A to B. If so, 'location' fields are origin, and 'locationDestination' fields are destination */
+  locationDestination: undefined | string;
+  /** undefined means not set, 0 means somewhere! */
+  locationDestinationLat: undefined | number;
+  /** undefined means not set, 0 means somewhere! */
+  locationDestinationLng: undefined | number;
+  /** Default zoom of the map, if undefined will be default to 9 */
+  locationDestinationZoom: undefined | number;
+
   description: string;
   /** ms */
   timestampStart: number;

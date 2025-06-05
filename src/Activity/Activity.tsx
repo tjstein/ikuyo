@@ -144,6 +144,9 @@ function ActivityInner({
               <Text as="div" size={responsiveTextSize} color="gray">
                 <SewingPinIcon style={{ verticalAlign: '-2px' }} />{' '}
                 {activity.location}
+                {activity.locationDestination
+                  ? ` → ${activity.locationDestination}`
+                  : null}
               </Text>
             ) : null}
 

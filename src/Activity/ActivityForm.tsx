@@ -1,4 +1,3 @@
-import { type GeocodingOptions, geocoding } from '@maptiler/sdk';
 import {
   Button,
   Flex,
@@ -8,10 +7,10 @@ import {
   TextField,
 } from '@radix-ui/themes';
 import { useCallback, useId, useReducer, useState } from 'react';
-import { REGIONS_MAP } from '../data/intl/regions';
 import { useBoundStore } from '../data/store';
 import { dangerToken } from '../ui';
 import { ActivityMap } from './ActivityDialogMap';
+import { geocodingRequest } from './ActivityFormGeocoding';
 import {
   ActivityFormMode,
   type ActivityFormModeType,
@@ -21,51 +20,70 @@ import { dbAddActivity, dbUpdateActivity } from './db';
 import { getDateTimeFromDatetimeLocalInput } from './time';
 
 interface LocationCoordinateState {
-  enabled: boolean;
-  lat: number | undefined;
-  lng: number | undefined;
-  zoom: number | undefined;
+  count: number;
+  enabled: [boolean, boolean];
+  lat: [number | undefined, number | undefined];
+  lng: [number | undefined, number | undefined];
+  zoom: [number | undefined, number | undefined];
 }
 
 function coordinateStateReducer(
   state: LocationCoordinateState,
   action:
-    | { type: 'setMapZoom'; zoom: number }
-    | { type: 'setMarkerCoordinate'; lat: number; lng: number }
+    | { type: 'setCount'; count: number }
+    | { type: 'setMapZoom'; index: number; zoom: number }
+    | { type: 'setMarkerCoordinate'; index: number; lat: number; lng: number }
     | {
         type: 'setEnabled';
+        index: number;
         lat: number | undefined;
         lng: number | undefined;
         zoom: number | undefined;
       }
     | {
         type: 'setDisabled';
+        index: number;
       },
 ): LocationCoordinateState {
   switch (action.type) {
-    case 'setEnabled':
-      return {
+    case 'setCount': {
+      const newState = {
         ...state,
-        lat: action.lat,
-        lng: action.lng,
-        enabled: true,
+        count: action.count,
       };
-    case 'setDisabled':
-      return {
+      return newState;
+    }
+    case 'setEnabled': {
+      const newState = {
         ...state,
-        enabled: false,
       };
-    case 'setMapZoom':
-      return {
+      newState.enabled[action.index] = true;
+      newState.lat[action.index] = action.lat;
+      newState.lng[action.index] = action.lng;
+      return newState;
+    }
+    case 'setDisabled': {
+      const newState = {
         ...state,
-        zoom: action.zoom,
       };
-    case 'setMarkerCoordinate':
-      return {
+      newState.enabled[action.index] = false;
+      return newState;
+    }
+    case 'setMapZoom': {
+      const newState = {
         ...state,
-        lat: action.lat,
-        lng: action.lng,
       };
+      newState.zoom[action.index] = action.zoom;
+      return newState;
+    }
+    case 'setMarkerCoordinate': {
+      const newState = {
+        ...state,
+      };
+      newState.lat[action.index] = action.lat;
+      newState.lng[action.index] = action.lng;
+      return newState;
+    }
     default:
       return state;
   }
@@ -86,6 +104,12 @@ export function ActivityForm({
   activityLocationLng,
   activityLocationLat,
   activityLocationZoom,
+
+  activityLocationDestination,
+  activityLocationDestinationLng,
+  activityLocationDestinationLat,
+  activityLocationDestinationZoom,
+
   activityDescription,
 
   onFormSuccess,
@@ -105,6 +129,12 @@ export function ActivityForm({
   activityLocationLat: number | undefined;
   activityLocationLng: number | undefined;
   activityLocationZoom: number | undefined;
+
+  activityLocationDestination: string | undefined;
+  activityLocationDestinationLat: number | undefined;
+  activityLocationDestinationLng: number | undefined;
+  activityLocationDestinationZoom: number | undefined;
+
   activityDescription: string;
 
   onFormSuccess: () => void;
@@ -115,94 +145,132 @@ export function ActivityForm({
   const idTimeStart = useId();
   const idTimeEnd = useId();
   const idLocation = useId();
+  const idTwoLocationEnabled = useId();
+  const idLocationDestination = useId();
+  const idCoordinatesDestination = useId();
+
   const idDescription = useId();
   const idCoordinates = useId();
   const publishToast = useBoundStore((state) => state.publishToast);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const [coordinateState, dispatchCoordinateState] = useReducer(
+  const [locationFieldsState, dispatchLocationFieldsState] = useReducer(
     coordinateStateReducer,
     {
-      enabled:
+      enabled: [
         activityLocationLat !== undefined && activityLocationLng !== undefined,
-      lat: activityLocationLat,
-      lng: activityLocationLng,
-      zoom: activityLocationZoom ?? 9,
+        activityLocationDestinationLat !== undefined &&
+          activityLocationDestinationLng !== undefined,
+      ],
+      lat: [activityLocationLat, activityLocationDestinationLat],
+      lng: [activityLocationLng, activityLocationDestinationLng],
+      zoom: [activityLocationZoom ?? 9, activityLocationDestinationZoom ?? 9],
+      count:
+        activityLocationDestinationLat !== undefined &&
+        activityLocationDestinationLng !== undefined
+          ? 2
+          : 1,
     },
   );
   const setCoordinateEnabled = useCallback(
     async (enabled: boolean) => {
       if (enabled) {
-        if (coordinateState.lat && coordinateState.lng) {
-          dispatchCoordinateState({
+        if (locationFieldsState.lat[0] && locationFieldsState.lng[0]) {
+          dispatchLocationFieldsState({
             type: 'setEnabled',
-            lat: coordinateState.lat,
-            lng: coordinateState.lng,
-            zoom: coordinateState.zoom,
+            index: 0,
+            lat: locationFieldsState.lat[0],
+            lng: locationFieldsState.lng[0],
+            zoom: locationFieldsState.zoom[0],
           });
         } else {
           // if coordinates are not set, use geocoding from location to get the coordinates
           const elLocation = document.getElementById(
             idLocation,
           ) as HTMLInputElement;
-          let location = elLocation.value;
-          const geocodingOptions: GeocodingOptions = {
-            language: 'en',
-            limit: 5,
-            country: [tripRegion.toLowerCase()],
-            types: ['poi'],
-            apiKey: process.env.MAPTILER_API_KEY,
-          };
-
-          if (!location) {
-            // if location is not yet set, set location as the trip region
-            const region = REGIONS_MAP[tripRegion] ?? 'Japan';
-            location = region;
-            geocodingOptions.types = ['country'];
-          }
-
-          let lat: number | undefined;
-          let lng: number | undefined;
-          console.log('geocoding: request', location, geocodingOptions);
-          if (location) {
-            const res = await geocoding.forward(location, geocodingOptions);
-            console.log('geocoding: response', res);
-            [lng, lat] = res?.features[0]?.center ?? [];
-          }
-          if (lng === undefined || lat === undefined) {
-            // if location coordinate couldn't be found, set location as the trip region
-            const region = REGIONS_MAP[tripRegion] ?? 'Japan';
-            geocodingOptions.types = ['country'];
-            const res = await geocoding.forward(region, geocodingOptions);
-            console.log('geocoding: response 2', res);
-            [lng, lat] = res?.features[0]?.center ?? [];
-          }
-
-          dispatchCoordinateState({
+          const location = elLocation.value;
+          const [lng, lat] = await geocodingRequest(location, tripRegion);
+          dispatchLocationFieldsState({
             type: 'setEnabled',
+            index: 0,
             lat: lat,
             lng: lng,
-            zoom: coordinateState.zoom,
+            zoom: locationFieldsState.zoom[0],
           });
         }
       } else {
-        dispatchCoordinateState({
+        dispatchLocationFieldsState({
           type: 'setDisabled',
+          index: 0,
         });
       }
     },
     [
       idLocation,
       tripRegion,
-      coordinateState.lat,
-      coordinateState.lng,
-      coordinateState.zoom,
+      locationFieldsState.lat,
+      locationFieldsState.lng,
+      locationFieldsState.zoom,
+    ],
+  );
+
+  const setCoordinateEnabledForDestination = useCallback(
+    async (enabled: boolean) => {
+      if (enabled) {
+        if (locationFieldsState.lat[1] && locationFieldsState.lng[1]) {
+          dispatchLocationFieldsState({
+            type: 'setEnabled',
+            index: 1,
+            lat: locationFieldsState.lat[1],
+            lng: locationFieldsState.lng[1],
+            zoom: locationFieldsState.zoom[1],
+          });
+        } else {
+          // if coordinates are not set, use geocoding from location to get the coordinates
+          const elLocation = document.getElementById(
+            idLocationDestination,
+          ) as HTMLInputElement;
+          const location = elLocation.value;
+          const [lng, lat] = await geocodingRequest(location, tripRegion);
+          dispatchLocationFieldsState({
+            type: 'setEnabled',
+            index: 1,
+            lat: lat,
+            lng: lng,
+            zoom: locationFieldsState.zoom[1],
+          });
+        }
+      } else {
+        dispatchLocationFieldsState({
+          type: 'setDisabled',
+          index: 1,
+        });
+      }
+    },
+    [
+      idLocationDestination,
+      tripRegion,
+      locationFieldsState.lat,
+      locationFieldsState.lng,
+      locationFieldsState.zoom,
     ],
   );
   const setMarkerCoordinate = useCallback(
     async (coordinate: { lng: number; lat: number }) => {
-      dispatchCoordinateState({
+      dispatchLocationFieldsState({
         type: 'setMarkerCoordinate',
+        index: 0,
+        lat: coordinate.lat,
+        lng: coordinate.lng,
+      });
+    },
+    [],
+  );
+  const setMarkerCoordinateForDestination = useCallback(
+    async (coordinate: { lng: number; lat: number }) => {
+      dispatchLocationFieldsState({
+        type: 'setMarkerCoordinate',
+        index: 1,
         lat: coordinate.lat,
         lng: coordinate.lng,
       });
@@ -210,12 +278,33 @@ export function ActivityForm({
     [],
   );
   const setMapZoom = useCallback(async (zoom: number) => {
-    dispatchCoordinateState({
+    dispatchLocationFieldsState({
       type: 'setMapZoom',
+      index: 0,
       zoom: zoom,
     });
   }, []);
-  console.log('coordinateState', coordinateState);
+  const setMapZoomForDestination = useCallback(async (zoom: number) => {
+    dispatchLocationFieldsState({
+      type: 'setMapZoom',
+      index: 1,
+      zoom: zoom,
+    });
+  }, []);
+  const setTwoLocationEnabled = useCallback((enabled: boolean) => {
+    if (enabled) {
+      dispatchLocationFieldsState({
+        type: 'setCount',
+        count: 2,
+      });
+    } else {
+      dispatchLocationFieldsState({
+        type: 'setCount',
+        count: 1,
+      });
+    }
+  }, []);
+  console.log('locationFieldsState', locationFieldsState);
 
   const handleSubmit = useCallback(() => {
     return async (elForm: HTMLFormElement) => {
@@ -230,6 +319,8 @@ export function ActivityForm({
       const title = (formData.get('title') as string | null) ?? '';
       const description = (formData.get('description') as string | null) ?? '';
       const location = (formData.get('location') as string | null) ?? '';
+      const locationDestination =
+        (formData.get('locationDestination') as string | null) ?? '';
       const timeStartString =
         (formData.get('startTime') as string | null) ?? '';
       const timeEndString = (formData.get('endTime') as string | null) ?? '';
@@ -246,6 +337,7 @@ export function ActivityForm({
         activityId,
         description,
         location,
+        locationDestination,
         tripId,
         title,
         tripTimeZone,
@@ -253,7 +345,7 @@ export function ActivityForm({
         timeEndString,
         startTime: timeStartDate,
         endTime: timeEndDate,
-        coordinateState,
+        coordinateState: locationFieldsState,
       });
       if (!title || !timeStartString || !timeEndString) {
         return;
@@ -272,15 +364,30 @@ export function ActivityForm({
           title,
           description,
           location,
-          locationLat: coordinateState.enabled
-            ? coordinateState.lat
+          locationLat: locationFieldsState.enabled[0]
+            ? locationFieldsState.lat[0]
             : undefined,
-          locationLng: coordinateState.enabled
-            ? coordinateState.lng
+          locationLng: locationFieldsState.enabled[0]
+            ? locationFieldsState.lng[0]
             : undefined,
-          locationZoom: coordinateState.enabled
-            ? coordinateState.zoom
+          locationZoom: locationFieldsState.enabled[0]
+            ? locationFieldsState.zoom[0]
             : undefined,
+          locationDestination:
+            locationFieldsState.count === 2 ? locationDestination : undefined,
+          locationDestinationLat:
+            locationFieldsState.enabled[1] && locationFieldsState.count === 2
+              ? locationFieldsState.lat[1]
+              : undefined,
+          locationDestinationLng:
+            locationFieldsState.enabled[1] && locationFieldsState.count === 2
+              ? locationFieldsState.lng[1]
+              : undefined,
+          locationDestinationZoom:
+            locationFieldsState.enabled[1] && locationFieldsState.count === 2
+              ? locationFieldsState.zoom[1]
+              : undefined,
+
           timestampStart: timeStartDate.toMillis(),
           timestampEnd: timeEndDate.toMillis(),
         });
@@ -299,15 +406,28 @@ export function ActivityForm({
             title,
             description,
             location,
-            locationLat: coordinateState.enabled
-              ? coordinateState.lat
+            locationLat: locationFieldsState.enabled[0]
+              ? locationFieldsState.lat[0]
               : undefined,
-            locationLng: coordinateState.enabled
-              ? coordinateState.lng
+            locationLng: locationFieldsState.enabled[0]
+              ? locationFieldsState.lng[0]
               : undefined,
-            locationZoom: coordinateState.enabled
-              ? coordinateState.zoom
+            locationZoom: locationFieldsState.enabled[0]
+              ? locationFieldsState.zoom[0]
               : undefined,
+            locationDestination,
+            locationDestinationLat:
+              locationFieldsState.enabled[1] && locationFieldsState.count === 2
+                ? locationFieldsState.lat[1]
+                : undefined,
+            locationDestinationLng:
+              locationFieldsState.enabled[1] && locationFieldsState.count === 2
+                ? locationFieldsState.lng[1]
+                : undefined,
+            locationDestinationZoom:
+              locationFieldsState.enabled[1] && locationFieldsState.count === 2
+                ? locationFieldsState.zoom[1]
+                : undefined,
             timestampStart: timeStartDate.toMillis(),
             timestampEnd: timeEndDate.toMillis(),
           },
@@ -332,7 +452,7 @@ export function ActivityForm({
     onFormSuccess,
     tripId,
     tripTimeZone,
-    coordinateState,
+    locationFieldsState,
   ]);
 
   return (
@@ -365,44 +485,100 @@ export function ActivityForm({
           id={idTitle}
           required
         />
+
+        <Text as="label" htmlFor={idTwoLocationEnabled}>
+          Set two locations (origin & destination)?
+        </Text>
+        <Switch
+          name="twoLocationEnabled"
+          id={idTwoLocationEnabled}
+          checked={locationFieldsState.count === 2}
+          onCheckedChange={setTwoLocationEnabled}
+        />
         <Text as="label" htmlFor={idLocation}>
-          Location
+          {locationFieldsState.count === 2 ? 'Origin' : 'Location'}
         </Text>
         <TextArea
           defaultValue={activityLocation}
           placeholder="Enter location name"
           name="location"
           id={idLocation}
-          style={{ minHeight: 80 }}
+          style={{ minHeight: 40 }}
         />
         <Text as="label" htmlFor={idCoordinates}>
-          Set location coordinates
+          Set{locationFieldsState.count === 2 ? ' origin' : null} location
+          coordinates
         </Text>
         <Switch
           name="coordinatesEnabled"
           id={idCoordinates}
-          checked={coordinateState.enabled}
+          checked={locationFieldsState.enabled[0]}
           onCheckedChange={setCoordinateEnabled}
         />
-        {coordinateState.enabled ? (
+        {locationFieldsState.enabled[0] ? (
           <ActivityMap
             mapOptions={{
-              lng: coordinateState.lng ?? 0,
-              lat: coordinateState.lat ?? 0,
-              zoom: coordinateState.zoom ?? 9,
+              lng: locationFieldsState.lng[0] ?? 0,
+              lat: locationFieldsState.lat[0] ?? 0,
+              zoom: locationFieldsState.zoom[0] ?? 9,
               region: tripRegion,
             }}
             marker={
-              coordinateState.lng && coordinateState.lat
+              locationFieldsState.lng[0] && locationFieldsState.lat[0]
                 ? {
-                    lng: coordinateState.lng,
-                    lat: coordinateState.lat,
+                    lng: locationFieldsState.lng[0],
+                    lat: locationFieldsState.lat[0],
                   }
                 : undefined
             }
             setMarkerCoordinate={setMarkerCoordinate}
             setMapZoom={setMapZoom}
           />
+        ) : null}
+
+        {locationFieldsState.count === 2 ? (
+          <>
+            {' '}
+            <Text as="label" htmlFor={idLocation}>
+              Destination
+            </Text>
+            <TextArea
+              defaultValue={activityLocationDestination}
+              placeholder="Enter destination location name"
+              name="locationDestination"
+              id={idLocationDestination}
+              style={{ minHeight: 40 }}
+            />
+            <Text as="label" htmlFor={idCoordinates}>
+              Set destination location coordinates
+            </Text>
+            <Switch
+              name="coordinatesDestinationEnabled"
+              id={idCoordinatesDestination}
+              checked={locationFieldsState.enabled[1]}
+              onCheckedChange={setCoordinateEnabledForDestination}
+            />
+            {locationFieldsState.enabled[1] ? (
+              <ActivityMap
+                mapOptions={{
+                  lng: locationFieldsState.lng[1] ?? 0,
+                  lat: locationFieldsState.lat[1] ?? 0,
+                  zoom: locationFieldsState.zoom[1] ?? 9,
+                  region: tripRegion,
+                }}
+                marker={
+                  locationFieldsState.lng[1] && locationFieldsState.lat[1]
+                    ? {
+                        lng: locationFieldsState.lng[1],
+                        lat: locationFieldsState.lat[1],
+                      }
+                    : undefined
+                }
+                setMarkerCoordinate={setMarkerCoordinateForDestination}
+                setMapZoom={setMapZoomForDestination}
+              />
+            ) : null}
+          </>
         ) : null}
 
         <Text as="label" htmlFor={idTimeStart}>

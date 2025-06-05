@@ -41,6 +41,11 @@ const _schema = i.schema({
       locationLng: i.number().optional(),
       locationZoom: i.number().optional(),
 
+      locationDestination: i.string().optional(),
+      locationDestinationLat: i.number().optional(),
+      locationDestinationLng: i.number().optional(),
+      locationDestinationZoom: i.number().optional(),
+
       timestampEnd: i.number(),
       timestampStart: i.number(),
       title: i.string(),
