@@ -133,6 +133,9 @@ export function TripMap() {
           : MapStyle.OPENSTREETMAP,
       bounds: mapOptions ? mapOptions.bounds : undefined,
       center: mapOptions ? mapOptions.center : undefined,
+      fitBoundsOptions: {
+        padding: 20,
+      },
       apiKey: process.env.MAPTILER_API_KEY,
       logoPosition: 'bottom-right',
     });
