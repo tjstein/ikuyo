@@ -26,7 +26,17 @@ export function ActivityMap({
 
   useEffect(() => {
     if (map.current) return;
-    if (!mapContainer.current) return;
+    if (!mapContainer.current || mapContainer.current.clientHeight < 1) return;
+
+    const bounds =
+      marker && markerDestination
+        ? ([
+            Math.min(marker.lng, markerDestination.lng), // west
+            Math.min(marker.lat, markerDestination.lat), // south
+            Math.max(marker.lng, markerDestination.lng), // east
+            Math.max(marker.lat, markerDestination.lat), // north
+          ] as [number, number, number, number])
+        : undefined;
 
     map.current = new MapTilerMap({
       container: mapContainer.current,
@@ -34,9 +44,12 @@ export function ActivityMap({
         theme === ThemeAppearance.Dark
           ? MapStyle.OPENSTREETMAP_DARK
           : MapStyle.OPENSTREETMAP,
-      // TODO: set 'bound' to be both marker locations
       center: [mapOptions.lng, mapOptions.lat],
       zoom: mapOptions.zoom,
+      bounds,
+      fitBoundsOptions: {
+        padding: 50,
+      },
       apiKey: process.env.MAPTILER_API_KEY,
       logoPosition: 'bottom-right',
     });
