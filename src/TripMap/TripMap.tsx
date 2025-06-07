@@ -30,6 +30,10 @@ const LocationType = {
   Accommodation: 'accommodation',
 } as const;
 
+const routeLineLayerId = 'Route Line' as const;
+const routeArrowLayerId = 'Route Line Arrow' as const;
+const routeSourceId = 'route' as const;
+
 export function TripMap() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<MapTilerMap>(null);
@@ -105,6 +109,32 @@ export function TripMap() {
     }
     return locations;
   }, [activitiesWithLocation, accommodationsWithLocation]);
+  const allLines = useMemo(() => {
+    const lines: {
+      from: { lat: number; lng: number };
+      to: { lat: number; lng: number };
+    }[] = [];
+    for (const activity of activitiesWithLocation) {
+      if (
+        activity.locationLat != null &&
+        activity.locationLng != null &&
+        activity.locationDestinationLat != null &&
+        activity.locationDestinationLng != null
+      ) {
+        lines.push({
+          from: {
+            lat: activity.locationLat,
+            lng: activity.locationLng,
+          },
+          to: {
+            lat: activity.locationDestinationLat,
+            lng: activity.locationDestinationLng,
+          },
+        });
+      }
+    }
+    return lines;
+  }, [activitiesWithLocation]);
 
   const mapOptions = useMemo(() => {
     if (allLocations.length === 0) {
@@ -176,6 +206,71 @@ export function TripMap() {
       logoPosition: 'bottom-right',
     });
 
+    // Add line layer to connect origin and destination
+    const addLineLayer = () => {
+      if (!map.current || !allLines.length) return;
+
+      // Remove existing line soruce & layer if it exists
+      if (map.current.getLayer(routeLineLayerId)) {
+        map.current.removeLayer(routeLineLayerId);
+      }
+      if (map.current.getSource(routeSourceId)) {
+        map.current.removeSource(routeSourceId);
+      }
+      // Add source and layer
+
+      map.current.addSource(routeSourceId, {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: allLines.map((line) =>
+            createLineGeoJSON(
+              { lng: line.from.lng, lat: line.from.lat },
+              { lng: line.to.lng, lat: line.to.lat },
+            ),
+          ),
+        },
+      });
+
+      map.current.addLayer({
+        id: routeLineLayerId,
+        type: 'line',
+        source: routeSourceId,
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round',
+        },
+        paint: {
+          'line-color': 'hsla(0, 100%, 60%, 0.9)',
+          'line-width': 2,
+          'line-dasharray': [2, 4],
+        },
+      });
+
+      // Add arrow head at the destination
+      map.current.addLayer({
+        id: routeArrowLayerId,
+        type: 'symbol',
+        source: routeSourceId,
+        layout: {
+          'symbol-placement': 'line-center',
+          'text-field': '▶',
+          'text-size': 16,
+          'text-rotate': 0,
+          'text-rotation-alignment': 'map',
+          'text-pitch-alignment': 'map',
+        },
+        paint: {
+          'text-color': 'hsla(0, 100%, 60%, 0.9)',
+        },
+      });
+    };
+    map.current.on('load', addLineLayer);
+    // If map is already loaded, add immediately
+    if (map.current.isStyleLoaded()) {
+      addLineLayer();
+    }
+
     const newPopupPortals: typeof popupPortals = [];
     for (const location of allLocations) {
       const popupContent = document.createElement('div');
@@ -214,7 +309,14 @@ export function TripMap() {
     }
 
     setPopupPortals(newPopupPortals);
-  }, [allLocations, mapOptions, currentTripLoading, theme]);
+
+    return () => {
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
+    };
+  }, [allLocations, allLines, mapOptions, currentTripLoading, theme]);
   useEffect(() => {
     if (!map.current) return;
     if (theme === ThemeAppearance.Dark) {
@@ -223,6 +325,8 @@ export function TripMap() {
       map.current.setStyle(MapStyle.OPENSTREETMAP);
     }
   }, [theme]);
+
+  // TODO: Handle if locations are updated after map is initialized
 
   return (
     <div className={s.mapWrapper}>
@@ -362,4 +466,21 @@ function ActivityPopup({
       ) : null}
     </Container>
   );
+}
+
+function createLineGeoJSON(
+  from: { lng: number; lat: number },
+  to: { lng: number; lat: number },
+) {
+  return {
+    type: 'Feature' as const,
+    properties: {},
+    geometry: {
+      type: 'LineString' as const,
+      coordinates: [
+        [from.lng, from.lat],
+        [to.lng, to.lat],
+      ] as [number, number][],
+    },
+  };
 }
