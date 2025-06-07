@@ -1,4 +1,4 @@
-import { Map as MapTilerMap, Marker } from '@maptiler/sdk';
+import { type GeoJSONSource, Map as MapTilerMap, Marker } from '@maptiler/sdk';
 import { useEffect, useRef, useState } from 'react';
 import { MapStyle } from '../maptiler/style';
 import s from './ActivityDialogMap.module.css';
@@ -107,24 +107,10 @@ export function ActivityMap({
       // Add source and layer
       map.current.addSource(routeSourceId, {
         type: 'geojson',
-        data: {
-          type: 'Feature' as const,
-          properties: {
-            class: 'primary',
-            layer: 100,
-          },
-          // TODO: possible to add arrow head?
-          geometry: {
-            type: 'LineString' as const,
-            coordinates: [
-              [initialValues.marker.lng, initialValues.marker.lat],
-              [
-                initialValues.markerDestination.lng,
-                initialValues.markerDestination.lat,
-              ],
-            ],
-          },
-        },
+        data: createLineGeoJSON(
+          initialValues.marker,
+          initialValues.markerDestination,
+        ),
       });
 
       map.current.addLayer({
@@ -170,6 +156,56 @@ export function ActivityMap({
       }
     }
 
+    if (initialValues.marker) {
+      mapMarker.current = new Marker({
+        color: 'var(--accent-indicator)',
+        draggable: !!setMarkerCoordinate,
+      });
+      mapMarker.current
+        .setLngLat([initialValues.marker.lng, initialValues.marker.lat])
+        .addTo(map.current)
+        .on('dragend', (event: { type: 'dragend'; target: Marker }) => {
+          if (!map.current) return;
+          const { lng, lat } = event.target.getLngLat();
+          console.log('ActivityDialogMap dragend', { lng, lat });
+          if (setMarkerCoordinate) {
+            setMarkerCoordinate({ lng, lat });
+          }
+        });
+    }
+
+    if (initialValues.markerDestination) {
+      mapMarkerDestination.current = new Marker({
+        color: 'var(--accent-indicator)',
+      });
+      mapMarkerDestination.current
+        .setLngLat([
+          initialValues.markerDestination.lng,
+          initialValues.markerDestination.lat,
+        ])
+        .addTo(map.current);
+    }
+
+    if (setMarkerCoordinate) {
+      const gc = new GeocodingControl({
+        limit: 5,
+        country: initialValues.mapOptions?.region?.toLowerCase(),
+        proximity: [{ type: 'map-center' }],
+        types: ['poi'],
+        marker: false,
+      });
+      gc.on('pick', ({ feature }) => {
+        if (!map.current) return;
+        console.log('ActivityDialogMap geocoding pick', feature);
+        if (feature?.center) {
+          const [lng, lat] = feature.center;
+          mapMarker.current?.setLngLat([lng, lat]);
+          setMarkerCoordinate({ lng, lat });
+        }
+      });
+      map.current.addControl(gc);
+    }
+
     return () => {
       if (map.current) {
         if (map.current.getLayer(routeArrowLayerId)) {
@@ -191,58 +227,7 @@ export function ActivityMap({
         mapMarkerDestination.current.remove();
       }
     };
-  }, [setMapZoom, theme, initialValues]);
-
-  useEffect(() => {
-    if (!map.current || !marker) return;
-    mapMarker.current = new Marker({
-      color: 'var(--accent-indicator)',
-      draggable: !!setMarkerCoordinate,
-    });
-    mapMarker.current
-      .setLngLat([marker.lng, marker.lat])
-      .addTo(map.current)
-      .on('dragend', (event: { type: 'dragend'; target: Marker }) => {
-        if (!map.current) return;
-        const { lng, lat } = event.target.getLngLat();
-        console.log('ActivityDialogMap dragend', { lng, lat });
-        if (setMarkerCoordinate) {
-          setMarkerCoordinate({ lng, lat });
-        }
-      });
-  });
-
-  useEffect(() => {
-    if (!map.current || !markerDestination) return;
-    mapMarkerDestination.current = new Marker({
-      color: 'var(--accent-indicator)',
-    });
-    mapMarkerDestination.current
-      .setLngLat([markerDestination.lng, markerDestination.lat])
-      .addTo(map.current);
-  }, [markerDestination]);
-
-  useEffect(() => {
-    if (!map.current || !setMarkerCoordinate) return;
-
-    const gc = new GeocodingControl({
-      limit: 5,
-      country: mapOptions?.region?.toLowerCase(),
-      proximity: [{ type: 'map-center' }],
-      types: ['poi'],
-      marker: false,
-    });
-    gc.on('pick', ({ feature }) => {
-      if (!map.current) return;
-      console.log('ActivityDialogMap geocoding pick', feature);
-      if (feature?.center) {
-        const [lng, lat] = feature.center;
-        mapMarker.current?.setLngLat([lng, lat]);
-        setMarkerCoordinate({ lng, lat });
-      }
-    });
-    map.current.addControl(gc);
-  }, [setMarkerCoordinate, mapOptions?.region]);
+  }, [setMapZoom, setMarkerCoordinate, theme, initialValues]);
 
   useEffect(() => {
     if (!map.current) return;
@@ -259,9 +244,68 @@ export function ActivityMap({
     map.current.setZoom(mapOptions.zoom);
   }, [mapOptions.zoom]);
 
+  useEffect(() => {
+    if (!map.current || !mapMarker.current) return;
+    if (marker?.lat == null || marker?.lng == null) return;
+    mapMarker.current.setLngLat([marker.lng, marker.lat]);
+  }, [marker?.lat, marker?.lng]);
+
+  useEffect(() => {
+    if (!map.current || !mapMarkerDestination.current) return;
+    if (markerDestination?.lat == null || markerDestination?.lng == null)
+      return;
+    mapMarkerDestination.current.setLngLat([
+      markerDestination.lng,
+      markerDestination.lat,
+    ]);
+  }, [markerDestination?.lat, markerDestination?.lng]);
+
+  useEffect(() => {
+    if (!map.current || !mapMarker.current || !mapMarkerDestination.current)
+      return;
+    if (marker?.lat == null || marker?.lng == null) return;
+    if (markerDestination?.lat == null || markerDestination?.lng == null)
+      return;
+
+    const mapSource = map.current.getSource<GeoJSONSource>(routeSourceId);
+    if (mapSource) {
+      mapSource.setData(
+        createLineGeoJSON(
+          { lng: marker.lng, lat: marker.lat },
+          {
+            lng: markerDestination?.lng ?? marker.lng,
+            lat: markerDestination?.lat ?? marker.lat,
+          },
+        ),
+      );
+    }
+  }, [
+    marker?.lat,
+    marker?.lng,
+    markerDestination?.lat,
+    markerDestination?.lng,
+  ]);
+
   return (
     <div className={s.mapWrapper}>
       <div ref={mapContainer} className={s.map} />
     </div>
   );
+}
+
+function createLineGeoJSON(
+  from: { lng: number; lat: number },
+  to: { lng: number; lat: number },
+) {
+  return {
+    type: 'Feature' as const,
+    properties: {},
+    geometry: {
+      type: 'LineString' as const,
+      coordinates: [
+        [from.lng, from.lat],
+        [to.lng, to.lat],
+      ] as [number, number][],
+    },
+  };
 }
