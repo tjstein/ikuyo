@@ -23,6 +23,13 @@ import {
 } from '../Trip/store/hooks';
 import { ThemeAppearance } from '../theme/constants';
 import { useTheme } from '../theme/hooks';
+
+const LocationType = {
+  Activity: 'activity',
+  ActivityDestination: 'activityDestination',
+  Accommodation: 'accommodation',
+} as const;
+
 export function TripMap() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<MapTilerMap>(null);
@@ -48,21 +55,48 @@ export function TripMap() {
     [accommodations],
   );
   const allLocations = useMemo(() => {
-    const locations = [];
+    const locations: (
+      | {
+          type: typeof LocationType.Activity;
+          id: string;
+          lat: number;
+          lng: number;
+        }
+      | {
+          type: typeof LocationType.ActivityDestination;
+          id: string;
+          lat: number;
+          lng: number;
+        }
+      | {
+          type: typeof LocationType.Accommodation;
+          id: string;
+          lat: number;
+          lng: number;
+        }
+    )[] = [];
     for (const activity of activitiesWithLocation) {
       if (activity.locationLat && activity.locationLng) {
         locations.push({
-          type: 'activity' as const,
+          type: LocationType.Activity,
           id: activity.id,
           lat: activity.locationLat,
           lng: activity.locationLng,
+        });
+      }
+      if (activity.locationDestinationLat && activity.locationDestinationLng) {
+        locations.push({
+          type: LocationType.ActivityDestination,
+          id: activity.id,
+          lat: activity.locationDestinationLat,
+          lng: activity.locationDestinationLng,
         });
       }
     }
     for (const accommodation of accommodationsWithLocation) {
       if (accommodation.locationLat && accommodation.locationLng) {
         locations.push({
-          type: 'accommodation' as const,
+          type: LocationType.Accommodation,
           id: accommodation.id,
           lat: accommodation.locationLat,
           lng: accommodation.locationLng,
@@ -106,12 +140,14 @@ export function TripMap() {
   const [popupPortals, setPopupPortals] = useState<
     Array<
       | {
-          type: 'activity';
+          type:
+            | typeof LocationType.Activity
+            | typeof LocationType.ActivityDestination;
           activityId: string;
           popup: HTMLDivElement;
         }
       | {
-          type: 'accommodation';
+          type: typeof LocationType.Accommodation;
           accommodationId: string;
           popup: HTMLDivElement;
         }
@@ -150,15 +186,18 @@ export function TripMap() {
         className: s.popup,
       }).setDOMContent(popupContent);
 
-      if (location.type === 'accommodation') {
+      if (location.type === LocationType.Accommodation) {
         newPopupPortals.push({
-          type: 'accommodation',
+          type: LocationType.Accommodation,
           accommodationId: location.id,
           popup: popupContent,
         });
-      } else if (location.type === 'activity') {
+      } else if (
+        location.type === LocationType.Activity ||
+        location.type === LocationType.ActivityDestination
+      ) {
         newPopupPortals.push({
-          type: 'activity',
+          type: location.type,
           activityId: location.id,
           popup: popupContent,
         });
@@ -191,7 +230,7 @@ export function TripMap() {
       <div ref={mapContainer} className={s.map} />
       {popupPortals.map((popupPortal) => {
         switch (popupPortal.type) {
-          case 'accommodation':
+          case LocationType.Accommodation:
             return createPortal(
               <AccommodationPopup
                 key={popupPortal.accommodationId}
@@ -199,11 +238,13 @@ export function TripMap() {
               />,
               popupPortal.popup,
             );
-          case 'activity':
+          case LocationType.Activity:
+          case LocationType.ActivityDestination:
             return createPortal(
               <ActivityPopup
                 key={popupPortal.activityId}
                 activityId={popupPortal.activityId}
+                type={popupPortal.type}
               />,
               popupPortal.popup,
             );
@@ -254,7 +295,13 @@ function AccommodationPopup({ accommodationId }: { accommodationId: string }) {
     </Container>
   );
 }
-function ActivityPopup({ activityId }: { activityId: string }) {
+function ActivityPopup({
+  activityId,
+  type,
+}: {
+  activityId: string;
+  type: typeof LocationType.Activity | typeof LocationType.ActivityDestination;
+}) {
   const activity = useTripActivity(activityId);
   const { trip } = useTrip(activity?.tripId);
   const activityStartStr = activity
@@ -279,10 +326,33 @@ function ActivityPopup({ activityId }: { activityId: string }) {
         <ClockIcon style={{ verticalAlign: '-2px' }} /> {activityStartStr} to{' '}
         {activityEndStr}
       </Text>
-      {activity?.location ? (
+      {type === LocationType.Activity ? (
+        activity?.location ? (
+          <Text as="p" size="1">
+            <SewingPinIcon style={{ verticalAlign: '-2px' }} />{' '}
+            <Text weight="bold">{activity.location}</Text>
+            {activity.locationDestination ? (
+              <>
+                {' → '}
+                {<Text color="gray">{activity.locationDestination}</Text>}
+              </>
+            ) : (
+              ''
+            )}
+          </Text>
+        ) : null
+      ) : activity?.locationDestination ? (
         <Text as="p" size="1">
           <SewingPinIcon style={{ verticalAlign: '-2px' }} />{' '}
-          {activity.location}
+          {activity.location ? (
+            <>
+              {<Text color="gray">{activity.location}</Text>}
+              {' → '}
+            </>
+          ) : (
+            ''
+          )}
+          <Text weight="bold">{activity.locationDestination}</Text>
         </Text>
       ) : null}
       {description.length > 0 ? (
