@@ -22,9 +22,9 @@ import { getDateTimeFromDatetimeLocalInput } from './time';
 interface LocationCoordinateState {
   count: number;
   enabled: [boolean, boolean];
-  lat: [number | undefined, number | undefined];
-  lng: [number | undefined, number | undefined];
-  zoom: [number | undefined, number | undefined];
+  lat: [number | null | undefined, number | null | undefined];
+  lng: [number | null | undefined, number | null | undefined];
+  zoom: [number | null | undefined, number | null | undefined];
 }
 
 function coordinateStateReducer(
@@ -36,9 +36,9 @@ function coordinateStateReducer(
     | {
         type: 'setEnabled';
         index: number;
-        lat: number | undefined;
-        lng: number | undefined;
-        zoom: number | undefined;
+        lat: number | null | undefined;
+        lng: number | null | undefined;
+        zoom: number | null | undefined;
       }
     | {
         type: 'setDisabled';
@@ -126,14 +126,14 @@ export function ActivityForm({
   activityStartStr: string;
   activityEndStr: string;
   activityLocation: string;
-  activityLocationLat: number | undefined;
-  activityLocationLng: number | undefined;
-  activityLocationZoom: number | undefined;
+  activityLocationLat: number | null | undefined;
+  activityLocationLng: number | null | undefined;
+  activityLocationZoom: number | null | undefined;
 
-  activityLocationDestination: string | undefined;
-  activityLocationDestinationLat: number | undefined;
-  activityLocationDestinationLng: number | undefined;
-  activityLocationDestinationZoom: number | undefined;
+  activityLocationDestination: string | null | undefined;
+  activityLocationDestinationLat: number | null | undefined;
+  activityLocationDestinationLng: number | null | undefined;
+  activityLocationDestinationZoom: number | null | undefined;
 
   activityDescription: string;
 
@@ -366,27 +366,27 @@ export function ActivityForm({
           location,
           locationLat: locationFieldsState.enabled[0]
             ? locationFieldsState.lat[0]
-            : undefined,
+            : null,
           locationLng: locationFieldsState.enabled[0]
             ? locationFieldsState.lng[0]
-            : undefined,
+            : null,
           locationZoom: locationFieldsState.enabled[0]
             ? locationFieldsState.zoom[0]
-            : undefined,
+            : null,
           locationDestination:
-            locationFieldsState.count === 2 ? locationDestination : undefined,
+            locationFieldsState.count === 2 ? locationDestination : null,
           locationDestinationLat:
             locationFieldsState.enabled[1] && locationFieldsState.count === 2
               ? locationFieldsState.lat[1]
-              : undefined,
+              : null,
           locationDestinationLng:
             locationFieldsState.enabled[1] && locationFieldsState.count === 2
               ? locationFieldsState.lng[1]
-              : undefined,
+              : null,
           locationDestinationZoom:
             locationFieldsState.enabled[1] && locationFieldsState.count === 2
               ? locationFieldsState.zoom[1]
-              : undefined,
+              : null,
 
           timestampStart: timeStartDate.toMillis(),
           timestampEnd: timeEndDate.toMillis(),
@@ -543,7 +543,7 @@ export function ActivityForm({
               Destination
             </Text>
             <TextArea
-              defaultValue={activityLocationDestination}
+              defaultValue={activityLocationDestination ?? ''}
               placeholder="Enter destination location name"
               name="locationDestination"
               id={idLocationDestination}

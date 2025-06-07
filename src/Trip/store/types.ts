@@ -119,13 +119,13 @@ export type DbTripQueryReturnType = {
     timestampStart: number;
     timestampEnd: number;
     location: string;
-    locationLat?: number | undefined;
-    locationLng?: number | undefined;
-    locationZoom?: number | undefined;
-    locationDestination?: string | undefined;
-    locationDestinationLat?: number | undefined;
-    locationDestinationLng?: number | undefined;
-    locationDestinationZoom?: number | undefined;
+    locationLat?: number | null | undefined;
+    locationLng?: number | null | undefined;
+    locationZoom?: number | null | undefined;
+    locationDestination?: string | null | undefined;
+    locationDestinationLat?: number | null | undefined;
+    locationDestinationLng?: number | null | undefined;
+    locationDestinationZoom?: number | null | undefined;
   }[];
   macroplan: {
     id: string;

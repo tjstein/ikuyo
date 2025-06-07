@@ -11,21 +11,21 @@ export type DbActivity = {
   id: string;
   title: string;
   location: string;
-  /** undefined means not set, 0 means somewhere! */
-  locationLat: undefined | number;
-  /** undefined means not set, 0 means somewhere! */
-  locationLng: undefined | number;
+  /** undefined/null means not set, 0 means somewhere! */
+  locationLat: undefined | null | number;
+  /** undefined/null means not set, 0 means somewhere! */
+  locationLng: undefined | null | number;
   /** Default zoom of the map, if undefined will be default to 9 */
-  locationZoom: undefined | number;
+  locationZoom: undefined | null | number;
 
   /** Some activity is about going from A to B. If so, 'location' fields are origin, and 'locationDestination' fields are destination */
-  locationDestination: undefined | string;
-  /** undefined means not set, 0 means somewhere! */
-  locationDestinationLat: undefined | number;
-  /** undefined means not set, 0 means somewhere! */
-  locationDestinationLng: undefined | number;
+  locationDestination: undefined | null | string;
+  /** undefined/null means not set, 0 means somewhere! */
+  locationDestinationLat: undefined | null | number;
+  /** undefined/null means not set, 0 means somewhere! */
+  locationDestinationLng: undefined | null | number;
   /** Default zoom of the map, if undefined will be default to 9 */
-  locationDestinationZoom: undefined | number;
+  locationDestinationZoom: undefined | null | number;
 
   description: string;
   /** ms */

@@ -151,15 +151,14 @@ export function ActivityDialogContentView({
             <></>
           )}
 
-          {activity?.locationLat !== undefined &&
-          activity?.locationLng !== undefined ? (
+          {activity?.locationLat != null && activity?.locationLng != null ? (
             <ActivityMap
               mapOptions={{
                 lng: activity.locationLng,
                 lat: activity.locationLat,
                 zoom:
-                  activity.locationDestinationLng !== undefined &&
-                  activity.locationDestinationLat !== undefined
+                  activity.locationDestinationLng != null &&
+                  activity.locationDestinationLat != null
                     ? // If destination is set, use let the map calculate the zoom to fit both; else use user-saved zoom during form new/edit
                       undefined
                     : (activity.locationZoom ?? 9),
@@ -169,8 +168,8 @@ export function ActivityDialogContentView({
                 lat: activity.locationLat,
               }}
               markerDestination={
-                activity.locationDestinationLng !== undefined &&
-                activity.locationDestinationLat !== undefined
+                activity.locationDestinationLng != null &&
+                activity.locationDestinationLat != null
                   ? {
                       lng: activity.locationDestinationLng,
                       lat: activity.locationDestinationLat,
