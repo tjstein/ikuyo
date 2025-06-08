@@ -75,17 +75,17 @@ export async function dbDeleteMacroplan(macroplanId: string) {
   const commentGroups = await db.queryOnce({
     commentGroup: {
       comment: { $: { fields: ['id'] } },
-    },
-    $: {
-      where: {
-        'object.type': 'macroplan',
-        'object.macroplan.id': macroplanId,
+      $: {
+        where: {
+          'object.type': 'macroplan',
+          'object.macroplan.id': macroplanId,
+        },
+        fields: ['id'],
       },
-      fields: ['id'],
     },
   });
-  const commentGroupIds = Object.keys(commentGroups.data.commentGroup).map(
-    (id) => id,
+  const commentGroupIds = commentGroups.data.commentGroup.map(
+    (commentGroup) => commentGroup.id,
   );
   const commentIds = commentGroups.data.commentGroup.flatMap((commentGroup) =>
     commentGroup.comment.map((comment) => comment.id),
