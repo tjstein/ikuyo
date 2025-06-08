@@ -190,7 +190,7 @@
     grid-column-end: -1;
     box-sizing: border-box;
     min-height: 30px;
-    grid-auto-flow: row;
+    grid-auto-flow: row dense;
     grid-auto-columns: 30px;
   }
 
@@ -201,7 +201,7 @@
     grid-column-end: -1;
     box-sizing: border-box;
     min-height: 30px;
-    grid-auto-flow: row;
+    grid-auto-flow: row dense;
     grid-auto-columns: 30px;
   }
 }
