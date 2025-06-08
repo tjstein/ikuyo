@@ -111,10 +111,7 @@ function ExpenseRowView({
                 variant="solid"
                 color={dangerToken}
                 onClick={() => {
-                  dbDeleteExpense({
-                    expenseId: expense.id,
-                    tripId: expense.tripId,
-                  })
+                  dbDeleteExpense(expense.id)
                     .then(() => {
                       publishToast({
                         root: {},

@@ -66,14 +66,35 @@ export async function dbUpdateAccommodation(
   );
 }
 
-export async function dbDeleteAccommodation(
-  accommodationId: string,
-  tripId: string,
-) {
+export async function dbDeleteAccommodation(accommodationId: string) {
+  const commentGroups = await db.queryOnce({
+    commentGroup: {
+      comment: { $: { fields: ['id'] } },
+    },
+    $: {
+      where: {
+        'object.type': 'accommodation',
+        'object.accommodation.id': accommodationId,
+      },
+      fields: ['id'],
+    },
+  });
+  const commentGroupIds = Object.keys(commentGroups.data.commentGroup).map(
+    (id) => id,
+  );
+  const commentIds = commentGroups.data.commentGroup.flatMap((commentGroup) =>
+    commentGroup.comment.map((comment) => comment.id),
+  );
+
   return db.transact([
-    db.tx.trip[tripId].unlink({
-      accommodation: [accommodationId],
-    }),
+    ...commentGroupIds.map((commentGroupId) =>
+      db.tx.commentGroup[commentGroupId].delete(),
+    ),
+    ...commentGroupIds.map((commentGroupId) =>
+      // CommentGroupObject has same id as commentGroup
+      db.tx.commentGroupObject[commentGroupId].delete(),
+    ),
+    ...commentIds.map((commentId) => db.tx.comment[commentId].delete()),
     db.tx.accommodation[accommodationId].delete(),
   ]);
 }

@@ -20,7 +20,7 @@ export function AccommodationDialogContentDelete({
     if (!accommodation) {
       return;
     }
-    void dbDeleteAccommodation(accommodation.id, accommodation.tripId)
+    void dbDeleteAccommodation(accommodation.id)
       .then(() => {
         publishToast({
           root: {},

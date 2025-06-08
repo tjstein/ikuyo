@@ -63,7 +63,36 @@ export async function dbAddActivity(
   );
 }
 export async function dbDeleteActivity(activityId: string) {
-  return db.transact(db.tx.activity[activityId].delete());
+  const commentGroups = await db.queryOnce({
+    commentGroup: {
+      comment: { $: { fields: ['id'] } },
+    },
+    $: {
+      where: {
+        'object.type': 'activity',
+        'object.activity.id': activityId,
+      },
+      fields: ['id'],
+    },
+  });
+  const commentGroupIds = Object.keys(commentGroups.data.commentGroup).map(
+    (id) => id,
+  );
+  const commentIds = commentGroups.data.commentGroup.flatMap((commentGroup) =>
+    commentGroup.comment.map((comment) => comment.id),
+  );
+
+  return db.transact([
+    ...commentGroupIds.map((commentGroupId) =>
+      db.tx.commentGroup[commentGroupId].delete(),
+    ),
+    ...commentGroupIds.map((commentGroupId) =>
+      // CommentGroupObject has same id as commentGroup
+      db.tx.commentGroupObject[commentGroupId].delete(),
+    ),
+    ...commentIds.map((commentId) => db.tx.comment[commentId].delete()),
+    db.tx.activity[activityId].delete(),
+  ]);
 }
 export async function dbUpdateActivity(
   activity: Omit<DbActivity, 'createdAt' | 'lastUpdatedAt' | 'trip'>,

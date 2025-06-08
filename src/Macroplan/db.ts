@@ -71,11 +71,35 @@ export async function dbUpdateMacroplan(
   );
 }
 
-export async function dbDeleteMacroplan(macroplanId: string, tripId: string) {
+export async function dbDeleteMacroplan(macroplanId: string) {
+  const commentGroups = await db.queryOnce({
+    commentGroup: {
+      comment: { $: { fields: ['id'] } },
+    },
+    $: {
+      where: {
+        'object.type': 'macroplan',
+        'object.macroplan.id': macroplanId,
+      },
+      fields: ['id'],
+    },
+  });
+  const commentGroupIds = Object.keys(commentGroups.data.commentGroup).map(
+    (id) => id,
+  );
+  const commentIds = commentGroups.data.commentGroup.flatMap((commentGroup) =>
+    commentGroup.comment.map((comment) => comment.id),
+  );
+
   return db.transact([
-    db.tx.trip[tripId].unlink({
-      macroplan: [macroplanId],
-    }),
+    ...commentGroupIds.map((commentGroupId) =>
+      db.tx.commentGroup[commentGroupId].delete(),
+    ),
+    ...commentGroupIds.map((commentGroupId) =>
+      // CommentGroupObject has same id as commentGroup
+      db.tx.commentGroupObject[commentGroupId].delete(),
+    ),
+    ...commentIds.map((commentId) => db.tx.comment[commentId].delete()),
     db.tx.macroplan[macroplanId].delete(),
   ]);
 }

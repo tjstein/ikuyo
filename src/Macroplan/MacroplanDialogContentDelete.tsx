@@ -21,7 +21,7 @@ export function MacroplanDialogContentDelete({
       console.error('No macroplan to delete');
       return;
     }
-    void dbDeleteMacroplan(macroplan.id, macroplan.tripId)
+    void dbDeleteMacroplan(macroplan.id)
       .then(() => {
         publishToast({
           root: {},
