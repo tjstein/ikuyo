@@ -106,9 +106,9 @@ export type DbTripQueryReturnType = {
     timestampCheckOut: number;
     phoneNumber: string;
     notes: string;
-    locationLat?: number | undefined;
-    locationLng?: number | undefined;
-    locationZoom?: number | undefined;
+    locationLat?: number | null | undefined;
+    locationLng?: number | null | undefined;
+    locationZoom?: number | null | undefined;
   }[];
   activity: {
     id: string;

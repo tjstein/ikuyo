@@ -80,7 +80,7 @@ export function TripMap() {
         }
     )[] = [];
     for (const activity of activitiesWithLocation) {
-      if (activity.locationLat && activity.locationLng) {
+      if (activity.locationLat != null && activity.locationLng != null) {
         locations.push({
           type: LocationType.Activity,
           id: activity.id,
@@ -88,7 +88,10 @@ export function TripMap() {
           lng: activity.locationLng,
         });
       }
-      if (activity.locationDestinationLat && activity.locationDestinationLng) {
+      if (
+        activity.locationDestinationLat != null &&
+        activity.locationDestinationLng != null
+      ) {
         locations.push({
           type: LocationType.ActivityDestination,
           id: activity.id,
@@ -98,7 +101,10 @@ export function TripMap() {
       }
     }
     for (const accommodation of accommodationsWithLocation) {
-      if (accommodation.locationLat && accommodation.locationLng) {
+      if (
+        accommodation.locationLat != null &&
+        accommodation.locationLng != null
+      ) {
         locations.push({
           type: LocationType.Accommodation,
           id: accommodation.id,

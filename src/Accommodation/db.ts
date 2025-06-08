@@ -17,9 +17,9 @@ export type DbAccommodation = {
   phoneNumber: string;
   notes: string;
 
-  locationLat: number | undefined;
-  locationLng: number | undefined;
-  locationZoom: number | undefined;
+  locationLat: number | null | undefined;
+  locationLng: number | null | undefined;
+  locationZoom: number | null | undefined;
 
   createdAt: number;
   lastUpdatedAt: number;

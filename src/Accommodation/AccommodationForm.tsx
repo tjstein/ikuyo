@@ -21,9 +21,9 @@ import { getDateTimeFromDatetimeLocalInput } from './time';
 
 interface LocationCoordinateState {
   enabled: boolean;
-  lat: number | undefined;
-  lng: number | undefined;
-  zoom: number | undefined;
+  lat: number | null | undefined;
+  lng: number | null | undefined;
+  zoom: number | null | undefined;
 }
 
 function coordinateStateReducer(
@@ -33,9 +33,9 @@ function coordinateStateReducer(
     | { type: 'setMarkerCoordinate'; lat: number; lng: number }
     | {
         type: 'setEnabled';
-        lat: number | undefined;
-        lng: number | undefined;
-        zoom: number | undefined;
+        lat: number | null | undefined;
+        lng: number | null | undefined;
+        zoom: number | null | undefined;
       }
     | {
         type: 'setDisabled';
@@ -108,9 +108,9 @@ export function AccommodationForm({
   accommodationCheckOutStr: string;
   accommodationPhoneNumber: string;
   accommodationNotes: string;
-  accommodationLocationLat: number | undefined;
-  accommodationLocationLng: number | undefined;
-  accommodationLocationZoom: number | undefined;
+  accommodationLocationLat: number | null | undefined;
+  accommodationLocationLng: number | null | undefined;
+  accommodationLocationZoom: number | null | undefined;
 
   onFormSuccess: () => void;
   onFormCancel: () => void;
@@ -130,8 +130,7 @@ export function AccommodationForm({
     coordinateStateReducer,
     {
       enabled:
-        accommodationLocationLat !== undefined &&
-        accommodationLocationLng !== undefined,
+        accommodationLocationLat != null && accommodationLocationLng != null,
       lat: accommodationLocationLat,
       lng: accommodationLocationLng,
       zoom: accommodationLocationZoom ?? 9,
@@ -170,15 +169,15 @@ export function AccommodationForm({
             geocodingOptions.types = ['country'];
           }
 
-          let lat: number | undefined;
-          let lng: number | undefined;
+          let lat: number | undefined | null;
+          let lng: number | undefined | null;
           console.log('geocoding: request', address, geocodingOptions);
           if (address) {
             const res = await geocoding.forward(address, geocodingOptions);
             console.log('geocoding: response', res);
             [lng, lat] = res?.features[0]?.center ?? [];
           }
-          if (lng === undefined || lat === undefined) {
+          if (lng == null || lat == null) {
             // if location coordinate couldn't be found, set location as the trip region
             const region = REGIONS_MAP[tripRegion] ?? 'Japan';
             geocodingOptions.types = ['country'];
@@ -284,15 +283,9 @@ export function AccommodationForm({
           timestampCheckOut: timeCheckOutDate.toMillis(),
           phoneNumber,
           notes,
-          locationLat: coordinateState.enabled
-            ? coordinateState.lat
-            : undefined,
-          locationLng: coordinateState.enabled
-            ? coordinateState.lng
-            : undefined,
-          locationZoom: coordinateState.enabled
-            ? coordinateState.zoom
-            : undefined,
+          locationLat: coordinateState.enabled ? coordinateState.lat : null,
+          locationLng: coordinateState.enabled ? coordinateState.lng : null,
+          locationZoom: coordinateState.enabled ? coordinateState.zoom : null,
         });
         publishToast({
           root: {},
@@ -308,15 +301,9 @@ export function AccommodationForm({
             timestampCheckOut: timeCheckOutDate.toMillis(),
             phoneNumber,
             notes,
-            locationLat: coordinateState.enabled
-              ? coordinateState.lat
-              : undefined,
-            locationLng: coordinateState.enabled
-              ? coordinateState.lng
-              : undefined,
-            locationZoom: coordinateState.enabled
-              ? coordinateState.zoom
-              : undefined,
+            locationLat: coordinateState.enabled ? coordinateState.lat : null,
+            locationLng: coordinateState.enabled ? coordinateState.lng : null,
+            locationZoom: coordinateState.enabled ? coordinateState.zoom : null,
           },
           {
             tripId: tripId,
@@ -400,7 +387,7 @@ export function AccommodationForm({
               region: tripRegion,
             }}
             marker={
-              coordinateState.lng && coordinateState.lat
+              coordinateState.lng != null && coordinateState.lat != null
                 ? {
                     lng: coordinateState.lng,
                     lat: coordinateState.lat,

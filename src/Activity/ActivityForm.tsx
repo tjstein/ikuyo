@@ -158,16 +158,16 @@ export function ActivityForm({
     coordinateStateReducer,
     {
       enabled: [
-        activityLocationLat !== undefined && activityLocationLng !== undefined,
-        activityLocationDestinationLat !== undefined &&
-          activityLocationDestinationLng !== undefined,
+        activityLocationLat != null && activityLocationLng != null,
+        activityLocationDestinationLat != null &&
+          activityLocationDestinationLng != null,
       ],
       lat: [activityLocationLat, activityLocationDestinationLat],
       lng: [activityLocationLng, activityLocationDestinationLng],
       zoom: [activityLocationZoom ?? 9, activityLocationDestinationZoom ?? 9],
       count:
-        activityLocationDestinationLat !== undefined &&
-        activityLocationDestinationLng !== undefined
+        activityLocationDestinationLat != null &&
+        activityLocationDestinationLng != null
           ? 2
           : 1,
     },
@@ -408,26 +408,26 @@ export function ActivityForm({
             location,
             locationLat: locationFieldsState.enabled[0]
               ? locationFieldsState.lat[0]
-              : undefined,
+              : null,
             locationLng: locationFieldsState.enabled[0]
               ? locationFieldsState.lng[0]
-              : undefined,
+              : null,
             locationZoom: locationFieldsState.enabled[0]
               ? locationFieldsState.zoom[0]
-              : undefined,
+              : null,
             locationDestination,
             locationDestinationLat:
               locationFieldsState.enabled[1] && locationFieldsState.count === 2
                 ? locationFieldsState.lat[1]
-                : undefined,
+                : null,
             locationDestinationLng:
               locationFieldsState.enabled[1] && locationFieldsState.count === 2
                 ? locationFieldsState.lng[1]
-                : undefined,
+                : null,
             locationDestinationZoom:
               locationFieldsState.enabled[1] && locationFieldsState.count === 2
                 ? locationFieldsState.zoom[1]
-                : undefined,
+                : null,
             timestampStart: timeStartDate.toMillis(),
             timestampEnd: timeEndDate.toMillis(),
           },
@@ -524,7 +524,8 @@ export function ActivityForm({
               region: tripRegion,
             }}
             marker={
-              locationFieldsState.lng[0] && locationFieldsState.lat[0]
+              locationFieldsState.lng[0] != null &&
+              locationFieldsState.lat[0] != null
                 ? {
                     lng: locationFieldsState.lng[0],
                     lat: locationFieldsState.lat[0],
@@ -567,7 +568,8 @@ export function ActivityForm({
                   region: tripRegion,
                 }}
                 marker={
-                  locationFieldsState.lng[1] && locationFieldsState.lat[1]
+                  locationFieldsState.lng[1] != null &&
+                  locationFieldsState.lat[1] != null
                     ? {
                         lng: locationFieldsState.lng[1],
                         lat: locationFieldsState.lat[1],

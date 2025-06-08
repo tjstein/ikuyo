@@ -156,7 +156,8 @@ export function AccommodationDialogContentView({
             <></>
           )}
 
-          {accommodation?.locationLat && accommodation?.locationLng ? (
+          {accommodation?.locationLat != null &&
+          accommodation?.locationLng != null ? (
             <AccommodationMap
               mapOptions={{
                 lng: accommodation.locationLng,
