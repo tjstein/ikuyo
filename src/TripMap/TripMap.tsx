@@ -253,11 +253,14 @@ export function TripMap() {
         source: routeSourceId,
         layout: {
           'symbol-placement': 'line-center',
+          'symbol-avoid-edges': true,
           'text-field': '▶',
           'text-size': 16,
           'text-rotate': 0,
-          'text-rotation-alignment': 'map',
+          'text-allow-overlap': true,
+          'text-keep-upright': false,
           'text-pitch-alignment': 'map',
+          'text-rotation-alignment': 'map',
         },
         paint: {
           'text-color': 'hsla(0, 100%, 60%, 0.9)',
