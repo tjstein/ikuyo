@@ -1,28 +1,23 @@
-import { Map as MapTilerMap, Marker, Popup } from '@maptiler/sdk';
+import { type GeoJSONSource, Map as MapTilerMap, Marker } from '@maptiler/sdk';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { MapStyle } from '../maptiler/style';
 import s from './TripMap.module.css';
 
 import '@maptiler/sdk/style.css';
-import {
-  ClockIcon,
-  InfoCircledIcon,
-  SewingPinIcon,
-} from '@radix-ui/react-icons';
-import { Container, Heading, Spinner, Text } from '@radix-ui/themes';
-import { DateTime } from 'luxon';
+import { Spinner } from '@radix-ui/themes';
 import { createPortal } from 'react-dom';
-import { useParseTextIntoNodes } from '../common/text/parseTextIntoNodes';
 import {
   useCurrentTrip,
-  useTrip,
-  useTripAccommodation,
   useTripAccommodations,
   useTripActivities,
-  useTripActivity,
 } from '../Trip/store/hooks';
 import { ThemeAppearance } from '../theme/constants';
 import { useTheme } from '../theme/hooks';
+import { createGeoJsonData } from './geometry';
+import { createMarkerElement } from './marker';
+import { AccommodationPopup } from './popups/AccommodationPopup';
+import { ActivityPopup } from './popups/ActivityPopup';
+import { createPopup } from './popups/createPopup';
 
 const LocationType = {
   Activity: 'activity',
@@ -34,12 +29,52 @@ const routeLineLayerId = 'Route Line' as const;
 const routeArrowLayerId = 'Route Line Arrow' as const;
 const routeSourceId = 'route' as const;
 
+type MarkerLocation =
+  | {
+      type: typeof LocationType.Activity;
+      id: string;
+      lat: number;
+      lng: number;
+    }
+  | {
+      type: typeof LocationType.ActivityDestination;
+      id: string;
+      lat: number;
+      lng: number;
+    }
+  | {
+      type: typeof LocationType.Accommodation;
+      id: string;
+      lat: number;
+      lng: number;
+    };
+
+type PopupPortal =
+  | {
+      type:
+        | typeof LocationType.Activity
+        | typeof LocationType.ActivityDestination;
+      activityId: string;
+      popup: HTMLDivElement;
+    }
+  | {
+      type: typeof LocationType.Accommodation;
+      accommodationId: string;
+      popup: HTMLDivElement;
+    };
+
 export function TripMap() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<MapTilerMap>(null);
   const { trip, loading: currentTripLoading } = useCurrentTrip();
   const activities = useTripActivities(trip?.activityIds ?? []);
   const accommodations = useTripAccommodations(trip?.accommodationIds ?? []);
+  const mapMarkers = useRef<{
+    [key: string]: Marker;
+  }>({});
+  const [popupPortals, setPopupPortals] = useState<{
+    [key: string]: PopupPortal;
+  }>({});
 
   const activitiesWithLocation = useMemo(
     () =>
@@ -59,26 +94,7 @@ export function TripMap() {
     [accommodations],
   );
   const allLocations = useMemo(() => {
-    const locations: (
-      | {
-          type: typeof LocationType.Activity;
-          id: string;
-          lat: number;
-          lng: number;
-        }
-      | {
-          type: typeof LocationType.ActivityDestination;
-          id: string;
-          lat: number;
-          lng: number;
-        }
-      | {
-          type: typeof LocationType.Accommodation;
-          id: string;
-          lat: number;
-          lng: number;
-        }
-    )[] = [];
+    const locations: MarkerLocation[] = [];
     for (const activity of activitiesWithLocation) {
       if (activity.locationLat != null && activity.locationLng != null) {
         locations.push({
@@ -173,24 +189,9 @@ export function TripMap() {
     };
   }, [allLocations]);
 
-  const [popupPortals, setPopupPortals] = useState<
-    Array<
-      | {
-          type:
-            | typeof LocationType.Activity
-            | typeof LocationType.ActivityDestination;
-          activityId: string;
-          popup: HTMLDivElement;
-        }
-      | {
-          type: typeof LocationType.Accommodation;
-          accommodationId: string;
-          popup: HTMLDivElement;
-        }
-    >
-  >([]);
   const theme = useTheme();
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: This hook should only run once during the component mount and unmount! so we don't get flashes of map initialization
   useEffect(() => {
     if (map.current) return;
     if (!mapContainer.current) return;
@@ -227,15 +228,7 @@ export function TripMap() {
 
       map.current.addSource(routeSourceId, {
         type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: allLines.map((line) =>
-            createLineGeoJSON(
-              { lng: line.from.lng, lat: line.from.lat },
-              { lng: line.to.lng, lat: line.to.lat },
-            ),
-          ),
-        },
+        data: createGeoJsonData(allLines),
       });
 
       map.current.addLayer({
@@ -277,59 +270,15 @@ export function TripMap() {
       addLineLayer();
     }
 
-    const newPopupPortals: typeof popupPortals = [];
+    const newPopupPortals: Record<string, PopupPortal> = {};
     for (const location of allLocations) {
-      const popupContent = document.createElement('div');
-      const popup = new Popup({
-        closeButton: false,
-        closeOnClick: true,
-        offset: 25,
-        className: s.popup,
-      }).setDOMContent(popupContent);
+      const [popup, popupPortal] = createPopup(location, s.popup);
 
-      if (location.type === LocationType.Accommodation) {
-        newPopupPortals.push({
-          type: LocationType.Accommodation,
-          accommodationId: location.id,
-          popup: popupContent,
-        });
-      } else if (
-        location.type === LocationType.Activity ||
-        location.type === LocationType.ActivityDestination
-      ) {
-        newPopupPortals.push({
-          type: location.type,
-          activityId: location.id,
-          popup: popupContent,
-        });
-      }
+      const markerElement = createMarkerElement(location);
+      const markerKey = `${location.type}-${location.id}`;
+      newPopupPortals[markerKey] = popupPortal;
 
-      // Create custom marker element with different icons
-      const markerElement = document.createElement('div');
-      markerElement.style.width = '24px';
-      markerElement.style.height = '24px';
-      markerElement.style.borderRadius = '50%';
-      markerElement.style.display = 'flex';
-      markerElement.style.alignItems = 'center';
-      markerElement.style.justifyContent = 'center';
-      markerElement.style.fontSize = '12px';
-      markerElement.style.color = 'white';
-      markerElement.style.cursor = 'pointer';
-      markerElement.style.border = `1px solid var(--grey-9)`;
-      markerElement.style.boxShadow = 'var(--shadow-2)';
-
-      if (location.type === LocationType.Accommodation) {
-        markerElement.style.backgroundColor = 'var(--accent-surface)';
-        markerElement.innerHTML = '🏨';
-      } else if (location.type === LocationType.Activity) {
-        markerElement.style.backgroundColor = 'var(--accent-surface)';
-        markerElement.innerHTML = '📍';
-      } else if (location.type === LocationType.ActivityDestination) {
-        markerElement.style.backgroundColor = 'var(--accent-surface)';
-        markerElement.innerHTML = '🎯';
-      }
-
-      new Marker({
+      mapMarkers.current[markerKey] = new Marker({
         element: markerElement,
         draggable: false,
       })
@@ -346,7 +295,7 @@ export function TripMap() {
         map.current = null;
       }
     };
-  }, [allLocations, allLines, mapOptions, currentTripLoading, theme]);
+  }, [currentTripLoading, theme]);
   useEffect(() => {
     if (!map.current) return;
     if (theme === ThemeAppearance.Dark) {
@@ -356,19 +305,67 @@ export function TripMap() {
     }
   }, [theme]);
 
-  // TODO: Handle if locations are updated after map is initialized
+  // If locations change, update markers
+  useEffect(() => {
+    if (!map.current) return;
+    if (!allLocations.length) return;
+    console.log('TripMap update locations', { allLocations });
+    const allKeys = new Set(Object.keys(mapMarkers.current));
+    const newPopupPortals: Record<string, PopupPortal> = popupPortals;
+    for (const location of allLocations) {
+      const markerKey = `${location.type}-${location.id}`;
+      allKeys.delete(markerKey);
+      if (mapMarkers.current[markerKey]) {
+        mapMarkers.current[markerKey].setLngLat([location.lng, location.lat]);
+      } else {
+        // New marker & portal
+        const [popup, popupPortal] = createPopup(location, s.popup);
+        const markerElement = createMarkerElement(location);
+        newPopupPortals[markerKey] = popupPortal;
+        mapMarkers.current[markerKey] = new Marker({
+          element: markerElement,
+          draggable: false,
+        })
+          .setLngLat([location.lng, location.lat])
+          .setPopup(popup)
+          .addTo(map.current);
+      }
+    }
+    // Remove markers that are no longer in the locations
+    for (const key of allKeys) {
+      if (mapMarkers.current[key]) {
+        mapMarkers.current[key].remove();
+        delete mapMarkers.current[key];
+      }
+      delete newPopupPortals[key];
+    }
+  }, [allLocations, popupPortals]);
+
+  // If lines change, update the line layer
+  useEffect(() => {
+    if (!map.current) return;
+    if (!allLines.length) return;
+    console.log('TripMap update lines', { allLines });
+
+    const mapSource = map.current.getSource<GeoJSONSource>(routeSourceId);
+    if (mapSource) {
+      mapSource.setData(createGeoJsonData(allLines));
+      return;
+    }
+  }, [allLines]);
 
   return (
     <div className={s.mapWrapper}>
       {currentTripLoading ? <Spinner size="3" m="3" /> : null}
       <div ref={mapContainer} className={s.map} />
-      {popupPortals.map((popupPortal) => {
+      {Object.values(popupPortals).map((popupPortal) => {
         switch (popupPortal.type) {
           case LocationType.Accommodation:
             return createPortal(
               <AccommodationPopup
                 key={popupPortal.accommodationId}
                 accommodationId={popupPortal.accommodationId}
+                className={s.description}
               />,
               popupPortal.popup,
             );
@@ -379,6 +376,7 @@ export function TripMap() {
                 key={popupPortal.activityId}
                 activityId={popupPortal.activityId}
                 type={popupPortal.type}
+                className={s.description}
               />,
               popupPortal.popup,
             );
@@ -386,131 +384,4 @@ export function TripMap() {
       })}
     </div>
   );
-}
-
-function AccommodationPopup({ accommodationId }: { accommodationId: string }) {
-  const accommodation = useTripAccommodation(accommodationId);
-  const { trip } = useTrip(accommodation?.tripId);
-
-  const accommodationCheckInStr =
-    accommodation && trip
-      ? DateTime.fromMillis(accommodation.timestampCheckIn)
-          .setZone(trip.timeZone)
-          .toFormat('dd LLLL yyyy HH:mm')
-      : '';
-  const accommodationCheckOutStr =
-    accommodation && trip
-      ? DateTime.fromMillis(accommodation.timestampCheckOut)
-          .setZone(trip.timeZone)
-          .toFormat('dd LLLL yyyy HH:mm')
-      : '';
-  const notes = useParseTextIntoNodes(accommodation?.notes);
-
-  return (
-    <Container>
-      <Heading as="h3" size="2">
-        {accommodation?.name}
-      </Heading>
-      <Text as="p" size="1">
-        <ClockIcon style={{ verticalAlign: '-2px' }} />{' '}
-        {accommodationCheckInStr} to {accommodationCheckOutStr}
-      </Text>
-      {accommodation?.address ? (
-        <Text as="p" size="1">
-          <SewingPinIcon style={{ verticalAlign: '-2px' }} />{' '}
-          {accommodation.address}
-        </Text>
-      ) : null}
-      {notes.length > 0 ? (
-        <Text as="p" size="1" className={s.description}>
-          <InfoCircledIcon style={{ verticalAlign: '-2px' }} /> {notes}
-        </Text>
-      ) : null}
-    </Container>
-  );
-}
-function ActivityPopup({
-  activityId,
-  type,
-}: {
-  activityId: string;
-  type: typeof LocationType.Activity | typeof LocationType.ActivityDestination;
-}) {
-  const activity = useTripActivity(activityId);
-  const { trip } = useTrip(activity?.tripId);
-  const activityStartStr = activity
-    ? DateTime.fromMillis(activity.timestampStart)
-        .setZone(trip?.timeZone)
-        .toFormat('dd LLLL yyyy HH:mm')
-    : '';
-  const activityEndStr = activity
-    ? DateTime.fromMillis(activity.timestampEnd)
-        .setZone(trip?.timeZone)
-        // since 1 activity must be in same day, so might as well just show the time for end
-        .toFormat('HH:mm')
-    : '';
-  const description = useParseTextIntoNodes(activity?.description);
-
-  return (
-    <Container>
-      <Heading as="h3" size="2">
-        {activity?.title}
-      </Heading>
-      <Text as="p" size="1">
-        <ClockIcon style={{ verticalAlign: '-2px' }} /> {activityStartStr} to{' '}
-        {activityEndStr}
-      </Text>
-      {type === LocationType.Activity ? (
-        activity?.location ? (
-          <Text as="p" size="1">
-            <SewingPinIcon style={{ verticalAlign: '-2px' }} />{' '}
-            <Text weight="bold">{activity.location}</Text>
-            {activity.locationDestination ? (
-              <>
-                {' → '}
-                {<Text color="gray">{activity.locationDestination}</Text>}
-              </>
-            ) : (
-              ''
-            )}
-          </Text>
-        ) : null
-      ) : activity?.locationDestination ? (
-        <Text as="p" size="1">
-          <SewingPinIcon style={{ verticalAlign: '-2px' }} />{' '}
-          {activity.location ? (
-            <>
-              {<Text color="gray">{activity.location}</Text>}
-              {' → '}
-            </>
-          ) : (
-            ''
-          )}
-          <Text weight="bold">{activity.locationDestination}</Text>
-        </Text>
-      ) : null}
-      {description.length > 0 ? (
-        <Text as="p" size="1" className={s.description}>
-          <InfoCircledIcon style={{ verticalAlign: '-2px' }} /> {description}
-        </Text>
-      ) : null}
-    </Container>
-  );
-}
-
-function createLineGeoJSON(
-  from: { lng: number; lat: number },
-  to: { lng: number; lat: number },
-) {
-  return {
-    type: 'Feature' as const,
-    properties: {},
-    geometry: {
-      type: 'LineString' as const,
-      coordinates: [
-        [from.lng, from.lat],
-        [to.lng, to.lat],
-      ] as [number, number][],
-    },
-  };
 }
