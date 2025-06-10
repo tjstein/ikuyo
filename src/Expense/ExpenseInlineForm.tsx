@@ -35,6 +35,7 @@ export function ExpenseInlineForm({
   const [formState, setFormState] = useState(
     expenseMode === ExpenseMode.Edit && expense
       ? {
+          loading: false,
           timestampIncurred: timestampIncurredStr,
           title: expense.title,
           description: expense.description,
@@ -50,6 +51,7 @@ export function ExpenseInlineForm({
               : '',
         }
       : {
+          loading: false,
           timestampIncurred: timestampIncurredStr,
           title: '',
           description: '',
@@ -64,6 +66,7 @@ export function ExpenseInlineForm({
 
   const resetFormState = useCallback(() => {
     setFormState({
+      loading: false,
       timestampIncurred: timestampIncurredStr,
       title: '',
       description: '',
@@ -88,6 +91,7 @@ export function ExpenseInlineForm({
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       setErrorMessage('');
+      setFormState((prev) => ({ ...prev, loading: true }));
       const {
         timestampIncurred,
         title,
@@ -128,6 +132,7 @@ export function ExpenseInlineForm({
         Number.isNaN(amountFloat)
       ) {
         setErrorMessage('Please fill in all required fields.');
+        setFormState((prev) => ({ ...prev, loading: false }));
         return;
       }
 
@@ -161,6 +166,11 @@ export function ExpenseInlineForm({
             });
           });
       } else {
+        const backupFormState = { ...formState };
+        resetFormState();
+        refTimestampIncurred.current?.focus();
+
+        // Reset form state first, so that user can continue to add more expenses
         dbAddExpense(
           {
             title,
@@ -179,10 +189,6 @@ export function ExpenseInlineForm({
               title: { children: `Added expense: ${title}` },
               close: {},
             });
-
-            // TODO: UX issue: because the reset happen _after_ dbAddExpense call, user may see new form but without reset state, but we cannot reset state first because it may error
-            resetFormState();
-            refTimestampIncurred.current?.focus();
           })
           .catch((error: unknown) => {
             console.error(`Error adding expense "${title}"`, error);
@@ -191,6 +197,8 @@ export function ExpenseInlineForm({
               title: { children: `Error adding expense: ${title}` },
               close: {},
             });
+            // If error occurs, restore the form state to the previous state
+            setFormState(backupFormState);
           });
       }
     },
@@ -233,6 +241,7 @@ export function ExpenseInlineForm({
         onValueChange={handleCurrencyChange}
         required
         form={idForm}
+        disabled={formState.loading}
       >
         <Select.Trigger />
         <Select.Content>
@@ -244,7 +253,13 @@ export function ExpenseInlineForm({
         </Select.Content>
       </Select.Root>
     );
-  }, [currencies, formState.currency, handleCurrencyChange, idForm]);
+  }, [
+    currencies,
+    formState.currency,
+    formState.loading,
+    handleCurrencyChange,
+    idForm,
+  ]);
 
   const handleFocusAmount = useCallback(() => {
     // If the other two values are available & this is empty, then calculate it
@@ -328,10 +343,17 @@ export function ExpenseInlineForm({
         onChange={handleInputChange}
         form={idForm}
         onFocus={handleFocusAmount}
+        disabled={formState.loading}
         required
       />
     );
-  }, [formState.amount, handleFocusAmount, handleInputChange, idForm]);
+  }, [
+    formState.amount,
+    formState.loading,
+    handleFocusAmount,
+    handleInputChange,
+    idForm,
+  ]);
 
   const fieldCurrencyConversionFactor = useMemo(() => {
     return (
@@ -342,11 +364,13 @@ export function ExpenseInlineForm({
         onChange={handleInputChange}
         form={idForm}
         onFocus={handleFocusCurrencyConversionFactor}
+        disabled={formState.loading}
         required
       />
     );
   }, [
     formState.currencyConversionFactor,
+    formState.loading,
     handleFocusCurrencyConversionFactor,
     handleInputChange,
     idForm,
@@ -360,12 +384,14 @@ export function ExpenseInlineForm({
         value={formState.amountInOriginCurrency}
         onChange={handleInputChange}
         form={idForm}
+        disabled={formState.loading}
         onFocus={handleFocusAmountInOriginCurrency}
         required
       />
     );
   }, [
     formState.amountInOriginCurrency,
+    formState.loading,
     handleFocusAmountInOriginCurrency,
     handleInputChange,
     idForm,
@@ -391,6 +417,7 @@ export function ExpenseInlineForm({
           onChange={handleInputChange}
           required
           form={idForm}
+          disabled={formState.loading}
         />
       </Table.Cell>
       <Table.Cell>
@@ -401,6 +428,7 @@ export function ExpenseInlineForm({
           onChange={handleInputChange}
           required
           form={idForm}
+          disabled={formState.loading}
         />
       </Table.Cell>
       <Table.Cell>{fieldSelectCurrency}</Table.Cell>
@@ -415,6 +443,7 @@ export function ExpenseInlineForm({
           size="2"
           variant="solid"
           form={idForm}
+          loading={formState.loading}
         >
           {expenseMode === ExpenseMode.Edit ? 'Save' : 'Add'}
         </Button>
@@ -425,6 +454,7 @@ export function ExpenseInlineForm({
           color="gray"
           form={idForm}
           onClick={handleOnBack}
+          loading={formState.loading}
         >
           Back
         </Button>
