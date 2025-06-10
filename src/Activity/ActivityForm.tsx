@@ -168,7 +168,8 @@ export function ActivityForm({
       count:
         (activityLocationDestinationLat != null &&
           activityLocationDestinationLng != null) ||
-        activityLocationDestination != null
+        (activityLocationDestination != null &&
+          activityLocationDestination !== '')
           ? 2
           : 1,
     },
