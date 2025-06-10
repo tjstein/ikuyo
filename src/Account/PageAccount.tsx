@@ -20,6 +20,7 @@ export function PageAccount(_props: RouteComponentProps) {
   const currentUser = useDeepBoundStore((state) => state.currentUser);
   const resetToast = useBoundStore((state) => state.resetToast);
   const publishToast = useBoundStore((state) => state.publishToast);
+  const [isFormLoading, setIsFormLoading] = useState(false);
 
   const idEmail = useId();
   const idHandle = useId();
@@ -29,13 +30,16 @@ export function PageAccount(_props: RouteComponentProps) {
   const handleForm = useCallback(() => {
     return async (elForm: HTMLFormElement) => {
       setErrorMessage('');
+      setIsFormLoading(true);
       if (!elForm.reportValidity()) {
+        setIsFormLoading(false);
         return;
       }
       const formData = new FormData(elForm);
       const handle = (formData.get('handle') as string | null) ?? '';
 
       if (!handle || !currentUser) {
+        setIsFormLoading(false);
         return;
       }
       try {
@@ -49,6 +53,7 @@ export function PageAccount(_props: RouteComponentProps) {
           title: { children: 'Account details updated' },
           close: {},
         });
+        setIsFormLoading(false);
         elForm.reset();
       } catch (err) {
         publishToast({
@@ -63,6 +68,7 @@ export function PageAccount(_props: RouteComponentProps) {
           },
           close: {},
         });
+        setIsFormLoading(false);
         elForm.reset();
       }
     };
@@ -127,7 +133,12 @@ export function PageAccount(_props: RouteComponentProps) {
             />
           </Flex>
           <Flex gap="3" mt="5">
-            <Button type="submit" size="2" variant="solid">
+            <Button
+              type="submit"
+              size="2"
+              variant="solid"
+              loading={isFormLoading}
+            >
               Save
             </Button>
           </Flex>
