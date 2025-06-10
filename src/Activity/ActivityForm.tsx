@@ -166,8 +166,9 @@ export function ActivityForm({
       lng: [activityLocationLng, activityLocationDestinationLng],
       zoom: [activityLocationZoom ?? 9, activityLocationDestinationZoom ?? 9],
       count:
-        activityLocationDestinationLat != null &&
-        activityLocationDestinationLng != null
+        (activityLocationDestinationLat != null &&
+          activityLocationDestinationLng != null) ||
+        activityLocationDestination != null
           ? 2
           : 1,
     },
