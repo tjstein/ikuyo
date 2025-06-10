@@ -203,6 +203,9 @@ export function TripMap({ useCase }: { useCase: 'map' | 'home' | 'list' }) {
       },
       apiKey: process.env.MAPTILER_API_KEY,
       logoPosition: 'bottom-right',
+      terrainControl: false,
+      fullscreenControl: true,
+      geolocateControl: useCase === 'map',
     });
 
     // Add line layer to connect origin and destination

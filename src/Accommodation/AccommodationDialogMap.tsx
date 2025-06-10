@@ -37,6 +37,8 @@ export function AccommodationMap({
       zoom: mapOptions.zoom,
       apiKey: process.env.MAPTILER_API_KEY,
       logoPosition: 'bottom-right',
+      terrainControl: false,
+      geolocateControl: false,
     });
 
     map.current.on('zoomend', () => {
