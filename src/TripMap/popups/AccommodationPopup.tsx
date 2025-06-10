@@ -5,15 +5,25 @@ import {
 } from '@radix-ui/react-icons';
 import { Container, Heading, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
+import { Link } from 'wouter';
 import { useParseTextIntoNodes } from '../../common/text/parseTextIntoNodes';
+import {
+  RouteTrip,
+  RouteTripListView,
+  RouteTripListViewAccommodation,
+  RouteTripTimetableView,
+  RouteTripTimetableViewAccommodation,
+} from '../../Routes/routes';
 import { useTrip, useTripAccommodation } from '../../Trip/store/hooks';
 
 export function AccommodationPopup({
   accommodationId,
   className,
+  linkTargetBasePage,
 }: {
   accommodationId: string;
   className: string;
+  linkTargetBasePage: 'timetable' | 'list';
 }) {
   const accommodation = useTripAccommodation(accommodationId);
   const { trip } = useTrip(accommodation?.tripId);
@@ -31,11 +41,18 @@ export function AccommodationPopup({
           .toFormat('dd LLLL yyyy HH:mm')
       : '';
   const notes = useParseTextIntoNodes(accommodation?.notes);
+  const linkTarget = accommodation?.tripId
+    ? `~${RouteTrip.asRouteTarget(accommodation?.tripId)}${
+        linkTargetBasePage === 'timetable'
+          ? `${RouteTripTimetableView.asRouteTarget()}${RouteTripTimetableViewAccommodation.asRouteTarget(accommodation?.id)}`
+          : `${RouteTripListView.asRouteTarget()}${RouteTripListViewAccommodation.asRouteTarget(accommodation?.id)}`
+      }`
+    : null;
 
   return (
     <Container>
       <Heading as="h3" size="2">
-        {accommodation?.name}
+        {linkTarget ? <Link to={linkTarget}>{accommodation?.name}</Link> : ''}
       </Heading>
       <Text as="p" size="1">
         <ClockIcon style={{ verticalAlign: '-2px' }} />{' '}

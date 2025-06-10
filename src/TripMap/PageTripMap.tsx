@@ -5,7 +5,7 @@ import s from './TripMap.module.css';
 export function PageTripMap() {
   return (
     <Box className={s.pageMapWrapper}>
-      <TripMap />
+      <TripMap useCase="map" />
     </Box>
   );
 }

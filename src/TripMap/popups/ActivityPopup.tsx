@@ -5,7 +5,15 @@ import {
 } from '@radix-ui/react-icons';
 import { Container, Heading, Text } from '@radix-ui/themes';
 import { DateTime } from 'luxon';
+import { Link } from 'wouter';
 import { useParseTextIntoNodes } from '../../common/text/parseTextIntoNodes';
+import {
+  RouteTrip,
+  RouteTripListView,
+  RouteTripListViewActivity,
+  RouteTripTimetableView,
+  RouteTripTimetableViewActivity,
+} from '../../Routes/routes';
 import { useTrip, useTripActivity } from '../../Trip/store/hooks';
 import { LocationType } from '../constants';
 
@@ -13,10 +21,12 @@ export function ActivityPopup({
   activityId,
   type,
   className,
+  linkTargetBasePage,
 }: {
   activityId: string;
   type: typeof LocationType.Activity | typeof LocationType.ActivityDestination;
   className: string;
+  linkTargetBasePage: 'timetable' | 'list';
 }) {
   const activity = useTripActivity(activityId);
   const { trip } = useTrip(activity?.tripId);
@@ -32,11 +42,18 @@ export function ActivityPopup({
         .toFormat('HH:mm')
     : '';
   const description = useParseTextIntoNodes(activity?.description);
+  const linkTarget = activity?.tripId
+    ? `~${RouteTrip.asRouteTarget(activity?.tripId)}${
+        linkTargetBasePage === 'timetable'
+          ? `${RouteTripTimetableView.asRouteTarget()}${RouteTripTimetableViewActivity.asRouteTarget(activity?.id)}`
+          : `${RouteTripListView.asRouteTarget()}${RouteTripListViewActivity.asRouteTarget(activity?.id)}`
+      }`
+    : null;
 
   return (
     <Container>
       <Heading as="h3" size="2">
-        {activity?.title}
+        {linkTarget ? <Link to={linkTarget}>{activity?.title}</Link> : ''}
       </Heading>
       <Text as="p" size="1">
         <ClockIcon style={{ verticalAlign: '-2px' }} /> {activityStartStr} to{' '}

@@ -63,7 +63,7 @@ type PopupPortal =
       popup: HTMLDivElement;
     };
 
-export function TripMap() {
+export function TripMap({ useCase }: { useCase: 'map' | 'home' | 'list' }) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<MapTilerMap>(null);
   const { trip, loading: currentTripLoading } = useCurrentTrip();
@@ -361,6 +361,9 @@ export function TripMap() {
                 key={popupPortal.accommodationId}
                 accommodationId={popupPortal.accommodationId}
                 className={s.description}
+                linkTargetBasePage={
+                  useCase === 'list' || useCase === 'map' ? 'list' : 'timetable'
+                }
               />,
               popupPortal.popup,
             );
@@ -372,6 +375,9 @@ export function TripMap() {
                 activityId={popupPortal.activityId}
                 type={popupPortal.type}
                 className={s.description}
+                linkTargetBasePage={
+                  useCase === 'list' || useCase === 'map' ? 'list' : 'timetable'
+                }
               />,
               popupPortal.popup,
             );

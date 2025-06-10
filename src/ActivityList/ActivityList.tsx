@@ -175,7 +175,7 @@ export function ActivityList() {
           maxWidth={{ initial: '100%', sm: '50%' }}
           display={{ initial: 'none', sm: 'flex' }}
         >
-          <TripMap />
+          <TripMap useCase="list" />
         </Flex>
       </Flex>
 

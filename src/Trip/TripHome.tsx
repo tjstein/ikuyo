@@ -115,7 +115,7 @@ export function TripHome() {
           maxWidth={{ initial: '100%', sm: '50%' }}
           display={{ initial: 'none', sm: 'flex' }}
         >
-          <TripMap />
+          <TripMap useCase="home" />
         </Flex>
       </Flex>
       {latestComments.length > 0 ? (
