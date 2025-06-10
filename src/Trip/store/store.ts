@@ -261,9 +261,11 @@ export const createTripSlice: StateCreator<
       if (!trip) {
         return [];
       }
-      const commentGroups = trip.commentGroupIds.map(
-        (id) => state.commentGroup[id],
-      );
+      const commentGroups = trip.commentGroupIds
+        .map((id) => state.commentGroup[id])
+        .filter((commentGroup): commentGroup is TripSliceCommentGroup => {
+          return commentGroup !== undefined;
+        });
       const comments = commentGroups
         .flatMap((commentGroup) => {
           return commentGroup.commentIds.map((id) => {
