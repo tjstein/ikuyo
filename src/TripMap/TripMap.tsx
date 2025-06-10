@@ -76,14 +76,6 @@ export function TripMap() {
     [key: string]: PopupPortal;
   }>({});
 
-  const activitiesWithLocation = useMemo(
-    () =>
-      activities.filter(
-        (activity) =>
-          activity.locationLat != null && activity.locationLng != null,
-      ),
-    [activities],
-  );
   const accommodationsWithLocation = useMemo(
     () =>
       accommodations.filter(
@@ -95,7 +87,7 @@ export function TripMap() {
   );
   const allLocations = useMemo(() => {
     const locations: MarkerLocation[] = [];
-    for (const activity of activitiesWithLocation) {
+    for (const activity of activities) {
       if (activity.locationLat != null && activity.locationLng != null) {
         locations.push({
           type: LocationType.Activity,
@@ -130,13 +122,13 @@ export function TripMap() {
       }
     }
     return locations;
-  }, [activitiesWithLocation, accommodationsWithLocation]);
+  }, [activities, accommodationsWithLocation]);
   const allLines = useMemo(() => {
     const lines: {
       from: { lat: number; lng: number };
       to: { lat: number; lng: number };
     }[] = [];
-    for (const activity of activitiesWithLocation) {
+    for (const activity of activities) {
       if (
         activity.locationLat != null &&
         activity.locationLng != null &&
@@ -156,7 +148,7 @@ export function TripMap() {
       }
     }
     return lines;
-  }, [activitiesWithLocation]);
+  }, [activities]);
 
   const mapOptions = useMemo(() => {
     if (allLocations.length === 0) {
