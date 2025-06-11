@@ -388,6 +388,23 @@ export function PageLanding() {
                     Detailed accommodation and activity management
                   </Text>
                 </Flex>
+
+                <Flex align="center" gap="3">
+                  <Box className={s.checkIcon}>
+                    <CheckIcon width="20" height="20" />
+                  </Box>
+                  <Text size="4">
+                    100%{' '}
+                    <a
+                      href="https://github.com/kenrick95/ikuyo"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      free and open source
+                    </a>{' '}
+                    - no hidden costs
+                  </Text>
+                </Flex>
               </Flex>
             </Flex>
             <Card size="4" className={s.benefitsCard}>
@@ -418,7 +435,7 @@ export function PageLanding() {
             </Heading>
             <Text size="4" weight="bold" className={s.ctaSubtitle}>
               Join travelers who trust Ikuyo to make their trip planning
-              effortless and fun.
+              effortless and fun. Completely free!
             </Text>
 
             {currentUser ? (
@@ -458,6 +475,16 @@ export function PageLanding() {
                 <Link to="/terms" className={s.footerLink}>
                   Terms of Service
                 </Link>
+              </Text>
+              <Text size="2" asChild>
+                <a
+                  href="https://github.com/kenrick95/ikuyo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={s.footerLink}
+                >
+                  Source Code (GitHub)
+                </a>
               </Text>
             </Flex>
           </Flex>
