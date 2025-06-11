@@ -305,14 +305,8 @@ export default function Terms() {
       <ul>
         <li>
           <p>
-            By visiting this page on our website:{' '}
-            <a
-              href="https://ikuyo.kenrick95.org/"
-              rel="noreferrer external nofollow noopener"
-              target="_blank"
-            >
-              https://ikuyo.kenrick95.org/
-            </a>
+            By e-mailing us at{' '}
+            <a href="mailto:contact@kenrick95.org">contact@kenrick95.org</a>
           </p>
         </li>
       </ul>

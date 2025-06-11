@@ -488,13 +488,7 @@ export default function Privacy() {
         <li>
           <p>
             By visiting this page on our website:{' '}
-            <a
-              href="https://ikuyo.kenrick95.org/"
-              rel="noreferrer external nofollow noopener"
-              target="_blank"
-            >
-              https://ikuyo.kenrick95.org/
-            </a>
+            <a href="mailto:contact@kenrick95.org">contact@kenrick95.org</a>
           </p>
         </li>
       </ul>
