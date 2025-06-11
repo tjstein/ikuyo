@@ -322,6 +322,13 @@ export function PageLanding() {
                 </a>
               </Flex>
             </Grid>
+            <Flex justify="center">
+              <Button size="3" variant="outline" asChild>
+                <Link to="~/trip/2617cd98-a229-45d4-9617-5265d52317cd/home">
+                  View Example Trip
+                </Link>
+              </Button>
+            </Flex>
           </Flex>
         </Container>
       </Section>
