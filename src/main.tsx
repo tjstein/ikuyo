@@ -1,7 +1,14 @@
 import './index.css';
+import { init as sentryInit } from '@sentry/react';
 // import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
+
+sentryInit({
+  dsn: 'https://f7955000a5929d11ff4c6e6d47826169@o4509480519991296.ingest.de.sentry.io/4509480521891920',
+  sendDefaultPii: true,
+  allowUrls: ['https://ikuyo.kenrick95.org'],
+});
 
 /** Delete all service worker generated from previous build tooling... It was kind of unnecessarily complicated since fetching data still need internet connection, maybe we don't need it for now... */
 async function unregisterServiceWorker() {
