@@ -26,6 +26,12 @@ import { useCurrentUser } from '../Auth/hooks';
 import imgUrl from '../logo/ikuyo.svg';
 import { DocTitle } from '../Nav/DocTitle';
 import { RouteLogin, RouteTrips } from '../Routes/routes';
+import ScreenshotTripComment from './assets/ScreenshotTripComment.png';
+import ScreenshotTripExpense from './assets/ScreenshotTripExpense.png';
+import ScreenshotTripHome from './assets/ScreenshotTripHome.png';
+import ScreenshotTripList from './assets/ScreenshotTripList.png';
+import ScreenshotTripMap from './assets/ScreenshotTripMap.png';
+import ScreenshotTripTimetable from './assets/ScreenshotTripTimetable.png';
 import s from './PageLanding.module.css';
 
 export default PageLanding;
@@ -207,6 +213,32 @@ export function PageLanding() {
                   Set your destination, dates, and time zone. Add basic trip
                   information to get started with your itinerary planning.
                 </Text>
+                <a
+                  href={ScreenshotTripHome}
+                  className={s.screenshotLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src={ScreenshotTripHome}
+                    className={s.screenshot}
+                    alt="Trip Home Screenshot"
+                    loading="lazy"
+                  />
+                </a>
+                <a
+                  href={ScreenshotTripMap}
+                  className={s.screenshotLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src={ScreenshotTripMap}
+                    className={s.screenshot}
+                    alt="Trip Map Screenshot"
+                    loading="lazy"
+                  />
+                </a>
               </Flex>
 
               <Flex
@@ -222,6 +254,32 @@ export function PageLanding() {
                   interactive timetable to visualize your schedule and avoid
                   conflicts.
                 </Text>
+                <a
+                  href={ScreenshotTripTimetable}
+                  className={s.screenshotLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src={ScreenshotTripTimetable}
+                    className={s.screenshot}
+                    alt="Trip Timetable Screenshot"
+                    loading="lazy"
+                  />
+                </a>
+                <a
+                  href={ScreenshotTripList}
+                  className={s.screenshotLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src={ScreenshotTripList}
+                    className={s.screenshot}
+                    alt="Trip List Screenshot"
+                    loading="lazy"
+                  />
+                </a>
               </Flex>
 
               <Flex
@@ -236,6 +294,32 @@ export function PageLanding() {
                   Invite travel companions to collaborate on planning. Track
                   expenses and manage all trip details in one place.
                 </Text>
+                <a
+                  href={ScreenshotTripExpense}
+                  className={s.screenshotLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src={ScreenshotTripExpense}
+                    className={s.screenshot}
+                    alt="Trip Expense Screenshot"
+                    loading="lazy"
+                  />
+                </a>
+                <a
+                  href={ScreenshotTripComment}
+                  className={s.screenshotLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src={ScreenshotTripComment}
+                    className={s.screenshot}
+                    alt="Trip Comment Screenshot"
+                    loading="lazy"
+                  />
+                </a>
               </Flex>
             </Grid>
           </Flex>

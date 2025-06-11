@@ -44,6 +44,18 @@
   font-size: 24px;
   font-weight: bold;
 }
+.screenshotLink {
+  display: block;
+  text-align: center;
+  margin: var(--space-2) auto;
+}
+.screenshot {
+  width: 100%;
+  max-width: 600px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: block;
+}
 
 .ctaSection {
   background: var(--accent-10);
