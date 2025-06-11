@@ -93,7 +93,7 @@ export const REGIONS_MAP: Record<string, string> = {
   FO: 'Faroe Islands',
   FQ: 'Antarctica',
   FR: 'France',
-  FX: 'France',
+  // FX: 'France',
   GA: 'Gabon',
   GB: 'United Kingdom',
   GD: 'Grenada',
